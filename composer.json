@@ -1,6 +1,6 @@
 {
-    "name": "bravedave/mvp",
-    "description": "Minimum Viable Product",
+    "name": "bravedave/smokealarm",
+    "description": "Smoke Alarm Matrix",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "license": "MIT",
@@ -12,12 +12,18 @@
         }
     ],
     "require": {
+        "bravedave/green": "^1.1"
     },
     "autoload": {
         "psr-4": {
-            "": "src/app/"
+            "smokealarm\\": "src/smokealarm/",
+            "": "src/application/app/"
 
         }
+
+    },
+    "scripts": {
+        "post-update-cmd": "smokealarm\\postUpdate::upgrade"
 
     }
 

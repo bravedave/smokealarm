@@ -22,4 +22,4 @@ if (preg_match('/\.(?:png|ico|jpg|jpeg|gif|css|js)$/', $_SERVER['REQUEST_URI']))
 require __DIR__ . '/../vendor/autoload.php';
 
 // run the application
-launcher::run();
+application::run();

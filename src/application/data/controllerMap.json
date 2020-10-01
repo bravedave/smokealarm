@@ -1,0 +1,4 @@
+{
+    "smokealarm": "smokealarm\\controller",
+    "smokealarmtypes": "smokealarm\\controllerSmokeAlarmTypes"
+}
