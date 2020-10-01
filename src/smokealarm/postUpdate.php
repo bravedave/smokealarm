@@ -21,6 +21,7 @@ class postUpdate extends dvc\service {
     echo( sprintf('%s : %s%s', 'green updated', __METHOD__, PHP_EOL));
 
     config::route_register( 'smokealarm', 'smokealarm\controller');
+    config::route_register( 'smokealarmlocations', 'smokealarm\controllerSmokeAlarmLocations');
     config::route_register( 'smokealarmtypes', 'smokealarm\controllerSmokeAlarmTypes');
     echo( sprintf('%s : %s%s', 'smokealarm  updated', __METHOD__, PHP_EOL));
 

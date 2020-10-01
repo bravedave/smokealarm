@@ -12,7 +12,7 @@
 	<thead class="small">
     <tr>
       <td line-number>#</td>
-      <td>type</td>
+      <td>location</td>
     </tr>
   </thead>
 
@@ -23,7 +23,7 @@
     printf( '<tr data-id="%s">', $dto->id);
 
     print '<td line-number></td>';
-    printf( '<td>%s</td>', $dto->type);
+    printf( '<td>%s</td>', $dto->location);
 
     print '</tr>';
 
@@ -45,7 +45,7 @@
 <script>
 ( _ => {
   $(document).ready( () => {
-    $(document).on( 'add-smokealarm-type', e => {
+    $(document).on( 'add-smokealarm-location', e => {
       _.get.modal( _.url('<?= $this->route ?>/edit'))
       .then( m => m.on( 'success', e => window.location.reload()));
 
@@ -65,7 +65,9 @@
     })
     .trigger('update-line-numbers');
 
-    $('#<?= $addBtn ?>').on( 'click', e => { $(document).trigger( 'add-smokealarm-type'); });
+    console.log( 'aa');
+
+    $('#<?= $addBtn ?>').on( 'click', e => { $(document).trigger( 'add-smokealarm-location'); });
 
     $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
@@ -97,7 +99,7 @@
 				_.post({
 					url : _.url('<?= $this->route ?>'),
 					data : {
-						action : 'delete-smokealarm-type',
+						action : 'delete-smokealarm-location',
 						id : _data.id
 
 					},

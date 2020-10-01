@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "bravedave/green": "^1.1"
+        "bravedave/green": "^1.1",
+        "parsecsv/php-parsecsv": "^1.2"
     },
     "autoload": {
         "psr-4": {

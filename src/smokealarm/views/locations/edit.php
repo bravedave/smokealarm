@@ -16,7 +16,7 @@ use strings;
 $dto = $this->data->dto; ?>
 
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">
-  <input type="hidden" name="action" value="save-smokealarm-type">
+  <input type="hidden" name="action" value="save-smokealarm-location">
   <input type="hidden" name="id" value="<?= $dto->id ?>">
 
   <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" id="<?= $_modal = strings::rand() ?>" aria-labelledby="<?= $_modal ?>Label" aria-hidden="true">
@@ -32,10 +32,10 @@ $dto = $this->data->dto; ?>
           <div class="form-group row">
             <div class="col">
               <label for="<?= $_uid = strings::rand() ?>">Type</label>
-              <input type="text" name="type" class="form-control"
+              <input type="text" name="location" class="form-control"
                 placeholder="type"
                 id="<?= $_uid ?>"
-                value="<?= $dto->type ?>">
+                value="<?= $dto->location ?>">
 
             </div>
 

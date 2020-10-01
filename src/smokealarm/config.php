@@ -12,7 +12,7 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms';
-  const smokealarm_db_version = 0.03;
+  const smokealarm_db_version = 0.04;
 
   static protected $_SMOKEALARM_VERSION = 0;
 
@@ -53,6 +53,15 @@ class config extends \config {
       'smokealarm.json'
 
     ]);
+
+	}
+
+	static function smokealarm_import_csv() {
+		return realpath( implode( DIRECTORY_SEPARATOR, [
+      rtrim( self::dataPath(), '/ '),
+      'smokealarm_import.csv'
+
+    ]));
 
 	}
 

@@ -10,8 +10,8 @@
 
 namespace dao;
 
-$dbc = \sys::dbCheck( 'properties');
+$dbc = \sys::dbCheck( 'smokealarm_locations');
 
-$dbc->defineField( 'smokealarms_required', 'int');
+$dbc->defineField( 'location', 'varchar');
 
 $dbc->check();

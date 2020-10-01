@@ -14,22 +14,22 @@ namespace smokealarm;
 use green;
 use Json;
 
-class controllerSmokeAlarmTypes extends controller {
+class controllerSmokeAlarmLocations extends controller {
   protected function _index() {
-    $dao = new dao\smokealarm_types;
+    $dao = new dao\smokealarm_locations;
     $this->data = (object)[
       'dtoSet' => $dao->dtoSet( $dao->getAll())
 
     ];
 
     $this->render([
-      'primary' => 'types/report',
+      'primary' => 'locations/report',
       'secondary' => [
         'index'
 
       ],
       'data' => [
-        'title' => $this->title = config::label . ' - types'
+        'title' => $this->title = config::label . ' - locations'
 
       ]
 
@@ -39,28 +39,28 @@ class controllerSmokeAlarmTypes extends controller {
 
 	function edit( $id = 0, $mode = '') {
 		$this->data = (object)[
-			'title' => $this->title = 'Add Smoke Alarm Type',
-			'dto' => new dao\dto\smokealarm_types
+			'title' => $this->title = 'Add Smoke Alarm Location',
+			'dto' => new dao\dto\smokealarm_locations
 
 		];
 
 		if ( $id = (int)$id) {
-			$dao = new dao\smokealarm_types;
+			$dao = new dao\smokealarm_locations;
 			if ( $dto = $dao->getByID( $id)) {
 
-				$this->data->title = $this->title = 'Edit Smoke Alarm Type';
+				$this->data->title = $this->title = 'Edit Smoke Alarm Location';
 				$this->data->dto = $dto;
-				$this->load('types/edit');
+				$this->load('locations/edit');
 
 			}
 			else {
-        $this->load('types/not-found');
+        $this->load('locations/not-found');
 
 			}
 
 		}
 		else {
-      $this->load('types/edit');
+      $this->load('locations/edit');
 
 		}
 

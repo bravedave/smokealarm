@@ -104,6 +104,59 @@
 
       $(tr)
       .addClass( 'pointer' )
+			.on( 'delete', function( e) {
+				let _tr = $(this);
+
+				_.ask({
+					headClass: 'text-white bg-danger',
+					text: 'Are you sure ?',
+					title: 'Confirm Delete',
+					buttons : {
+						yes : function(e) {
+							$(this).modal('hide');
+							_tr.trigger( 'delete-confirmed');
+
+						}
+
+					}
+
+				});
+
+			})
+			.on( 'delete-confirmed', function(e) {
+				let _tr = $(this);
+				let _data = _tr.data();
+
+				_.post({
+					url : _.url('<?= $this->route ?>'),
+					data : {
+						action : 'delete-smokealarm',
+						id : _data.id
+
+					},
+
+				}).then( d => {
+					if ( 'ack' == d.response) {
+						_tr.remove();
+						$('#<?= $_table ?>').trigger('update-line-numbers');
+
+					}
+					else {
+						_.growl( d);
+
+					}
+
+				});
+
+      })
+      .on( 'copy', function(e) {
+        let _tr = $(this);
+        let _data = _tr.data();
+
+        _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id + '/copy'))
+        .then( modal => modal.on( 'success', e => window.location.reload()));
+
+      })
       .on( 'edit', function(e) {
         let _tr = $(this);
         let _data = _tr.data();
@@ -117,7 +170,49 @@
 
         $(this).trigger( 'edit');
 
-      });
+      })
+			.on( 'contextmenu', function( e) {
+				if ( e.shiftKey)
+					return;
+
+				e.stopPropagation();e.preventDefault();
+
+				let _tr = $(this);
+				let _data = _tr.data();
+
+				_.hideContexts();
+				let _context = _.context();
+
+				_context.append( $('<a href="#"><b>edit</b></a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+					_context.close();
+
+					_tr.trigger( 'edit');
+
+				}));
+
+        _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+
+          _tr.trigger( 'copy');
+
+        }));
+
+				_context.append( $('<a href="#"><i class="fa fa-trash"></i>delete</a>').on( 'click', function( e) {
+					e.stopPropagation();e.preventDefault();
+
+					_context.close();
+
+					_tr.trigger( 'delete');
+
+				}));
+
+				_context.open( e);
+
+			});
 
     });
 
