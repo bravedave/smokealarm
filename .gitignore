@@ -1,0 +1,4 @@
+.bak
+vendor/
+*.lock
+src/data/

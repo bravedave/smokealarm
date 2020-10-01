@@ -1,0 +1,9 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+*.php text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+
+src/dvc/bootstrap4/* linguist-vendored
+src/dvc/public/* linguist-vendored
