@@ -1,31 +1,32 @@
 {
-    "name": "bravedave/smokealarm",
-    "description": "Smoke Alarm Matrix",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "license": "MIT",
+  "name": "bravedave/smokealarm",
+  "description": "Smoke Alarm Matrix",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "MIT",
 
-    "authors": [
-        {
-            "name": "Dave Bray",
-            "email": "david@brayworth.com.au"
-        }
-    ],
-    "require": {
-        "bravedave/green": "^1.1",
-        "parsecsv/php-parsecsv": "^1.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "smokealarm\\": "src/smokealarm/",
-            "": "src/application/app/"
-
-        }
-
-    },
-    "scripts": {
-        "post-update-cmd": "smokealarm\\postUpdate::upgrade"
+  "authors": [
+    {
+      "name": "Dave Bray",
+      "email": "david@brayworth.com.au"
+    }
+  ],
+  "require": {
+    "bravedave/green": "^1.1",
+    "parsecsv/php-parsecsv": "^1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "smokealarm\\": "src/smokealarm/",
+      "": "src/application/app/"
 
     }
+
+  },
+  "scripts": {
+    "post-update-cmd": "smokealarm\\postUpdate::upgrade",
+    "importcsv-cmd": "smokealarm\\postUpdate::importcsv"
+
+  }
 
 }

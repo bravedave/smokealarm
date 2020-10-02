@@ -13,5 +13,7 @@ namespace dao;
 $dbc = \sys::dbCheck( 'properties');
 
 $dbc->defineField( 'smokealarms_required', 'int');
+$dbc->defineField( 'smokealarms_power', 'varchar');
+$dbc->defineField( 'smokealarms_2022_compliant', 'varchar');
 
 $dbc->check();

@@ -1,5 +1,4 @@
 {
     "smokealarm": "smokealarm\\controller",
-    "smokealarmtypes": "smokealarm\\controllerSmokeAlarmTypes",
     "smokealarmlocations": "smokealarm\\controllerSmokeAlarmLocations"
 }

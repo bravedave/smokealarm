@@ -22,16 +22,8 @@ use strings;
   </li>
 
   <li class="nav-item">
-    <a class="nav-link" href="<?= strings::url( 'smokealarmtypes') ?>">Types</a>
+    <a class="nav-link" href="<?= strings::url( 'smokealarm/propertyalarms') ?>">All Alarms</a>
 
   </li>
-
-  <?php if ( config::smokealarm_import_csv()) { ?>
-    <li class="nav-item">
-      <a class="nav-link" href="<?= strings::url( 'smokealarm/importcsv') ?>">Import CSV</a>
-
-    </li>
-
-  <?php } ?>
 
 </ul>

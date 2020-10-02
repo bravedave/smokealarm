@@ -42,31 +42,6 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- Type -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Type</label>
-            <div class="col">
-              <select name="type" class="form-control" id="<?= $_uid ?>" required>
-                <option></option>
-                <?php
-                $_dao = new dao\smokealarm_types;
-                $_dtoSet = $_dao->dtoSet( $_dao->getAll());
-                foreach ($_dtoSet as $_dto) {
-                  printf(
-                    '<option value="%s" %s>%s</option>',
-                    $_dto->type,
-                    $dto->type == $_dto->type ? 'selected' : '',
-                    $_dto->type
-
-                  );
-
-                } ?>
-
-              </select>
-
-            </div>
-
-          </div>
-
           <div class="form-group row"><!-- Location -->
             <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Location</label>
             <div class="col">
@@ -247,33 +222,6 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- Power -->
-            <div class="col-sm-3">Power</div>
-            <div class="col">
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input" name="power"
-                  value="battery" required
-                  <?php if ( 'battery' == $dto->power) print 'checked' ?>
-                  id="<?= $uid = strings::rand() ?>">
-
-                <label class="form-check-label" for="<?= $uid ?>">battery</label>
-
-              </div>
-
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input" name="power"
-                  value="mains" required
-                  <?php if ( 'mains' == $dto->power) print 'checked' ?>
-                  id="<?= $uid = strings::rand() ?>">
-
-                <label class="form-check-label" for="<?= $uid ?>">mains</label>
-
-              </div>
-
-            </div>
-
-          </div>
-
         </div>
 
         <div class="modal-footer">
@@ -307,7 +255,7 @@ $dto = $this->data->dto; ?>
         let _data = _form.serializeFormJSON();
         let _modalBody = $('.modal-body', _form);
 
-        console.log( _data);
+        // console.log( _data);
         _.post({
           url : _.url('<?= $this->route ?>'),
           data : _data,

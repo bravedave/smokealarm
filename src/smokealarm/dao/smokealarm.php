@@ -22,7 +22,10 @@ class smokealarm extends _dao {
 			p.address_street,
 			p.address_suburb,
 			p.address_state,
-			p.address_postcode
+			p.address_postcode,
+			p.smokealarms_required,
+			p.smokealarms_power,
+			p.smokealarms_2022_compliant
 		FROM
 			%s sa
 			LEFT JOIN properties p on p.id = sa.properties_id
@@ -35,7 +38,10 @@ class smokealarm extends _dao {
 			p.address_street,
 			p.address_suburb,
 			p.address_state,
-			p.address_postcode
+			p.address_postcode,
+			p.smokealarms_required,
+			p.smokealarms_power,
+			p.smokealarms_2022_compliant
 		FROM `smokealarm` sa
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
@@ -48,6 +54,17 @@ class smokealarm extends _dao {
 	public function getDistinctModels() {
 		$sql = 'SELECT DISTINCT `model` FROM `smokealarm` ORDER BY `model`';
 		return $this->Result( $sql);
+
+	}
+
+	public function getForProperty( $id) {
+		$_sql = sprintf(
+			'SELECT sa.* FROM `smokealarm` sa WHERE sa.properties_id = %d',
+			$id
+
+		);
+
+		return $this->Result( $_sql);
 
 	}
 

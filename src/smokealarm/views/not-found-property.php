@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="modal-body">
-                    smokealarm type not found
+                    property not found
 
                 </div>
 

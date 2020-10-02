@@ -12,8 +12,9 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms';
-  const smokealarm_db_version = 0.04;
+  const smokealarm_db_version = 0.05;
 
+  static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
   static protected $_SMOKEALARM_VERSION = 0;
 
 	static protected function smokealarm_version( $set = null) {
@@ -67,6 +68,7 @@ class config extends \config {
 
   static function smokealarm_init() {
     $_a = [
+      'import_add_properties' => self::$SMOKEALARM_IMPORT_ADD_PROPERTIES,
       'smokealarm_version' => self::$_SMOKEALARM_VERSION,
 
     ];
@@ -75,6 +77,7 @@ class config extends \config {
 
       $j = (object)array_merge( $_a, (array)json_decode( file_get_contents( $config)));
 
+      self::$SMOKEALARM_IMPORT_ADD_PROPERTIES = (float)$j->import_add_properties;
       self::$_SMOKEALARM_VERSION = (float)$j->smokealarm_version;
 
 		}

@@ -1,3 +1,4 @@
 {
-    "smokealarm_version": 0.04
+    "import_add_properties": true,
+    "smokealarm_version": 0.05
 }

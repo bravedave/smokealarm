@@ -13,7 +13,6 @@ namespace smokealarm;
 
 use green;
 use Json;
-use ParseCsv;
 use strings;
 use sys;
 
@@ -27,14 +26,16 @@ class controller extends \Controller {
 
     ];
 
+    $this->title = config::label;
     $this->render([
       'primary' => 'report',
       'secondary' => [
         'index'
 
       ],
-      'data' => [
-        'title' => $this->title = config::label
+      'data' => (object)[
+        'searchFocus' => false,
+        'pageUrl' => strings::url( $this->route)
 
       ]
 
@@ -71,11 +72,29 @@ class controller extends \Controller {
       } else { Json::nak( $action); }
 
 		}
-    elseif ( 'delete-smokealarm-type' == $action) {
+    elseif ( 'get-property-by-id' == $action) {
       if ( $id = (int)$this->getPost('id')) {
-        $dao = new dao\smokealarm_types;
-        $dao->delete( $id);
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $id)) {
+          Json::ack( $action)
+            ->add( 'dto', $dto);
 
+        } else { Json::nak( $action); }
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'save-properties' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $a = [
+          'smokealarms_required' => $this->getPost('smokealarms_required'),
+          'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
+          'smokealarms_power' => $this->getPost('smokealarms_power')
+
+        ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
         Json::ack( $action);
 
       } else { Json::nak( $action); }
@@ -87,10 +106,8 @@ class controller extends \Controller {
         'location' => $this->getPost('location'),
         'make' => $this->getPost('make'),
         'model' => $this->getPost('model'),
-        'power' => $this->getPost('power'),
         'properties_id' => $this->getPost('properties_id'),
         'status' => $this->getPost('status'),
-        'type' => $this->getPost('type'),
 
       ];
 
@@ -115,26 +132,6 @@ class controller extends \Controller {
       ];
 
       $dao = new dao\smokealarm_locations;
-      if ( $id = (int)$this->getPost('id')) {
-        $dao->UpdateByID( $a, $id);
-
-      }
-      else {
-        $id = $dao->Insert( $a);
-
-      }
-
-      Json::ack( $action)
-        ->add( 'id', $id);
-
-		}
-    elseif ( 'save-smokealarm-type' == $action) {
-      $a = [
-        'type' => $this->getPost('type'),
-
-      ];
-
-      $dao = new dao\smokealarm_types;
       if ( $id = (int)$this->getPost('id')) {
         $dao->UpdateByID( $a, $id);
 
@@ -195,71 +192,93 @@ class controller extends \Controller {
 
 		}
 		else {
+      if ( $pid = (int)$this->getParam('pid')) {
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $pid)) {
+          $this->data->dto->properties_id = $dto->id;
+          $this->data->dto->address_street = $dto->address_street;
+
+        }
+
+      }
 			$this->load('edit');
 
 		}
 
   }
 
-  function importcsv() {
-    if ( $csvFile = config::smokealarm_import_csv()) {
-      $csv = new ParseCsv\Csv( $csvFile);
-      // sys::dump($csv->data, null, false);
+	function editproperty( $id = 0) {
+    $this->title = 'Edit Property';
 
-      $cmsIDs = [];
+    if ( $id = (int)$id) {
 
-      foreach ($csv->data as $data) {
-        # code...
-        if ( !\in_array( $data['CMS ID'], $cmsIDs)) {
-          $cmsIDs[] = $id = $data['CMS ID'];
+      $dao = new dao\properties;
+      if ( $dto = $dao->getByID( $id)) {
 
-          $dao = new dao\properties;
-          if ( $dto = $dao->getByID( $data['CMS ID'])) {
-            $a = [
-              'smokealarms_required' => (int)$data['Sum total of alarms required'],
-
-            ];
-
-            $dao->UpdateByID( $a, $dto->id);
-
-          }
-          else {
-            $a = [
-              'address_street' => sprintf( '%s %s', $data['No'], $data['Street']),
-              'smokealarms_required' => (int)$data['Sum total of alarms required'],
-
-            ];
-
-            $id = $dao->Insert( $a);
-
-          }
-
-        }
-
-        $status = 'non compliant';
-        if ( \in_array( $data['Status'], ['Existing', 'Replacement'])) {
-          $status = 'compliant';
-
-        }
-
-        $a = [
-          'properties_id' => $id,
-          'type' => $data['Type'],
-          'location' => $data['Location'],
-          'make' => $data['Make'],
-          'model' => $data['Type and Power Source'],
-          'expiry' => strings::BRITISHDateAsANSI( $data['Date of expiry']),
-          'status' =>$status,
-          'power' => $data['Power Source'],
+        $this->data = (object)[
+          'dto' => $dto
 
         ];
 
+				$this->load('edit-property');
+
+			}
+			else {
+				$this->load('not-found-property');
+
+			}
+
+		}
+    else {
+      $this->load('not-found-property');
+
+    }
+
+  }
+
+  function propertyalarms( $id = 0) {
+
+    if ( $id = (int)$id) {
+      $dao = new dao\properties;
+      if ( $dto = $dao->getByID( $id)) {
         $dao = new dao\smokealarm;
-        $dao->Insert( $a);
+        $this->data = (object)[
+          'dtoSet' => $dao->dtoSet( $dao->getForProperty( $id)),
+          'property' => $dto
+
+        ];
+
+        $this->title = config::label;
+        $this->load( 'report-property');
+
+      }
+      else {
+				$this->load('not-found-property-alert');
 
       }
 
-      \rename( $csvFile, \preg_replace( '@csv$@', 'bak', $csvFile));
+    }
+    else {
+      $dao = new dao\smokealarm;
+      $this->data = (object)[
+        'dtoSet' => $dao->dtoSet( $dao->getAll())
+
+      ];
+
+      $this->title = config::label;
+      $this->render([
+        'primary' => 'report-all',
+        'secondary' => [
+          'index'
+
+        ],
+        'data' => (object)[
+          'searchFocus' => false,
+          'pageUrl' => strings::url( $this->route)
+
+        ]
+
+      ]);
 
     }
 

@@ -20,13 +20,9 @@ class smokealarm extends _dto {
 	public $model = '';
 	public $expiry = '';
 	public $status = '';
-	public $power = '';
 	public $properties_id = 0;
 	public $created = '';
 	public $updated = '';
 	public $address_street = '';
-	public $address_suburb = '';
-	public $address_state = '';
-	public $address_postcode = '';
 
 }
