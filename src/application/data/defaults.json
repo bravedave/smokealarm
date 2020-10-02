@@ -1,6 +1,0 @@
-{
-    "db_type": "sqlite",
-    "date_format": "d/m/Y",
-    "datetime_format": "d/m/Y g:ia",
-    "timezone": "Australia/Brisbane"
-}
