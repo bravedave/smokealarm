@@ -12,6 +12,7 @@ namespace smokealarm\dao;
 
 use dao\_dao;
 use db;
+use PropertyUtility;
 
 class smokealarm extends _dao {
 	protected $_db_name = 'smokealarm';
@@ -36,6 +37,7 @@ class smokealarm extends _dao {
 		'SELECT
 			sa.*,
 			p.address_street,
+			p.street_index,
 			p.address_suburb,
 			p.address_state,
 			p.address_postcode,
@@ -44,6 +46,46 @@ class smokealarm extends _dao {
 			p.smokealarms_2022_compliant
 		FROM `smokealarm` sa
 			LEFT JOIN properties p on p.id = sa.properties_id';
+
+	public function getOrderedByStreet() : ?object {
+
+		$this->Q( 'DROP TABLE IF EXISTS tmp');
+		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $this->_sql_getAll));
+
+		$sql = 'SELECT
+				id,
+				address_street,
+				street_index,
+				properties_id
+			FROM tmp
+			WHERE street_index = "" OR street_index IS NULL';
+		if ( $res = $this->Result( $sql)) {
+			$res->dtoSet( function( $dto) {
+				if ( !$dto->street_index) {
+					if ( $s = PropertyUtility::street_index( $dto->address_street)) {
+
+						// \sys::logger( sprintf('<%s> %s', $s, __METHOD__));
+						$this->db->Update( 'tmp', [ 'street_index' => $s ], 'WHERE id = ' . (int)$dto->id);
+
+						$dao = new properties;
+						$dao->UpdateByID([
+							'street_index' => $s
+
+						], $dto->properties_id);
+
+					}
+
+				}
+
+				return $dto;
+
+			});
+
+		}
+
+		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index');
+
+	}
 
 	public function getDistinctMakes() {
 		$sql = 'SELECT DISTINCT `make` FROM `smokealarm` ORDER BY `make`';

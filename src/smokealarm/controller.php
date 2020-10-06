@@ -22,9 +22,11 @@ class controller extends \Controller {
   protected function _index() {
     $dao = new dao\smokealarm;
     $this->data = (object)[
-      'dtoSet' => $dao->dtoSet( $dao->getAll())
+      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet())
 
     ];
+
+    // sys::dump( $this->data->dtoSet);
 
     $this->title = config::label;
     $this->render([
