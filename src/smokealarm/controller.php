@@ -78,8 +78,14 @@ class controller extends \Controller {
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
         if ( $dto = $dao->getByID( $id)) {
+
+          $dao = new dao\smokealarm;
+          $stat = $dao->getCompliantCountForProperty( $dto->id);
+
           Json::ack( $action)
-            ->add( 'dto', $dto);
+            ->add( 'dto', $dto)
+            ->add( 'compliant', $stat->compliant)
+            ;
 
         } else { Json::nak( $action); }
 
@@ -285,5 +291,19 @@ class controller extends \Controller {
     }
 
   }
+
+  // function x() {
+  //   $dao = new dao\properties;
+  //   if ( $dto = $dao->getByID( 12484)) {
+  //     $dao = new dao\smokealarm;
+  //     sys::dump([
+  //       $dto,
+  //       $dao->getCompliantCountForProperty( $dto->id)
+
+  //     ]);
+
+  //   }
+
+  // }
 
 }

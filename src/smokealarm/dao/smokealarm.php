@@ -110,6 +110,36 @@ class smokealarm extends _dao {
 
 	}
 
+	public function getCompliantCountForProperty( int $id) : ?object {
+		$_sql = sprintf(
+			'SELECT
+				count(*) "i"
+			FROM `smokealarm`
+			WHERE
+				`properties_id` = %d
+				AND "compliant" == `status`',
+			$id
+
+		);
+
+		$ret = (object)[
+			'properties_id' => $id,
+			'compliant' => 0
+
+		];
+
+		if ( $res = $this->Result( $_sql)) {
+			if ( $dto = $res->dto()) {
+				$ret->compliant = $dto->i;
+
+			}
+
+		}
+
+		return $ret;
+
+	}
+
 	public function Insert( $a) {
 		$a[ 'created'] = $a['updated'] = db::dbTimeStamp();
 		return parent::Insert( $a);

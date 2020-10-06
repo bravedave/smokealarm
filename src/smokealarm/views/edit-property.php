@@ -47,7 +47,7 @@ $dto = $this->data->dto; ?>
           </div>
 
           <div class="form-group row"><!-- smokealarms_power -->
-            <div class="col-sm-3 col-form-label" for="<?= $uid = strings::rand() ?>">Power</div>
+            <div class="col-sm-3 col-form-label" for="<?= $uid = strings::rand() ?>">Required</div>
             <div class="col-md-3">
               <input type="number" class="form-control" name="smokealarms_required"
                 value="<?= $dto->smokealarms_required ?>"

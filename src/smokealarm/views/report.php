@@ -21,6 +21,7 @@ use strings;  ?>
           <div class="row">
             <div class="col text-left">address</div>
             <div class="col-3 text-left">power</div>
+            <div class="col-1 text-center">count</div>
             <div class="col-1 text-center">req</div>
             <div class="col-1 text-center"><?= strings::html_tick ?></div>
 
@@ -37,64 +38,96 @@ use strings;  ?>
   </div>
 
   <?php
+  $items = [];
+  $index = -1;
   $pid = -1;
   foreach ($this->data->dtoSet as $dto) {
     if ( $pid != $dto->properties_id) {
-      $pid = $dto->properties_id; ?>
+      $addr = [$dto->address_street];
+      if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
+      if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
-      <div class="card">
-        <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
-          <h2 class="mb-0 d-flex">
-            <button class="btn btn-light btn-block" type="button"
-              data-toggle="collapse"
-              data-target="#<?= $_collapse = strings::rand() ?>"
-              data-property_id="<?= $dto->properties_id ?>"
-              aria-expanded="false" aria-controls="<?= $_collapse ?>">
-              <?php
-                $addr = [$dto->address_street];
-                if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
-                if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
+      $items[] = (object)[
+        'properties_id' => $pid = $dto->properties_id,
+        'address' => implode( $addr),
+        'smokealarms_power' => $dto->smokealarms_power,
+        'smokealarms_required' => $dto->smokealarms_required,
+        'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
+        'alarms' => 0
 
-                printf(
-                  '<div class="row">
-                    <div class="col text-left" address>%s</div>
-                    <div class="col-3 text-left" power>%s</div>
-                    <div class="col-1 text-center" required>%s</div>
-                    <div class="col-1 text-center %s" compliance>%s</div>
-                  </div>',
-                  implode( ' ', $addr),
-                  $dto->smokealarms_power,
-                  $dto->smokealarms_required,
-                  'yes' == $dto->smokealarms_2022_compliant ? 'text-success' : '',
-                  'yes' == $dto->smokealarms_2022_compliant ? strings::html_tick : '&nbsp;'
+      ];
 
-                );
+      $index = count( $items) -1; // the last item
 
-              ?>
-
-            </button>
-
-            <button type="button" class="btn btn-light" edit-property><i class="fa fa-pencil"></i></button>
-
-          </h2>
-
-        </div>
-
-        <div id="<?= $_collapse ?>" class="collapse"
-          aria-labelledby="<?= $_heading ?>"
-          data-parent="#<?= $_accordion ?>"
-          data-property_id="<?= $dto->properties_id ?>">
-
-          <div class="card-body"></div>
-
-        </div>
-
-      </div class="card">
-
-    <?php
     }
 
-  } ?>
+    if ( $index > -1 && 'compliant' == $dto->status) $items[$index]->alarms ++;
+
+  }
+
+  foreach ( $items as $item) {  ?>
+    <div class="card">
+      <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
+        <h2 class="mb-0 d-flex">
+          <button class="btn btn-light btn-block" type="button"
+            data-toggle="collapse"
+            data-target="#<?= $_collapse = strings::rand() ?>"
+            data-property_id="<?= $item->properties_id ?>"
+            aria-expanded="false" aria-controls="<?= $_collapse ?>">
+            <?php
+              $complianceClass = '';
+              $complianceHtml = '';
+              if ( 'yes' == $item->smokealarms_2022_compliant) {
+                $complianceClass = 'text-success';
+                $complianceHtml = strings::html_tick;
+
+              }
+              elseif ( $item->alarms < $item->smokealarms_required) {
+                $complianceClass = 'text-danger';
+                $complianceHtml = $item->alarms - $item->smokealarms_required;
+
+              }
+
+              printf(
+                '<div class="row">
+                  <div class="col text-left" address>%s</div>
+                  <div class="col-3 text-left" power>%s</div>
+                  <div class="col-1 text-center" compliant>%s</div>
+                  <div class="col-1 text-center" required>%s</div>
+                  <div class="col-1 text-center %s" compliance>%s</div>
+                </div>',
+                $item->address,
+                $item->smokealarms_power,
+                $item->alarms,
+                $item->smokealarms_required,
+                $complianceClass,
+                $complianceHtml
+
+              );
+
+            ?>
+
+          </button>
+
+          <button type="button" class="btn btn-light" edit-property><i class="fa fa-pencil"></i></button>
+
+        </h2>
+
+      </div>
+
+      <div id="<?= $_collapse ?>" class="collapse"
+        aria-labelledby="<?= $_heading ?>"
+        data-parent="#<?= $_accordion ?>"
+        data-property_id="<?= $item->properties_id ?>">
+
+        <div class="card-body"></div>
+
+      </div>
+
+    </div class="card">
+
+  <?php
+  }  ?>
 
 </div>
 <script>
@@ -126,16 +159,28 @@ use strings;  ?>
             console.log( d);
 
             $('[address]', _me).html( d.dto.address_street);
+            $('[compliant]', _me).html( d.compliant);
             $('[required]', _me).html( d.dto.smokealarms_required);
             $('[power]', _me).html( d.dto.smokealarms_power);
-            $('[compliance]', _me).html( 'yes' == d.dto.smokealarms_2022_compliant ? '<?= strings::html_tick ?>' : '&nbsp;' );
 
             if ( 'yes' == d.dto.smokealarms_2022_compliant) {
-              $('[compliance]', _me).addClass( 'text-success');
+              $('[compliance]', _me)
+              .removeClass( 'text-danger')
+              .addClass( 'text-success')
+              .html( '<?= strings::html_tick ?>');
+
+            }
+            else if ( Number( d.compliant) < Number( d.dto.smokealarms_required)) {
+              $('[compliance]', _me)
+              .removeClass( 'text-success')
+              .addClass( 'text-danger')
+              .html( Number( d.compliant) - Number( d.dto.smokealarms_required));
 
             }
             else {
-              $('[compliance]', _me).removeClass( 'text-success');
+              $('[compliance]', _me)
+              .removeClass( 'text-success text-danger')
+              .html( '&nbsp;' );
 
             }
 
