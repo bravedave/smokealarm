@@ -46,8 +46,8 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- smokealarms_power -->
-            <div class="col-sm-3 col-form-label" for="<?= $uid = strings::rand() ?>">Required</div>
+          <div class="form-group row"><!-- smokealarms_required -->
+            <div class="col-sm-4 col-form-label" for="<?= $uid = strings::rand() ?>">Required 2022</div>
             <div class="col-md-3">
               <input type="number" class="form-control" name="smokealarms_required"
                 value="<?= $dto->smokealarms_required ?>"
@@ -58,7 +58,7 @@ $dto = $this->data->dto; ?>
           </div>
 
           <div class="form-group row"><!-- smokealarms_power -->
-            <div class="col-sm-3">Power</div>
+            <div class="col-sm-4">Power</div>
             <div class="col">
               <div class="form-check form-check-inline">
                 <input type="radio" class="form-check-input" name="smokealarms_power"
@@ -95,7 +95,7 @@ $dto = $this->data->dto; ?>
           </div>
 
           <div class="form-group row"><!-- smokealarms_2022_compliant -->
-            <div class="offset-sm-3 col">
+            <div class="offset-sm-4 col">
               <div class="form-check form-check-inline">
                 <input type="checkbox" class="form-check-input" name="smokealarms_2022_compliant"
                   value="yes"

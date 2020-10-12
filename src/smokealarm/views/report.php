@@ -49,7 +49,9 @@ use strings;  ?>
 
       $items[] = (object)[
         'properties_id' => $pid = $dto->properties_id,
-        'address' => implode( $addr),
+        'address' => implode( ' ', $addr),
+        'people_id' => $dto->people_id,
+        'people_name' => $dto->people_name,
         'smokealarms_power' => $dto->smokealarms_power,
         'smokealarms_required' => $dto->smokealarms_required,
         'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
@@ -65,6 +67,9 @@ use strings;  ?>
 
   }
 
+  // \sys::dump( $this->data->dtoSet);
+  // \sys::dump( $items);
+
   foreach ( $items as $item) {  ?>
     <div class="card">
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
@@ -72,7 +77,10 @@ use strings;  ?>
           <button class="btn btn-light btn-block" type="button"
             data-toggle="collapse"
             data-target="#<?= $_collapse = strings::rand() ?>"
-            data-property_id="<?= $item->properties_id ?>"
+            data-properties_id="<?= $item->properties_id ?>"
+            data-address= "<?= htmlentities( $item->address) ?>""
+            data-people_id="<?= $item->people_id ?>"
+            data-people_name="<?= htmlentities( $item->people_name) ?>"
             aria-expanded="false" aria-controls="<?= $_collapse ?>">
             <?php
               $complianceClass = '';
@@ -118,7 +126,7 @@ use strings;  ?>
       <div id="<?= $_collapse ?>" class="collapse"
         aria-labelledby="<?= $_heading ?>"
         data-parent="#<?= $_accordion ?>"
-        data-property_id="<?= $item->properties_id ?>">
+        data-properties_id="<?= $item->properties_id ?>">
 
         <div class="card-body"></div>
 
@@ -133,12 +141,12 @@ use strings;  ?>
 <script>
   ( _ => {
     $(document).ready( () => {
-      $('#<?= $_accordion ?> button[data-property_id]')
+      $('#<?= $_accordion ?> button[data-properties_id]')
       .on( 'edit', function( e) {
         let _me = $(this);
         let _data = _me.data();
 
-        _.get.modal( _.url('<?= $this->route ?>/editproperty/' + _data.property_id))
+        _.get.modal( _.url('<?= $this->route ?>/editproperty/' + _data.properties_id))
         .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
 
       })
@@ -150,13 +158,13 @@ use strings;  ?>
           url : _.url('<?= $this->route ?>'),
           data : {
             action : 'get-property-by-id',
-            id : _data.property_id
+            id : _data.properties_id
 
           },
 
         }).then( d => {
           if ( 'ack' == d.response) {
-            console.log( d);
+            // console.log( d);
 
             $('[address]', _me).html( d.dto.address_street);
             $('[compliant]', _me).html( d.compliant);
@@ -199,7 +207,49 @@ use strings;  ?>
         e.stopPropagation();e.preventDefault();
 
         let _me = $(this);
-        _me.siblings('button[data-property_id]').trigger('edit');
+        _me.siblings('button[data-properties_id]').trigger('edit');
+
+      });
+
+      $('#<?= $_accordion ?> button[data-toggle="collapse"]')
+      .on( 'contextmenu', function( e) {
+        if ( e.shiftKey)
+          return;
+
+        e.stopPropagation();e.preventDefault();
+
+        _brayworth_.hideContexts();
+
+        let _me = $(this);
+        let _data = _me.data();
+        let _context = _brayworth_.context();
+
+        _context.append( $('<a href="#"><strong>Open/Close</strong></a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+          $( _data.target).collapse('toggle');
+
+        }));
+
+        _context.append(
+          $('<a href="#">goto ' + _data.address + '</a>')
+          .attr( 'href', _.url('property/view/' + _data.properties_id))
+          .on( 'click', e => _context.close())
+
+        );
+
+        if ( Number(_data.people_id) > 0) {
+          _context.append(
+            $('<a href="#">goto ' + _data.people_name + '</a>')
+            .attr( 'href', _.url('person/view/' + _data.people_id))
+            .on( 'click', e => _context.close())
+
+          );
+
+        }
+
+        _context.open( e);
 
       });
 
@@ -216,7 +266,7 @@ use strings;  ?>
         .append( sp)
         .prependTo( _me);
 
-        let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.property_id);
+        let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
         $('.card-body', this).load( url, d => indicator.remove());
 
       })

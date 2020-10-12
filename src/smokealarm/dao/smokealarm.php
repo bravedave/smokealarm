@@ -33,24 +33,27 @@ class smokealarm extends _dao {
 		WHERE
 			sa.id = %d';
 
-	protected $_sql_getAll =
-		'SELECT
-			sa.*,
-			p.address_street,
-			p.street_index,
-			p.address_suburb,
-			p.address_state,
-			p.address_postcode,
-			p.smokealarms_required,
-			p.smokealarms_power,
-			p.smokealarms_2022_compliant
-		FROM `smokealarm` sa
-			LEFT JOIN properties p on p.id = sa.properties_id';
-
 	public function getOrderedByStreet() : ?object {
 
+		$_sql =
+			'SELECT
+				sa.*,
+				p.address_street,
+				p.people_id,
+				p.street_index,
+				p.address_suburb,
+				p.address_state,
+				p.address_postcode,
+				p.smokealarms_required,
+				p.smokealarms_power,
+				p.smokealarms_2022_compliant,
+				people.name people_name
+			FROM `smokealarm` sa
+				LEFT JOIN properties p on p.id = sa.properties_id
+				LEFT JOIN people on p.people_id = people.id';
+
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
-		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $this->_sql_getAll));
+		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
 
 		$sql = 'SELECT
 				id,

@@ -292,18 +292,4 @@ class controller extends \Controller {
 
   }
 
-  // function x() {
-  //   $dao = new dao\properties;
-  //   if ( $dto = $dao->getByID( 12484)) {
-  //     $dao = new dao\smokealarm;
-  //     sys::dump([
-  //       $dto,
-  //       $dao->getCompliantCountForProperty( $dto->id)
-
-  //     ]);
-
-  //   }
-
-  // }
-
 }

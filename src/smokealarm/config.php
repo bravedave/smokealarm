@@ -12,7 +12,7 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms';
-  const smokealarm_db_version = 0.05;
+  const smokealarm_db_version = 0.06;
 
   static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
   static protected $_SMOKEALARM_VERSION = 0;
