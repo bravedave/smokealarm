@@ -13,6 +13,15 @@ namespace smokealarm;
 
 use strings;  ?>
 
+<style media="screen">
+@media screen and (max-width: 767px){
+  div[data-role="content-primary"] {
+    padding : 0 0 1.5rem 0!important;
+
+  }
+
+}
+</style>
 <div class="accordion" id="<?= $_accordion = strings::rand() ?>">
   <div class="card">
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
