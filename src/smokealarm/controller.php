@@ -169,7 +169,14 @@ class controller extends \Controller {
 
   }
 
-	function edit( $id = 0, $mode = '') {
+  protected function render($params) {
+    // dvc\pages::$contentClass = 'col pt-3 pb-4';
+    \dvc\pages\bootstrap::$primaryClass .= ' px-0 px-md-3';
+    parent::render($params);
+
+  }
+
+  function edit( $id = 0, $mode = '') {
 		$this->data = (object)[
 			'title' => $this->title = 'Add Smoke Alarm',
 			'dto' => new dao\dto\smokealarm

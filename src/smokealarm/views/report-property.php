@@ -18,8 +18,8 @@ use strings;  ?>
     <tr>
       <td class="align-bottom text-center" line-number>#</td>
       <td class="align-bottom">location</td>
-      <td class="align-bottom">make</td>
-      <td class="align-bottom">model</td>
+      <td class="align-bottom d-none d-md-table-cell">make</td>
+      <td class="align-bottom d-none d-md-table-cell">model</td>
       <td class="align-bottom">expiry</td>
       <td class="align-bottom text-center">status</td>
 
@@ -41,9 +41,15 @@ use strings;  ?>
     );
 
     print '<td class="text-center" line-number></td>';
-    printf( '<td>%s</td>', $dto->location);
-    printf( '<td>%s</td>', $dto->make);
-    printf( '<td>%s</td>', $dto->model);
+    printf(
+      '<td>%s<div class="d-md-none">&nbsp;%s</div><div class="d-md-none">&nbsp;%s</div></td>',
+      $dto->location,
+      $dto->make,
+      $dto->model
+
+    );
+    printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->make);
+    printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->model);
     printf( '<td>%s</td>', strings::asLocalDate( $dto->expiry));
     printf( '<td class="text-center">%s</td>', $dto->status);
 

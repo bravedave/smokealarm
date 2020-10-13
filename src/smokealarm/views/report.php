@@ -19,11 +19,16 @@ use strings;  ?>
       <div class="btn-group d-flex">
         <button class="btn btn-secondary btn-block" type="button">
           <div class="row">
-            <div class="col text-left">address</div>
-            <div class="col-3 text-left">power</div>
-            <div class="col-1 text-center">count</div>
-            <div class="col-1 text-center">req</div>
-            <div class="col-1 text-center"><?= strings::html_tick ?></div>
+            <div class="col text-left align-self-end">address</div>
+            <div class="col-3 text-left d-none d-md-table-column align-self-end">power</div>
+            <div class="col-1 text-center d-flex">
+              <div class="d-md-none align-self-end">#</div>
+              <div class="d-none d-md-block align-self-end">count</div>
+
+            </div>
+
+            <div class="col-2 col-md-1 text-center px-0 align-self-end">req 2022</div>
+            <div class="col-2 col-md-1 text-center px-0 align-self-end"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
 
           </div>
 
@@ -98,11 +103,11 @@ use strings;  ?>
 
               printf(
                 '<div class="row">
-                  <div class="col text-left" address>%s</div>
-                  <div class="col-3 text-left" power>%s</div>
+                  <div class="col text-left text-truncate" address>%s</div>
+                  <div class="col-3 text-left d-none d-md-table-column" power>%s</div>
                   <div class="col-1 text-center" compliant>%s</div>
-                  <div class="col-1 text-center" required>%s</div>
-                  <div class="col-1 text-center %s" compliance>%s</div>
+                  <div class="col-2 col-md-1 text-center" required>%s</div>
+                  <div class="col-2 col-md-1 text-center %s" compliance>%s</div>
                 </div>',
                 $item->address,
                 $item->smokealarms_power,
@@ -128,7 +133,7 @@ use strings;  ?>
         data-parent="#<?= $_accordion ?>"
         data-properties_id="<?= $item->properties_id ?>">
 
-        <div class="card-body"></div>
+        <div class="card-body px-0 px-md-3 py-1 py-md-2"></div>
 
       </div>
 
