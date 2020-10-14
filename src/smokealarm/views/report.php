@@ -13,6 +13,14 @@ namespace smokealarm;
 
 use strings;  ?>
 
+<div class="form-group row d-print-none" id="<?= $srch = strings::rand() ?>envelope">
+	<div class="col">
+    <input type="search" class="form-control" autofocus id="<?= $srch ?>">
+
+	</div>
+
+</div>
+
 <style media="screen">
 @media screen and (max-width: 767px){
   div[data-role="content-primary"] {
@@ -20,8 +28,11 @@ use strings;  ?>
 
   }
 
+  #<?= $srch ?>envelope > .col { padding: .2rem 20px; }
+
 }
 </style>
+
 <div class="accordion" id="<?= $_accordion = strings::rand() ?>">
   <div class="card">
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
@@ -286,6 +297,39 @@ use strings;  ?>
       })
       .on('show.bs.collapse', function() {
         $(this).trigger('reload');
+
+      });
+
+      let srchidx = 0;
+      $('#<?= $srch ?>').on( 'keyup', function( e) {
+        let idx = ++srchidx;
+        let txt = this.value;
+
+        if ( '' == txt.trim()) {
+          $('#<?= $_accordion ?> > .card.d-none').removeClass( 'd-none');
+
+        }
+        else {
+          $('#<?= $_accordion ?> button[data-toggle="collapse"]').each( ( i, btn) => {
+            if ( idx != srchidx) return false;
+
+            let _btn = $(btn);
+            let _card = _btn.closest('.card');
+            let _data = _btn.data();
+
+            let str = _data.address;
+            if ( str.match( new RegExp(txt, 'gi'))) {
+              _card.removeClass( 'd-none');
+
+            }
+            else {
+              _card.addClass( 'd-none');
+
+            }
+
+          });
+
+        }
 
       });
 

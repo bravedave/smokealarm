@@ -13,6 +13,7 @@ namespace dao;
 $dbc = \sys::dbCheck( 'properties');
 
 $dbc->defineField( 'people_id', 'bigint');
+$dbc->defineField( 'smokealarms_tags', 'text');
 $dbc->defineField( 'smokealarms_required', 'int');
 $dbc->defineField( 'smokealarms_power', 'varchar');
 $dbc->defineField( 'smokealarms_2022_compliant', 'varchar');

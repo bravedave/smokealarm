@@ -73,7 +73,152 @@ class controller extends \Controller {
 
       } else { Json::nak( $action); }
 
-		}
+    }
+    elseif ( 'document-delete-for-property' == $action) {
+      $debug = false;
+      // $debug = true;
+      if ( $properties_id = (int)$this->getPost('properties_id')) {
+        if ( $file = $this->getPost('file')) {
+          \sys::logger( sprintf('<%s> %s', $file, __METHOD__));
+          $dao = new dao\properties;
+          if ( $dto = $dao->getByID( $properties_id)) {
+            if ( $store = $dao->smokealarmStore( $dto)) {
+              $target = implode( DIRECTORY_SEPARATOR, [ $store, $file ]);
+
+              // \sys::logger( sprintf('<%s> %s', $target, __METHOD__));
+              if ( \file_exists( $target)) unlink( $target);
+              Json::ack( $action);
+
+            } else { Json::nak( sprintf( '%s : invalid store', $action)); }
+
+          } else { Json::nak( sprintf( '%s : property not found', $action)); }
+
+        } else { Json::nak( sprintf( '%s : invalid file', $action)); }
+
+      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
+
+    }
+    elseif ( 'document-get-for-property' == $action) {
+      $debug = false;
+      // $debug = true;
+      if ( $properties_id = (int)$this->getPost('properties_id')) {
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $properties_id)) {
+          if ( $store = $dao->smokealarmStore( $dto)) {
+
+            $tags = $dto->smokealarms_tags ?
+              (array)\json_decode( $dto->smokealarms_tags) :
+              [];
+
+            $it = new \FilesystemIterator($store);
+            $a = [];
+            foreach ($it as $obj) {
+              $key = (string)\array_search( $obj->getFilename(), $tags);
+              $a[] = (object)[
+                'name' => $obj->getFilename(),
+                'size' => strings::formatBytes( $obj->getSize(), 0),
+                'tag' => $key
+
+              ];
+
+            }
+
+            Json::ack( $action)
+              ->add( 'data', $a);
+
+          } else { Json::nak( sprintf( '%s : invalid store', $action)); }
+
+        } else { Json::nak( sprintf( '%s : property not found', $action)); }
+
+      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
+
+    }
+    elseif ( 'document-upload' == $action) {
+      $debug = false;
+      // $debug = true;
+      if ( $properties_id = (int)$this->getPost('properties_id')) {
+
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $properties_id)) {
+          if ( $store = $dao->smokealarmStore( $dto)) {
+            /*--- ---[uploads]--- ---*/
+            if ( $debug) \sys::logger( sprintf('<%s> %s', '-- uploads --', __METHOD__));
+            $good = [];
+            $bad = [];
+            foreach ( $_FILES as $file ) {
+              if ( $debug) sys::logger( sprintf('%s : %s', $file['name'], __METHOD__));
+              if ( is_uploaded_file( $file['tmp_name'] )) {
+                $strType = mime_content_type ( $file['tmp_name']);
+                if ( $debug) sys::logger( sprintf('%s (%s) : %s', $file['name'], $strType, __METHOD__));
+
+                $ok = true;
+                $accept = [
+                  'image/png',
+                  'image/x-png',
+                  'image/jpeg',
+                  'image/pjpeg',
+                  'image/tiff',
+                  'image/gif',
+                  'application/pdf',
+
+                ];
+
+                if ( in_array( $strType, $accept)) {
+                  $source = $file['tmp_name'];
+                  $target = implode( DIRECTORY_SEPARATOR, [
+                    $store,
+                    $file['name']
+
+                  ]);
+
+                  if ( file_exists( $target )) unlink( $target );
+                  if ( move_uploaded_file( $source, $target)) {
+                    chmod( $target, 0666 );
+                    $good[] = [ 'name' => $file['name'], 'result' => 'uploaded'];
+
+                  }
+                  else {
+                    $bad[] = [ 'name' => $file['name'], 'result' => 'nak'];
+
+                  }
+
+                }
+                elseif ( !$strType) {
+                  sys::logger( sprintf('%s invalid file type : %s', $file['name'], __METHOD__));
+                  $bad[] = [ 'name' => $file['name'], 'result' => 'invalid file type'];
+
+                }
+                else {
+                  sys::logger( sprintf('%s invalid file type - %s : %s', $file['name'], $strType, __METHOD__));
+                  $bad[] = [ 'name' => $file['name'], 'result' => 'invalid file type : ' . $strType];
+
+                }
+
+              }
+              elseif ( UPLOAD_ERR_INI_SIZE == $file['error']) {
+                sys::logger( sprintf('%s size exceeds ini size', $file['name'], __METHOD__));
+                $bad[] = [ 'name' => $file['name'], 'result' => 'size exceeds ini size'];
+
+              }
+              else {
+                sys::logger( sprintf('is not an uploaded file ? : %s : %s', $file['name'], __METHOD__));
+
+              }
+
+            }
+            /*--- ---[/uploads]--- ---*/
+
+            Json::ack( $action)
+              ->add( 'good', $good)
+              ->add( 'bad', $bad);
+
+          } else { Json::nak( sprintf( '%s : invalid store', $action)); }
+
+        } else { Json::nak( sprintf( '%s : property not found', $action)); }
+
+      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
+
+    }
     elseif ( 'get-property-by-id' == $action) {
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
@@ -162,6 +307,53 @@ class controller extends \Controller {
 			} else { Json::nak( $action); }
 
 		}
+    elseif ( 'tag-set-for-property' == $action) {
+      if ( $file = $this->getPost( 'file')) {
+        if ( $properties_id = (int)$this->getPost('properties_id')) {
+
+          $dao = new dao\properties;
+          if ( $dto = $dao->getByID( $properties_id)) {
+            // $_tags = [];
+            // foreach (config::smokealarm_tags as $_tag) $_tags[ $_tag] = '';
+
+            // $tags = $dto->smokealarms_tags ?
+            //   \array_merge( $_tags, (array)\json_decode( $dto->smokealarms_tags)) :
+            //   $_tags;
+
+            $tags = (array)\json_decode( $dto->smokealarms_tags);
+            foreach ($tags as $k => $v) {
+              if ( $file == $v) unset( $tags[$k]);
+
+            }
+
+            if ( $tag = $this->getPost( 'tag')) {
+              $tags[$tag] = $file;
+
+            }
+
+            \sys::logger( sprintf('<%s> %s', json_encode( $tags), __METHOD__));
+            \sys::logger( sprintf('<done %s> %s', $tag, __METHOD__));
+
+            $dao->UpdateByID(
+              ['smokealarms_tags' => json_encode( $tags)],
+              $dto->id
+
+            );
+
+            Json::ack( $action);
+
+          } else { Json::nak( sprintf( '%s : property not found', $action)); }
+
+        } else { Json::nak( sprintf( '%s : invalid id', $action)); }
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'tags-get-available' == $action) {
+      Json::ack( $action)
+        ->add( 'tags', config::smokealarm_tags);
+
+		}
 		else {
 			parent::postHandler();
 
@@ -169,7 +361,32 @@ class controller extends \Controller {
 
   }
 
-  function edit( $id = 0, $mode = '') {
+  public function documentView( $id = 0) {
+		if ( $id = (int)$id) {
+      // \sys::logger( sprintf('<%s> %s', $id, __METHOD__));
+			$dao = new dao\properties;
+			if ( $dto = $dao->getByID( $id)) {
+        if ( $document = $this->getParam( 'd')) {
+          if ( $store = $dao->smokealarmStore( $dto)) {
+            $target = implode( DIRECTORY_SEPARATOR, [ $store, $document ]);
+            // \sys::logger( sprintf('<%s> %s', $target, __METHOD__));
+
+            if ( \file_exists( $target)) {
+              \sys::serve( $target);
+
+            } else { $this->render(['content' => 'not-found']); }
+
+          } else { $this->render(['content' => 'not-found']); }
+
+        } else { $this->render(['content' => 'not-found']); }
+
+      } else { $this->render(['content' => 'not-found']); }
+
+    } else { $this->render(['content' => 'not-found']); }
+
+  }
+
+  public function edit( $id = 0, $mode = '') {
 		$this->data = (object)[
 			'title' => $this->title = 'Add Smoke Alarm',
 			'dto' => new dao\dto\smokealarm
@@ -215,7 +432,7 @@ class controller extends \Controller {
 
   }
 
-	function editproperty( $id = 0) {
+	public function editproperty( $id = 0) {
     $this->title = 'Edit Property';
 
     if ( $id = (int)$id) {
@@ -244,7 +461,7 @@ class controller extends \Controller {
 
   }
 
-  function propertyalarms( $id = 0) {
+  public function propertyalarms( $id = 0) {
 
     if ( $id = (int)$id) {
       $dao = new dao\properties;

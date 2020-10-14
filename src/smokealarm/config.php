@@ -12,7 +12,14 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms 2022';
-  const smokealarm_db_version = 0.06;
+	const smokealarm_db_version = 0.07;
+
+	const smokealarm_tags = [
+		'Smoke Alarm Certificate',
+		'Floorplan',
+		'Ill add more later'
+
+	];
 
   static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
   static protected $_SMOKEALARM_VERSION = 0;
@@ -81,6 +88,23 @@ class config extends \config {
       self::$_SMOKEALARM_VERSION = (float)$j->smokealarm_version;
 
 		}
+
+	}
+
+	static function smokealarm_store() {
+		$store = implode( DIRECTORY_SEPARATOR, [
+      rtrim( self::dataPath(), '/ '),
+      'smokealarm'
+
+		]);
+
+		if ( !is_dir( $store)) {
+			mkdir( $store, 0777);
+			chmod( $store, 0777);
+
+		}
+
+		return realpath( $store);
 
 	}
 

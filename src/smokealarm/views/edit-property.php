@@ -6,7 +6,6 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
@@ -110,9 +109,235 @@ $dto = $this->data->dto; ?>
 
           </div>
 
+          <div class="row">
+            <div class="col" id="<?= $_uid = strings::rand() ?>">&nbsp;</div>
+
+          </div>
+          <script>
+          $(document).ready( () => { ( _ => {
+
+            let tagSet = (file, tag) => {
+              _.post({
+                url : _.url('<?= $this->route ?>'),
+                data : {
+                  action : 'tag-set-for-property',
+                  properties_id : <?= (int)$dto->id ?>,
+                  file : file,
+                  tag : tag
+
+                },
+
+              }).then( d => {
+                if ( 'ack' == d.response) {
+                  $('#<?= $_form ?>').trigger('load-documents');
+
+                }
+                else {
+                  _.growl( d);
+
+                }
+
+                return d;
+
+              });
+
+            };
+
+            let tags = table => {
+              _.post({
+                url : _.url('<?= $this->route ?>'),
+                data : {
+                  action : 'tags-get-available'
+
+                },
+
+              }).then( d => {
+                if ( 'ack' == d.response) {
+                  // console.log( d.tags);
+
+                  let tagContext = function( e) {
+                    if ( e.shiftKey)
+                      return;
+
+                    e.stopPropagation();e.preventDefault();
+
+                    _brayworth_.hideContexts();
+
+                    let _tr = $(this);
+                    let _data = _tr.data();
+                    let _context = _brayworth_.context();
+
+                    _context.append( $('<a href="#"><strong>view</strong></a>').on( 'click', function( e) {
+                      e.stopPropagation();e.preventDefault();
+
+                      _context.close();
+                      _tr.trigger( 'view');
+
+                    }));
+
+                    $.each( d.tags, ( i, tag) => {
+                      _context.append( $('<a href="#"></a>').html( tag).on( 'click', function( e) {
+                        e.stopPropagation();e.preventDefault();
+
+                        _context.close();
+                        tagSet( _data.file, tag);
+
+                      }));
+
+                    })
+
+                    _context.append( '<hr>');
+                    _context.append( $('<a href="#">clear tag</a>').on( 'click', function( e) {
+                      e.stopPropagation();e.preventDefault();
+
+                      _context.close();
+                      tagSet( _data.file, '');
+
+                    }));
+
+                    _context.append( $('<a href="#"><i class="fa fa-trash"></i>delete document</a>').on( 'click', function( e) {
+                      e.stopPropagation();e.preventDefault();
+
+                      _context.close();
+
+                      _brayworth_.ask({
+                        headClass : 'text-white bg-danger',
+                        title : 'confirm delete',
+                        text : 'are you sure ?',
+                        buttons : {
+                          yes : function() {
+                            $(this).modal('hide');
+
+                            // console.log( _data.file);
+                            _.post({
+                              url : _.url('<?= $this->route ?>'),
+                              data : {
+                                action : 'document-delete-for-property',
+                                properties_id : <?= (int)$dto->id ?>,
+                                file : _data.file,
+
+                              },
+
+                            }).then( d => {
+                              _.growl( d);
+                              $('#<?= $_form ?>').trigger('load-documents');
+
+                            });
+
+                          }
+
+                        }
+
+                      });
+
+                    }));
+
+                    _context.open( e);
+
+                  };
+
+                  $('tbody > tr', table)
+                  .each( (i, tr) => {
+                    $(tr)
+                    .on( 'view', function( e) {
+                      let _tr = $(this);
+                      let _data = _tr.data();
+
+                      window.open( _.url('<?= $this->route ?>/documentView/<?= (int)$dto->id ?>?d=' + encodeURIComponent(_data.file)))
+
+                    })
+                    .addClass('pointer')
+                    .on( 'click', function( e) {
+                      e.stopPropagation();e.preventDefault();
+
+                      $(this).trigger( 'view');
+
+                    })
+                    .on( 'contextmenu', tagContext)
+
+                  });
+
+                }
+                else {
+                  _.growl( d);
+
+                }
+
+              });
+
+            };
+
+            $('#<?= $_form ?>').on('load-documents', (e) => {
+              $('#<?= $_uid ?>').append('<div class="spinner-grow spinner-grow-sm d-block mx-auto my-1"></div>');
+              _.post({
+                url : _.url('<?= $this->route ?>'),
+                data : {
+                  action : 'document-get-for-property',
+                  properties_id : <?= (int)$dto->id ?>
+
+                },
+
+              }).then( d => {
+                if ( 'ack' == d.response) {
+                  if ( d.data.length > 0) {
+                    let table = $('<table class="table table-sm"></table>');
+                    let thead = $('<thead class="small"></thead>').appendTo( table);
+                    $('<tr></tr>')
+                      .appendTo( thead)
+                      .append('<td>name</td>')
+                      .append('<td>size</td>')
+                      .append('<td>tag</td>');
+
+                    let tbody = $('<tbody></tbody>').appendTo( table);
+                    $.each( d.data, (i, file) => {
+
+                      let tr = $('<tr></tr>')
+                        .data( 'file', file.name)
+                        .appendTo( tbody);
+
+                      $('<td></td>').html( file.name).appendTo( tr);
+                      $('<td></td>').html( file.size).appendTo( tr);
+                      $('<td></td>').html( file.tag).appendTo( tr);
+                      // console.log( file);
+
+                    });
+
+                    $('#<?= $_uid ?>').html('').append( table);
+
+                    tags( table);
+
+                  }
+                  else {
+                    $('#<?= $_uid ?>').html('');
+
+                  }
+
+                }
+                else {
+                  _.growl( d);
+
+                }
+
+              });
+
+            });
+
+            // console.log( <?= $dto->smokealarms_tags ?>);
+
+          }) (_brayworth_); });
+          </script>
+
         </div>
 
         <div class="modal-footer">
+          <div class="flex-fill" upload>
+            <div class="progress mb-2 d-none">
+              <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+            </div>
+
+          </div>
+
           <button type="submit" class="btn btn-primary">Save</button>
 
         </div>
@@ -126,7 +351,6 @@ $dto = $this->data->dto; ?>
   <script>
   ( _ => {
     $(document).ready( () => {
-
       $('#<?= $_form ?>')
       .on( 'submit', function( e) {
         let _form = $(this);
@@ -153,6 +377,26 @@ $dto = $this->data->dto; ?>
         return false;
 
       });
+
+      ( c => {
+        _.fileDragDropHandler.call( c, {
+          url : _.url( '<?= $this->route ?>'),
+          postData : {
+            action : 'document-upload',
+            properties_id : <?= (int)$dto->id ?>
+
+          },
+          onUpload : d => {
+            _.growl( d);
+            $('#<?= $_form ?>').trigger('load-documents');
+
+          }
+
+        });
+
+      })( _.fileDragDropContainer().appendTo( '#<?= $_form ?> div[upload]'));
+
+      $('#<?= $_form ?>').trigger('load-documents');
 
     });
 

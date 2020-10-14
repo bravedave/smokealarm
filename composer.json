@@ -2,7 +2,6 @@
   "name": "bravedave/smokealarm",
   "description": "Smoke Alarm Matrix",
   "minimum-stability": "dev",
-  "prefer-stable": true,
   "license": "MIT",
 
   "authors": [
@@ -12,8 +11,8 @@
     }
   ],
   "require": {
-    "bravedave/green": "^1.1",
-    "parsecsv/php-parsecsv": "^1.2"
+    "bravedave/green": "*",
+    "parsecsv/php-parsecsv": "*"
   },
   "autoload": {
     "psr-4": {
