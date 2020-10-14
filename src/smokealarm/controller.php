@@ -6,7 +6,6 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
@@ -127,6 +126,8 @@ class controller extends \Controller {
             $it = new \FilesystemIterator($store);
             $a = [];
             foreach ($it as $obj) {
+              if ( 'notes.txt' == $obj->getFilename()) continue;
+
               $key = (string)\array_search( $obj->getFilename(), $tags);
               $a[] = (object)[
                 'name' => $obj->getFilename(),
