@@ -70,51 +70,10 @@ $dto = $this->data->dto; ?>
           <div class="form-group row"><!-- Make -->
             <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Make</label>
             <div class="col">
-              <div class="input-group">
-                <input type="text" name="make" class="form-control"
-                  placeholder="make" required
-                  id="<?= $_uid ?>"
-                  value="<?= $dto->make ?>">
-
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-                  <div class="dropdown-menu" id="<?= $_uid ?>items">
-                    <?php
-                    $_dao = new dao\smokealarm;
-                    $_dtoSet = $_dao->dtoSet( $_dao->getDistinctMakes());
-                    foreach ($_dtoSet as $_dto) {
-                      printf(
-                        '<a class="dropdown-item" href="#" data-value="%s">%s</a>',
-                        \htmlentities( $_dto->make),
-                        \htmlentities( $_dto->make)
-
-                      );
-
-                    } ?>
-
-                  </div>
-                  <script>
-                  $(document).ready( () => {
-                    $('#<?= $_uid ?>items > a').each( ( i, el) => {
-                      $(el).on( 'click', function( e) {
-                        e.stopPropagation();e.preventDefault();
-
-                        let _el = $(this);
-                        let _data = _el.data();
-
-                        $('#<?= $_uid ?>').val( _data.value);
-                        $('#<?= $_uid ?>items').dropdown('hide');
-
-                      })
-
-                    });
-
-                  });
-                  </script>
-
-                </div>
-
-              </div>
+              <input type="text" name="make" class="form-control"
+                placeholder="make" required
+                id="<?= $_uid ?>"
+                value="<?= $dto->make ?>">
 
             </div>
 
@@ -244,6 +203,16 @@ $dto = $this->data->dto; ?>
         select: function(event, ui) {
           let o = ui.item;
           $('input[name="properties_id"]', '#<?= $_form ?>').val( o.id);
+
+        },
+
+      });
+
+      $('input[name="make"]', '#<?= $_form ?>').autofill({
+        autoFocus : true,
+        source: _.search.alarmMake,
+        select: function(event, ui) {
+          let o = ui.item;
 
         },
 

@@ -73,24 +73,40 @@ use strings;  ?>
 
 <script>
 ( _ => {
-  if ('undefined' == typeof _.search)
-      _.search = {};
+  // if ('undefined' == typeof _.search)
+  //   _.search = {};
 
-  if ('undefined' == typeof _.search.address) {
-      _.search.address = (request, response) => {
-          _.post({
-              url: window.location.href,
-              data: {
-                  action: 'search-properties',
-                  term: request.term
+  // if ('undefined' == typeof _.search.address) {
+  //   _.search.address = (request, response) => {
+  //     _.post({
+  //       url: window.location.href,
+  //       data: {
+  //         action: 'search-properties',
+  //         term: request.term
 
-              },
+  //       },
 
-          }).then(d => response('ack' == d.response ? d.data : []));
+  //     }).then(d => response('ack' == d.response ? d.data : []));
 
-      };
+  //   };
 
-  }
+  // }
+
+  // if ('undefined' == typeof _.search.alarmMake) {
+  //   _.search.alarmMake = (request, response) => {
+  //     _.post({
+  //       url: window.location.href,
+  //       data: {
+  //         action: 'search-makes',
+  //         term: request.term
+
+  //       },
+
+  //     }).then(d => response('ack' == d.response ? d.data : []));
+
+  //   };
+
+  // }
 
   $(document).ready( () => {
     $('#<?= $_table ?>').on( 'add-smokealarm', e => {
@@ -103,7 +119,6 @@ use strings;  ?>
     .on('reload', function(e) {
       let _me = $(this);
       let _container = _me.closest('.collapse');
-
       _container.trigger('reload');
 
     })

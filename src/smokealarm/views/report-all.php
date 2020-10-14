@@ -104,24 +104,24 @@ use strings;  ?>
 </table>
 <script>
 ( _ => {
-  if ('undefined' == typeof _.search)
-      _.search = {};
+  // if ('undefined' == typeof _.search)
+  //     _.search = {};
 
-  if ('undefined' == typeof _.search.address) {
-      _.search.address = (request, response) => {
-          _.post({
-              url: window.location.href,
-              data: {
-                  action: 'search-properties',
-                  term: request.term
+  // if ('undefined' == typeof _.search.address) {
+  //     _.search.address = (request, response) => {
+  //         _.post({
+  //             url: window.location.href,
+  //             data: {
+  //                 action: 'search-properties',
+  //                 term: request.term
 
-              },
+  //             },
 
-          }).then(d => response('ack' == d.response ? d.data : []));
+  //         }).then(d => response('ack' == d.response ? d.data : []));
 
-      };
+  //     };
 
-  }
+  // }
 
   $(document).ready( () => {
     $(document).on( 'add-smokealarm', e => {

@@ -13,6 +13,7 @@ namespace smokealarm;
 
 use green;
 use Json;
+use Response;
 use strings;
 use sys;
 
@@ -50,6 +51,20 @@ class controller extends \Controller {
 		parent::before();
 
   }
+
+  protected function page( $params) {
+
+    if ( !isset( $params['latescripts'])) $params['latescripts'] = [];
+    $params['latescripts'][] = sprintf(
+      '<script type="text/javascript" src="%s"></script>',
+      strings::url( $this->route . '/js')
+
+    );
+
+		return parent::page( $params);
+
+	}
+
 
 	protected function posthandler() {
     $action = $this->getPost('action');
@@ -307,6 +322,22 @@ class controller extends \Controller {
 			} else { Json::nak( $action); }
 
 		}
+    elseif ( 'search-makes' == $action) {
+			if ( $term = $this->getPost('term')) {
+        // \sys::logger( sprintf('<%s> %s', $term, __METHOD__));
+
+        $dao = new dao\smokealarm;
+        $makes = $dao->searchMakes( $term);
+
+        // \sys::logger( sprintf('<%s> %s', json_encode($makes), __METHOD__));
+
+				Json::ack( $action)
+					->add( 'term', $term)
+					->add( 'data', $makes);
+
+			} else { Json::nak( $action); }
+
+		}
     elseif ( 'tag-set-for-property' == $action) {
       if ( $file = $this->getPost( 'file')) {
         if ( $properties_id = (int)$this->getPost('properties_id')) {
@@ -331,8 +362,8 @@ class controller extends \Controller {
 
             }
 
-            \sys::logger( sprintf('<%s> %s', json_encode( $tags), __METHOD__));
-            \sys::logger( sprintf('<done %s> %s', $tag, __METHOD__));
+            // \sys::logger( sprintf('<%s> %s', json_encode( $tags), __METHOD__));
+            // \sys::logger( sprintf('<done %s> %s', $tag, __METHOD__));
 
             $dao->UpdateByID(
               ['smokealarms_tags' => json_encode( $tags)],
@@ -429,6 +460,21 @@ class controller extends \Controller {
 			$this->load('edit');
 
 		}
+
+  }
+
+  public function js( $lib = '') {
+    $s = [];
+    $r = [];
+
+    $s[] = '@{{route}}@';
+    $r[] = strings::url( $this->route);
+
+    $js = \file_get_contents( __DIR__ . '/js/custom.js');
+    $js = preg_replace( $s, $r, $js);
+
+    Response::javascript_headers();
+    print $js;
 
   }
 

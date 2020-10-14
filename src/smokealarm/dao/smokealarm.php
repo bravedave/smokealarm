@@ -118,7 +118,14 @@ class smokealarm extends _dao {
 
 	public function getForProperty( $id) {
 		$_sql = sprintf(
-			'SELECT sa.* FROM `smokealarm` sa WHERE sa.properties_id = %d',
+			'SELECT
+				*
+			FROM
+				`smokealarm`
+			WHERE
+				`properties_id` = %d
+			ORDER BY
+				`location`',
 			$id
 
 		);
@@ -160,6 +167,30 @@ class smokealarm extends _dao {
 	public function Insert( $a) {
 		$a[ 'created'] = $a['updated'] = db::dbTimeStamp();
 		return parent::Insert( $a);
+
+	}
+
+	public function searchMakes( string $term) : array {
+		$sql = sprintf(
+			'SELECT
+				DISTINCT `make` `value`
+			FROM
+				`smokealarm`
+			WHERE
+				`make` LIKE "%%%s%%"
+			ORDER BY
+				`make`',
+			$this->escape( $term)
+
+		);
+
+		if ( $res = $this->Result( $sql)) {
+			return $res->dtoSet();
+
+		}
+
+		return [];
+
 
 	}
 
