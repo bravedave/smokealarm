@@ -14,10 +14,28 @@ class config extends \config {
   const label = 'Smoke Alarms 2022';
 	const smokealarm_db_version = 0.08;
 
+	const smokealarm_status = [
+		'pass',
+		'installed',
+		'expired',
+		'exp/replaced',
+		'fail',
+		'fail/replaced',
+		'not required',
+		'removed',
+
+	];
+
+	const smokealarm_status_compliant = [
+		'compliant',
+		'pass',
+
+	];
+
 	const smokealarm_tags = [
 		'Smoke Alarm Certificate',
 		'Floorplan',
-		'Ill add more later'
+		'I\'ll add more later'
 
 	];
 

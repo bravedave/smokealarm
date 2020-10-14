@@ -176,13 +176,17 @@ $dto = $this->data->dto; ?>
                     }));
 
                     $.each( d.tags, ( i, tag) => {
-                      _context.append( $('<a href="#"></a>').html( tag).on( 'click', function( e) {
+                      let ctrl = $('<a href="#"></a>').html( tag).on( 'click', function( e) {
                         e.stopPropagation();e.preventDefault();
 
                         _context.close();
                         tagSet( _data.file, tag);
 
-                      }));
+                      });
+
+                      if ( tag == _data.tag) ctrl.prepend('<i class="fa fa-check"></i>');
+
+                      _context.append( ctrl);
 
                     })
 
@@ -293,6 +297,7 @@ $dto = $this->data->dto; ?>
 
                       let tr = $('<tr></tr>')
                         .data( 'file', file.name)
+                        .data( 'tag', file.tag)
                         .appendTo( tbody);
 
                       $('<td></td>').html( file.name).appendTo( tr);

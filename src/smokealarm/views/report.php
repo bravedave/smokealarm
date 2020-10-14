@@ -88,7 +88,7 @@ use strings;  ?>
 
     }
 
-    if ( $index > -1 && 'compliant' == $dto->status) $items[$index]->alarms ++;
+    if ( $index > -1 && \in_array( $dto->status, config::smokealarm_status_compliant)) $items[$index]->alarms ++;
 
   }
 

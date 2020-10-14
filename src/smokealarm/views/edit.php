@@ -83,7 +83,7 @@ $dto = $this->data->dto; ?>
             <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Model</label>
             <div class="col">
               <input type="text" name="model" class="form-control"
-                placeholder="model" required
+                placeholder="model"
                 id="<?= $_uid ?>"
                 value="<?= $dto->model ?>">
 
@@ -159,35 +159,26 @@ $dto = $this->data->dto; ?>
           <div class="form-group row"><!-- Status -->
             <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Status</label>
             <div class="col">
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input" name="status"
-                  value="compliant" required
-                  <?php if ( 'compliant' == $dto->status) print 'checked' ?>
-                  id="<?= $uid = strings::rand() ?>">
+              <select class="form-control" name="status" id="<?= $_uid ?>">
+                <?php
+                if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
+                if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
+                if ( 'required' == $dto->status) print '<option value="required" selected>required</option>';
 
-                <label class="form-check-label" for="<?= $uid ?>">compliant</label>
+                foreach (config::smokealarm_status as $v) {
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    $v,
+                    $v == $dto->status ? 'selected' : '',
+                    $v
 
-              </div>
+                  );
 
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input" name="status"
-                  value="non compliant" required
-                  <?php if ( 'non compliant' == $dto->status) print 'checked' ?>
-                  id="<?= $uid = strings::rand() ?>">
+                }
 
-                <label class="form-check-label" for="<?= $uid ?>">non compliant</label>
+                ?>
 
-              </div>
-
-              <div class="form-check form-check-inline">
-                <input type="radio" class="form-check-input" name="status"
-                  value="required" required
-                  <?php if ( 'required' == $dto->status) print 'checked' ?>
-                  id="<?= $uid = strings::rand() ?>">
-
-                <label class="form-check-label" for="<?= $uid ?>">required</label>
-
-              </div>
+              </select>
 
             </div>
 
