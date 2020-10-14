@@ -159,7 +159,8 @@ $dto = $this->data->dto; ?>
           <div class="form-group row"><!-- Status -->
             <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Status</label>
             <div class="col">
-              <select class="form-control" name="status" id="<?= $_uid ?>">
+              <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
+                <option></option>
                 <?php
                 if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
                 if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
