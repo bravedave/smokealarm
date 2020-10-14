@@ -156,7 +156,7 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row">
+          <div class="form-group row"><!-- Status -->
             <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Status</label>
             <div class="col">
               <div class="form-check form-check-inline">

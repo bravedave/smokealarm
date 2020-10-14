@@ -74,43 +74,22 @@ use strings;  ?>
 
 </table>
 
+<div class="row">
+  <div class="col position-relative">
+    <textarea name="smokealarm_notes" class="form-control" data-version="0" data-checked="no"
+      id="<?= $_notes = strings::rand()  ?>"><?= $this->data->notes ?></textarea>
+
+    <button type="button" class="btn btn-primary rounded-circle position-absolute d-none" save style="right: 15px; top: -12px">
+      <i class="fa fa-save"></i>
+
+    </button>
+
+  </div>
+
+</div>
+
 <script>
 ( _ => {
-  // if ('undefined' == typeof _.search)
-  //   _.search = {};
-
-  // if ('undefined' == typeof _.search.address) {
-  //   _.search.address = (request, response) => {
-  //     _.post({
-  //       url: window.location.href,
-  //       data: {
-  //         action: 'search-properties',
-  //         term: request.term
-
-  //       },
-
-  //     }).then(d => response('ack' == d.response ? d.data : []));
-
-  //   };
-
-  // }
-
-  // if ('undefined' == typeof _.search.alarmMake) {
-  //   _.search.alarmMake = (request, response) => {
-  //     _.post({
-  //       url: window.location.href,
-  //       data: {
-  //         action: 'search-makes',
-  //         term: request.term
-
-  //       },
-
-  //     }).then(d => response('ack' == d.response ? d.data : []));
-
-  //   };
-
-  // }
-
   $(document).ready( () => {
     $('#<?= $_table ?>').on( 'add-smokealarm', e => {
       _.get.modal( _.url('<?= $this->route ?>/edit?pid=<?= $this->data->property->id ?>'))
@@ -258,6 +237,60 @@ use strings;  ?>
 			});
 
     });
+
+    $('#<?= $_notes ?>')
+    .autoResize()
+    .on( 'keypress', function( e) {
+      let _me = $(this);
+      _me.trigger( 'changed');
+
+    })
+    .on( 'changed', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+      if ( 'yes' == _data.changed) return;
+
+      _me
+      .data('version', Number(_data.version) +1)
+      .data('changed', 'yes');
+      _me.siblings('button[save]').removeClass('d-none');
+
+    })
+    .on( 'saved', function( e) {
+      let _me = $(this);
+      _me.siblings('button[save]').addClass('d-none');
+
+    })
+    .on( 'change', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let version = _data.vesion;
+
+      _me.data('changed', 'no');
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'save-notes',
+          id : <?= (int)$this->data->property->id ?>,
+          text : _me.val()
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          let _data = _me.data();
+          if ( version == _data.vesion) _me.trigger( 'saved');
+
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
+    });
+
 
   });
 

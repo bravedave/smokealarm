@@ -65,7 +65,6 @@ class controller extends \Controller {
 
 	}
 
-
 	protected function posthandler() {
     $action = $this->getPost('action');
 
@@ -246,6 +245,22 @@ class controller extends \Controller {
             ->add( 'dto', $dto)
             ->add( 'compliant', $stat->compliant)
             ;
+
+        } else { Json::nak( $action); }
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'save-notes' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $id)) {
+          if ( $path = $dao->smokealarmNotesPath( $dto)) {
+            $text = (string)$this->getPost( 'text');
+            \file_put_contents( $path, $text);
+            Json::ack( $action);
+
+          } else { Json::nak( $action); }
 
         } else { Json::nak( $action); }
 
@@ -512,10 +527,14 @@ class controller extends \Controller {
     if ( $id = (int)$id) {
       $dao = new dao\properties;
       if ( $dto = $dao->getByID( $id)) {
+
+        $notes = $dao->smokealarmNotes( $dto);
+
         $dao = new dao\smokealarm;
         $this->data = (object)[
           'dtoSet' => $dao->dtoSet( $dao->getForProperty( $id)),
-          'property' => $dto
+          'property' => $dto,
+          'notes' => $notes
 
         ];
 
