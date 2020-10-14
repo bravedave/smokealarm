@@ -116,6 +116,12 @@ class smokealarm extends _dao {
 
 	}
 
+	public function getDistinctTypes() {
+		$sql = 'SELECT DISTINCT `type` FROM `smokealarm` ORDER BY `type`';
+		return $this->Result( $sql);
+
+	}
+
 	public function getForProperty( $id) {
 		$_sql = sprintf(
 			'SELECT

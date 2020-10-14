@@ -12,7 +12,7 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms 2022';
-	const smokealarm_db_version = 0.07;
+	const smokealarm_db_version = 0.08;
 
 	const smokealarm_tags = [
 		'Smoke Alarm Certificate',

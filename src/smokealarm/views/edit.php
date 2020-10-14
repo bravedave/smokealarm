@@ -82,23 +82,35 @@ $dto = $this->data->dto; ?>
           <div class="form-group row"><!-- Model -->
             <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Model</label>
             <div class="col">
+              <input type="text" name="model" class="form-control"
+                placeholder="model" required
+                id="<?= $_uid ?>"
+                value="<?= $dto->model ?>">
+
+            </div>
+
+          </div>
+
+          <div class="form-group row"><!-- Types -->
+            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Type</label>
+            <div class="col">
               <div class="input-group">
-                <input type="text" name="model" class="form-control"
-                  placeholder="model" required
+                <input type="text" name="type" class="form-control"
+                  placeholder="type" required
                   id="<?= $_uid ?>"
-                  value="<?= $dto->model ?>">
+                  value="<?= $dto->type ?>">
 
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
                   <div class="dropdown-menu" id="<?= $_uid ?>items">
                     <?php
                     $_dao = new dao\smokealarm;
-                    $_dtoSet = $_dao->dtoSet( $_dao->getDistinctModels());
+                    $_dtoSet = $_dao->dtoSet( $_dao->getDistinctTypes());
                     foreach ($_dtoSet as $_dto) {
                       printf(
                         '<a class="dropdown-item" href="#" data-value="%s">%s</a>',
-                        \htmlentities( $_dto->model),
-                        \htmlentities( $_dto->model)
+                        \htmlentities( $_dto->type),
+                        \htmlentities( $_dto->type)
 
                       );
 

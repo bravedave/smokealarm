@@ -15,6 +15,7 @@ $dbc = \sys::dbCheck( 'smokealarm');
 $dbc->defineField( 'location', 'varchar');
 $dbc->defineField( 'make', 'varchar');
 $dbc->defineField( 'model', 'varchar');
+$dbc->defineField( 'type', 'varchar');
 $dbc->defineField( 'expiry', 'datetime');
 $dbc->defineField( 'status', 'varchar');
 $dbc->defineField( 'properties_id', 'bigint');

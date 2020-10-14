@@ -27,6 +27,7 @@ use strings;  ?>
       <td class="align-bottom">location</td>
       <td class="align-bottom">make</td>
       <td class="align-bottom">model</td>
+      <td class="align-bottom">type</td>
       <td class="align-bottom">expiry</td>
       <td class="align-bottom text-center" title="2022 Compliant & alarm status">
         2022<br>
@@ -50,7 +51,7 @@ use strings;  ?>
       if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
       if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
       printf(
-        '<td colspan="6"><div class="row">
+        '<td colspan="7"><div class="row">
           <div class="col">%s</div>
           <div class="col-sm-3">power : %s<div>
         </div></td>',
@@ -82,6 +83,7 @@ use strings;  ?>
     printf( '<td>%s</td>', $dto->location);
     printf( '<td>%s</td>', $dto->make);
     printf( '<td>%s</td>', $dto->model);
+    printf( '<td>%s</td>', $dto->type);
     printf( '<td>%s</td>', strings::asLocalDate( $dto->expiry));
     printf( '<td class="text-center">%s</td>', $dto->status);
 
@@ -92,7 +94,7 @@ use strings;  ?>
 
 	<tfoot class="d-print-none">
 		<tr>
-			<td colspan="7" class="text-right">
+			<td colspan="8" class="text-right">
 				<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="fa fa-plus"></i></a>
 
 			</td>
@@ -104,25 +106,6 @@ use strings;  ?>
 </table>
 <script>
 ( _ => {
-  // if ('undefined' == typeof _.search)
-  //     _.search = {};
-
-  // if ('undefined' == typeof _.search.address) {
-  //     _.search.address = (request, response) => {
-  //         _.post({
-  //             url: window.location.href,
-  //             data: {
-  //                 action: 'search-properties',
-  //                 term: request.term
-
-  //             },
-
-  //         }).then(d => response('ack' == d.response ? d.data : []));
-
-  //     };
-
-  // }
-
   $(document).ready( () => {
     $(document).on( 'add-smokealarm', e => {
       _.get.modal( _.url('<?= $this->route ?>/edit'))
