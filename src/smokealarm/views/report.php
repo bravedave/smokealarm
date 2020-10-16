@@ -340,9 +340,9 @@ use strings;  ?>
               let col = $('<div class="col"></div>').appendTo( row);
               let _row = $('<div class="form-group row"></div>').appendTo( col);
 
-              let nc = $('<input type="text" readonly class="form-control">').val( data.Name);
-              let ec = $('<input type="text" readonly class="form-control">').val( data.Email);
-              let pc = $('<input type="text" readonly class="form-control">').val( String( data.Mobile).AsMobilePhone());
+              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Name);
+              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Email);
+              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.Mobile).AsMobilePhone());
 
               $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
               $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
@@ -354,9 +354,9 @@ use strings;  ?>
 
                   let _row = $('<div class="form-group row"></div>').appendTo( col);
 
-                  let nc = $('<div class="form-control"></div>').html( o.name);
-                  let ec = $('<div class="form-control"></div>').html( o.Email);
-                  let pc = $('<div class="form-control"></div>').html( String( o.Mobile).AsMobilePhone());
+                  let nc = $('<div class="form-control bg-transparent"></div>').html( o.name);
+                  let ec = $('<div class="form-control bg-transparent"></div>').html( o.Email);
+                  let pc = $('<div class="form-control bg-transparent"></div>').html( String( o.Mobile).AsMobilePhone());
 
                   $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
                   $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
