@@ -279,6 +279,103 @@ use strings;  ?>
       });
 
       $('#<?= $_accordion ?> > .card > .collapse')
+      .on( 'lookup-tenant', function(e) {
+        let _me = $(this);
+        let _data = _me.data();
+
+        _.post({
+          url : _.url('<?= $this->route ?>'),
+          data : {
+            action : 'get-tenant-of-property',
+            properties_id : _data.properties_id
+
+          },
+
+        }).then( d => {
+          if ( 'ack' == d.response) {
+            /**-- [owner/tenants] --*/
+            console.log( d);
+
+            ( data => {
+              /** owner */
+              let row = $('<div class="row"></div>');
+
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
+              let col = $('<div class="col"></div>').appendTo( row);
+              let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Key);
+
+              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+
+              $('.card-body', this).prepend( row);
+
+            })( d.data);
+
+            ( data => {
+              /** owner */
+              let row = $('<div class="row"></div>');
+
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title="owner">owner</div>');
+              let col = $('<div class="col"></div>').appendTo( row);
+              let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerName);
+              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerEmail);
+              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.OwnerMobile).AsMobilePhone());
+
+              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+              $('.card-body', this).prepend( row);
+
+            })( d.data);
+
+            ( data => {
+              /** tenant */
+              let row = $('<div class="row"></div>');
+
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title="co tenants">tenants</div>');
+              let col = $('<div class="col"></div>').appendTo( row);
+              let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+              let nc = $('<input type="text" readonly class="form-control">').val( data.Name);
+              let ec = $('<input type="text" readonly class="form-control">').val( data.Email);
+              let pc = $('<input type="text" readonly class="form-control">').val( String( data.Mobile).AsMobilePhone());
+
+              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+              if ( data.cotens.length >0) {
+                $.each( data.cotens, ( i, o) => {
+                  //~ console.log( o);
+
+                  let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+                  let nc = $('<div class="form-control"></div>').html( o.name);
+                  let ec = $('<div class="form-control"></div>').html( o.Email);
+                  let pc = $('<div class="form-control"></div>').html( String( o.Mobile).AsMobilePhone());
+
+                  $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+                  $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+                  $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+                });
+
+              }
+
+              $('.card-body', this).prepend( row);
+
+            })( d.data);
+            /**-- [owner/tenants] --*/
+
+          }
+
+        });
+
+      })
       .on('reload', function() {
         let _me = $(this);
         let _data = _me.data();
@@ -292,7 +389,12 @@ use strings;  ?>
         .prependTo( _me);
 
         let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
-        $('.card-body', this).load( url, d => indicator.remove());
+        $('.card-body', this).load( url, d => {
+
+          indicator.remove();
+          _me.trigger('lookup-tenant');
+
+        });
 
       })
       .on('show.bs.collapse', function() {

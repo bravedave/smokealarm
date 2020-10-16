@@ -252,6 +252,35 @@ class controller extends \Controller {
       } else { Json::nak( $action); }
 
 		}
+		elseif ( 'get-tenant-of-property' == $action) {
+      if ( \class_exists( 'dao\console_tenants')) {;
+        if ( $properties_id = $this->getPost( 'properties_id')) {
+          /*
+          ( _ => {
+            _.post({
+              url : _.url('smokealarm'),
+              data : {
+                action : 'get-tenant-of-property',
+                properties_id : 48283
+
+              }
+
+            })
+            .then( d => console.log( d));
+
+          })(_brayworth_);
+          */
+          $dao = new \dao\console_tenants;
+          if ( $dto = $dao->getTenantOfProperty( $properties_id)) {
+            \Json::ack( $action)->add( 'data', $dto);
+
+          } else { \Json::nak( sprintf( '%s : not found', $action)); }
+
+        } else { \Json::nak( sprintf( '%s : missing id', $action)); }
+
+      } else { \Json::nak( sprintf( '%s : not enabled', $action)); }
+
+    }
     elseif ( 'save-notes' == $action) {
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
