@@ -76,6 +76,7 @@ use strings;  ?>
 <div class="row">
   <div class="col position-relative">
     <textarea name="smokealarm_notes" class="form-control" data-version="0" data-checked="no"
+      placeholder="notes ..."
       id="<?= $_notes = strings::rand()  ?>"><?= $this->data->notes ?></textarea>
 
     <button type="button" class="btn btn-primary rounded-circle position-absolute d-none" save style="right: 15px; top: -12px">
