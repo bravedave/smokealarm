@@ -149,10 +149,12 @@ class smokealarm extends _dao {
 			FROM `smokealarm`
 			WHERE
 				`properties_id` = %d
-				AND "compliant" == `status`',
+				AND "compliant" = `status`',
 			$id
 
 		);
+
+		// \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
 
 		$ret = (object)[
 			'properties_id' => $id,
