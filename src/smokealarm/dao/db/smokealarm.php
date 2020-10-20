@@ -16,7 +16,7 @@ $dbc->defineField( 'location', 'varchar');
 $dbc->defineField( 'make', 'varchar');
 $dbc->defineField( 'model', 'varchar');
 $dbc->defineField( 'type', 'varchar');
-$dbc->defineField( 'expiry', 'datetime');
+$dbc->defineField( 'expiry', 'date');
 $dbc->defineField( 'status', 'varchar');
 $dbc->defineField( 'properties_id', 'bigint');
 $dbc->defineField( 'created', 'datetime');

@@ -6,7 +6,6 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
@@ -40,7 +39,13 @@ use strings;  ?>
         <button class="btn btn-secondary btn-block" type="button">
           <div class="row">
             <div class="col text-left align-self-end">address</div>
-            <div class="col-3 text-left d-none d-md-table-column align-self-end">power</div>
+            <div class="col-3 text-left d-none d-md-block">
+              <div class="row">
+                <div class="col align-self-end">company</div>
+                <div class="col align-self-end">last inspection</div>
+              </div>
+            </div>
+            <div class="col-1 text-left d-none d-lg-block align-self-end">power</div>
             <div class="col-1 text-center d-flex">
               <div class="d-md-none align-self-end">#</div>
               <div class="d-none d-md-block align-self-end">count</div>
@@ -80,6 +85,8 @@ use strings;  ?>
         'smokealarms_power' => $dto->smokealarms_power,
         'smokealarms_required' => $dto->smokealarms_required,
         'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
+        'smokealarms_company' => $dto->smokealarms_company,
+        'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
         'alarms' => 0
 
       ];
@@ -124,12 +131,20 @@ use strings;  ?>
               printf(
                 '<div class="row">
                   <div class="col text-left text-truncate" address>%s</div>
-                  <div class="col-3 text-left d-none d-md-table-column" power>%s</div>
+                  <div class="col-3 text-left d-none d-md-block">
+                    <div class="row">
+                      <div class="col text-truncate" company>%s</div>
+                      <div class="col text-truncate" last_inspection>%s</div>
+                    </div>
+                  </div>
+                  <div class="col-1 text-left d-none d-lg-block text-truncate" power>%s</div>
                   <div class="col-1 text-center" compliant>%s</div>
                   <div class="col-2 col-md-1 text-center" required>%s</div>
                   <div class="col-2 col-md-1 text-center %s" compliance>%s</div>
                 </div>',
                 $item->address,
+                $item->smokealarms_company,
+                strings::asLocalDate( $item->smokealarms_last_inspection),
                 $item->smokealarms_power,
                 $item->alarms,
                 $item->smokealarms_required,
@@ -179,6 +194,8 @@ use strings;  ?>
         let _me = $(this);
         let _data = _me.data();
 
+        // console.log( _data);
+
         _.post({
           url : _.url('<?= $this->route ?>'),
           data : {
@@ -195,6 +212,8 @@ use strings;  ?>
             $('[compliant]', _me).html( d.compliant);
             $('[required]', _me).html( d.dto.smokealarms_required);
             $('[power]', _me).html( d.dto.smokealarms_power);
+            $('[company]', _me).html( d.dto.smokealarms_company);
+            $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
 
             if ( 'yes' == d.dto.smokealarms_2022_compliant) {
               $('[compliance]', _me)

@@ -302,7 +302,9 @@ class controller extends \Controller {
         $a = [
           'smokealarms_required' => $this->getPost('smokealarms_required'),
           'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
-          'smokealarms_power' => $this->getPost('smokealarms_power')
+          'smokealarms_power' => $this->getPost('smokealarms_power'),
+          'smokealarms_company' => $this->getPost('smokealarms_company'),
+          'smokealarms_last_inspection' => $this->getPost('smokealarms_last_inspection'),
 
         ];
 

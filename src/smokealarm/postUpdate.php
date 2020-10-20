@@ -54,9 +54,20 @@ class postUpdate extends dvc\service {
 
   }
 
+  protected function _importpropertystatuscsv() {
+    utility::importpropertystatuscsv();
+
+  }
+
   static function importcsv() {
     $app = new self( application::startDir());
     $app->_importcsv();
+
+  }
+
+  static function importpropertystatuscsv() {
+    $app = new self( application::startDir());
+    $app->_importpropertystatuscsv();
 
   }
 

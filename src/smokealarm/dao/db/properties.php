@@ -17,5 +17,7 @@ $dbc->defineField( 'smokealarms_tags', 'text');
 $dbc->defineField( 'smokealarms_required', 'int');
 $dbc->defineField( 'smokealarms_power', 'varchar');
 $dbc->defineField( 'smokealarms_2022_compliant', 'varchar');
+$dbc->defineField( 'smokealarms_company', 'varchar');
+$dbc->defineField( 'smokealarms_last_inspection', 'date');
 
 $dbc->check();

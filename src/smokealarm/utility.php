@@ -145,4 +145,52 @@ abstract class utility {
 
   }
 
+  static function importpropertystatuscsv() {
+    if ( $csvFile = config::smokealarm_propertystatus_import_csv()) {
+      $csv = new ParseCsv\Csv( $csvFile);
+      $a = array_map( function( $el) {
+        return [
+          'properties_id' => $el['CMS ID'],
+          'smokealarms_company' => $el['SA Company'],
+          'smokealarms_last_inspection' => strings::BRITISHDateAsANSI( $el['Last Insp'])
+
+        ];
+
+      }, $csv->data);
+
+      $dao = new dao\properties;
+      $i = 0;
+      $t = 0;
+      foreach ($a as $p) {
+        $t++;
+        if ( $p['properties_id']) {
+          if ( $dao->getByID( $p['properties_id'])) {
+            $dao->UpdateByID( [
+              'smokealarms_company' => $p['smokealarms_company'],
+              'smokealarms_last_inspection' => $p['smokealarms_last_inspection']
+
+            ], $p['properties_id']);
+            $i++;
+
+          }
+          else {
+            printf( "not found : %d\n", $p['properties_id']);
+
+          }
+
+        }
+        else {
+          print_r($p);
+          break;
+
+        }
+
+      }
+
+      printf( "done : %d/%d\n", $i, $t);
+
+    }
+
+  }
+
 }

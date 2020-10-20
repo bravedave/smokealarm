@@ -22,30 +22,20 @@ $dto = $this->data->dto; ?>
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white py-2">
-          <h5 class="modal-title" id="<?= $_modal ?>Label"><?= $this->title ?></h5>
+          <h5 class="modal-title" id="<?= $_modal ?>Label"><?php
+            $addr = [$dto->address_street];
+            if ($dto->address_suburb) $addr[] = $dto->address_suburb;
+            if ($dto->address_postcode) $addr[] = $dto->address_postcode;
+
+            print implode( ' ', $addr);
+
+            ?></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group row">
-            <div class="col">
-              <div class="form-control">
-                <?php
-                $addr = [$dto->address_street];
-                if ($dto->address_suburb) $addr[] = $dto->address_suburb;
-                if ($dto->address_postcode) $addr[] = $dto->address_postcode;
-
-                print implode( ' ', $addr);
-
-                ?>
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="form-group row"><!-- smokealarms_required -->
+          <div class="form-row mb-2"><!-- smokealarms_required -->
             <div class="col-sm-4 col-form-label" for="<?= $uid = strings::rand() ?>">Required 2022</div>
             <div class="col-md-3">
               <input type="number" class="form-control" name="smokealarms_required"
@@ -56,7 +46,7 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- smokealarms_power -->
+          <div class="form-row mb-2"><!-- smokealarms_power -->
             <div class="col-sm-4">Power</div>
             <div class="col">
               <div class="form-check form-check-inline">
@@ -93,7 +83,7 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- smokealarms_2022_compliant -->
+          <div class="form-row mb-2"><!-- smokealarms_2022_compliant -->
             <div class="offset-sm-4 col">
               <div class="form-check form-check-inline">
                 <input type="checkbox" class="form-check-input" name="smokealarms_2022_compliant"
@@ -104,6 +94,28 @@ $dto = $this->data->dto; ?>
                 <label class="form-check-label" for="<?= $uid ?>">2022 Compliant</label>
 
               </div>
+
+            </div>
+
+          </div>
+
+          <div class="form-row mb-2"><!-- smokealarms_company -->
+            <div class="col-sm-4 col-form-label" for="<?= $uid = strings::rand() ?>">Company</div>
+            <div class="col">
+              <input type="text" class="form-control" name="smokealarms_company"
+                value="<?= $dto->smokealarms_company ?>"
+                id="<?= $uid ?>">
+
+            </div>
+
+          </div>
+
+          <div class="form-row mb-2"><!-- smokealarms_last_inspection -->
+            <div class="col-sm-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Last inspection</div>
+            <div class="col">
+              <input type="date" class="form-control" name="smokealarms_last_inspection"
+                value="<?= $dto->smokealarms_last_inspection ?>"
+                id="<?= $uid ?>">
 
             </div>
 

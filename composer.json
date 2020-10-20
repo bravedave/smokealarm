@@ -24,7 +24,8 @@
   },
   "scripts": {
     "post-update-cmd": "smokealarm\\postUpdate::upgrade",
-    "importcsv-cmd": "smokealarm\\postUpdate::importcsv"
+    "importcsv-cmd": "smokealarm\\postUpdate::importcsv",
+    "import-property-status-cmd": "smokealarm\\postUpdate::importpropertystatuscsv"
 
   }
 

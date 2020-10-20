@@ -12,7 +12,7 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms 2022';
-	const smokealarm_db_version = 0.08;
+	const smokealarm_db_version = 0.09;
 
 	const smokealarm_status = [
 		'pass',
@@ -86,6 +86,15 @@ class config extends \config {
 		return realpath( implode( DIRECTORY_SEPARATOR, [
       rtrim( self::dataPath(), '/ '),
       'smokealarm_import.csv'
+
+    ]));
+
+	}
+
+	static function smokealarm_propertystatus_import_csv() {
+		return realpath( implode( DIRECTORY_SEPARATOR, [
+      rtrim( self::dataPath(), '/ '),
+      'smoke-alarm-property-status.csv'
 
     ]));
 
