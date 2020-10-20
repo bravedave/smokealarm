@@ -6,7 +6,6 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
@@ -59,7 +58,7 @@ abstract class utility {
 
             }
             else {
-              sys::dump( $data, null, false);
+              \sys::dump( $data, null, false);
               throw new \Exception('Property Not Found');
 
             }

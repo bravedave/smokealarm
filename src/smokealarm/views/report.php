@@ -195,6 +195,15 @@ use strings;  ?>
         let _data = _me.data();
 
         // console.log( _data);
+        /*
+        _brayworth_.post({
+          url : _brayworth_.url('smokealarm'),
+          data : {
+            action : 'get-property-by-id',
+            id : 1
+          }
+        }).then( d => console.log(d));
+         */
 
         _.post({
           url : _.url('<?= $this->route ?>'),
