@@ -187,6 +187,7 @@ abstract class utility {
 
       }
 
+      \rename( $csvFile, \preg_replace( '@csv$@', 'bak', $csvFile));
       printf( "done : %d/%d\n", $i, $t);
 
     }
