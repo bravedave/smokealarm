@@ -68,16 +68,17 @@ class smokealarm extends _dao {
 				LEFT JOIN properties p on p.id = sa.properties_id
 				LEFT JOIN people on p.people_id = people.id';
 
+    $activeProperties = [];
     if ( $excludeInactive && \class_exists('dao\console_properties')) {
       $_cp_dao = new \dao\console_properties;
       if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
-        $a = array_map( function( $dto) {
+        $activeProperties = array_map( function( $dto) {
           return $dto->properties_id;
 
         }, $_cp_res->dtoSet());
 
-        if ( $a) {
-          $_sql .= sprintf( ' WHERE sa.`properties_id` IN (%s)', implode( ',', $a));
+        if ( $activeProperties) {
+          $_sql .= sprintf( ' WHERE sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
           // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
           // \sys::logger( sprintf('<%s> %s', implode( ',', $a), __METHOD__));
 
@@ -90,20 +91,85 @@ class smokealarm extends _dao {
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
 		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
 
-		$sql = 'SELECT
+    if ($activeProperties) {
+      $_sql = 'SELECT properties_id FROM tmp WHERE properties_id > 0';
+      if ( $res = $this->Result( $_sql)) {
+        $res->dtoSet( function( $dto) use (&$activeProperties) {
+          if ( $i = array_search( $dto->properties_id, $activeProperties)) {
+            if ( false !== $i) {
+              unset( $activeProperties[$i]);
+
+            }
+
+          }
+
+        });
+
+      }
+
+      // \sys::logger( sprintf('<%s> %s', implode( ',', $activeProperties), __METHOD__));
+      // \sys::logger( sprintf('<%s> %s', count( $activeProperties), __METHOD__));
+
+      if ( $activeProperties) {
+        $_sql = sprintf( 'INSERT INTO tmp(
+          `properties_id`,
+          `address_street`,
+          `people_id`,
+          `street_index`,
+          `address_suburb`,
+          `address_state`,
+          `address_postcode`,
+          `smokealarms_required`,
+          `smokealarms_power`,
+          `smokealarms_2022_compliant`,
+          `smokealarms_company`,
+          `smokealarms_last_inspection`,
+          `people_name`)
+          SELECT
+            p.id,
+            p.address_street,
+            p.people_id,
+            p.street_index,
+            p.address_suburb,
+            p.address_state,
+            p.address_postcode,
+            p.smokealarms_required,
+            p.smokealarms_power,
+            p.smokealarms_2022_compliant,
+            p.smokealarms_company,
+            p.smokealarms_last_inspection,
+            people.name people_name
+            FROM properties p
+              LEFT JOIN people on p.people_id = people.id
+            WHERE p.id IN (%s)', implode( ',', $activeProperties));
+
+          // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+
+        $this->Q( $_sql);
+
+      }
+
+    }
+
+		$_sql = 'SELECT
 				id,
 				address_street,
 				street_index,
 				properties_id
 			FROM tmp
 			WHERE street_index = "" OR street_index IS NULL';
-		if ( $res = $this->Result( $sql)) {
+		if ( $res = $this->Result( $_sql)) {
 			$res->dtoSet( function( $dto) {
 				if ( !$dto->street_index) {
 					if ( $s = PropertyUtility::street_index( $dto->address_street)) {
 
 						// \sys::logger( sprintf('<%s> %s', $s, __METHOD__));
-						$this->db->Update( 'tmp', [ 'street_index' => $s ], 'WHERE id = ' . (int)$dto->id);
+            $this->db->Update( 'tmp',
+              [ 'street_index' => $s ],
+              'WHERE id = ' . (int)$dto->id,
+              $flushCache = false
+
+            );
 
 						$dao = new properties;
 						$dao->UpdateByID([
