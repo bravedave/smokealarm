@@ -20,9 +20,16 @@ class controller extends \Controller {
   protected $viewPath = __DIR__ . '/views/';
 
   protected function _index() {
+
+    $excludeInactive = false;
+    if ( \class_exists('dao\console_properties')) {
+      $excludeInactive = 'yes' == \currentUser::option('smokealarm-inactive-exclude');
+
+    }
+
     $dao = new dao\smokealarm;
     $this->data = (object)[
-      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet())
+      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $excludeInactive))
 
     ];
 
@@ -384,7 +391,17 @@ class controller extends \Controller {
 
 			} else { Json::nak( $action); }
 
-		}
+    }
+    elseif ( 'set-option-exclude-inactive' == $action) {
+      \currentUser::option('smokealarm-inactive-exclude', 'yes');
+      Json::ack( $action);
+
+    }
+    elseif ( 'set-option-exclude-inactive-undo' == $action) {
+      \currentUser::option('smokealarm-inactive-exclude', '');
+      Json::ack( $action);
+
+    }
     elseif ( 'tag-set-for-property' == $action) {
       if ( $file = $this->getPost( 'file')) {
         if ( $properties_id = (int)$this->getPost('properties_id')) {

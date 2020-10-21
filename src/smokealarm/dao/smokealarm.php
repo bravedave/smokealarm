@@ -47,7 +47,7 @@ class smokealarm extends _dao {
 		FROM `smokealarm` sa
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
-	public function getOrderedByStreet() : ?object {
+	public function getOrderedByStreet( bool $excludeInactive = false) : ?object {
 
 		$_sql =
 			'SELECT
@@ -67,6 +67,25 @@ class smokealarm extends _dao {
 			FROM `smokealarm` sa
 				LEFT JOIN properties p on p.id = sa.properties_id
 				LEFT JOIN people on p.people_id = people.id';
+
+    if ( $excludeInactive && \class_exists('dao\console_properties')) {
+      $_cp_dao = new \dao\console_properties;
+      if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
+        $a = array_map( function( $dto) {
+          return $dto->properties_id;
+
+        }, $_cp_res->dtoSet());
+
+        if ( $a) {
+          $_sql .= sprintf( ' WHERE sa.`properties_id` IN (%s)', implode( ',', $a));
+          // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+          // \sys::logger( sprintf('<%s> %s', implode( ',', $a), __METHOD__));
+
+        }
+
+      }
+
+    }
 
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
 		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
