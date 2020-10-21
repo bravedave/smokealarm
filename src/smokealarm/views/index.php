@@ -50,7 +50,7 @@ use strings;
         _.post({
           url : _.url('<?= $this->route ?>'),
           data : {
-            action : _me.prop('checked') ? 'set-option-exclude-inactive-undo' : 'set-option-exclude-inactive'
+            action : _me.prop('checked') ? 'set-option-exclude-inactive' : 'set-option-exclude-inactive-undo'
 
           },
 
