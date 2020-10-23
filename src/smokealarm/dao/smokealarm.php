@@ -12,8 +12,7 @@ namespace smokealarm\dao;
 
 use dao\_dao;
 use db;
-use PropertyUtility;
-
+use smokealarm\strings;
 class smokealarm extends _dao {
 	protected $_db_name = 'smokealarm';
 	protected $template = __NAMESPACE__ . '\dto\smokealarm';
@@ -161,7 +160,7 @@ class smokealarm extends _dao {
 		if ( $res = $this->Result( $_sql)) {
 			$res->dtoSet( function( $dto) {
 				if ( !$dto->street_index) {
-					if ( $s = PropertyUtility::street_index( $dto->address_street)) {
+					if ( $s = strings::street_index( $dto->address_street)) {
 
 						// \sys::logger( sprintf('<%s> %s', $s, __METHOD__));
             $this->db->Update( 'tmp',

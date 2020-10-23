@@ -12,7 +12,16 @@ namespace smokealarm;
 
 class config extends \config {
   const label = 'Smoke Alarms 2022';
-	const smokealarm_db_version = 0.09;
+	const smokealarm_db_version = 0.10;
+
+	const smokealarm_connect = [
+		'HW - I/C',
+		'HW - I/C RF',
+		'HW - no connect',
+		'WL - I/C',
+		'WL - unable to connect'
+
+	];
 
 	const smokealarm_status = [
 		'pass',
@@ -28,6 +37,9 @@ class config extends \config {
 
 	const smokealarm_status_compliant = [
 		'compliant',
+		'exp/replaced',
+		'fail/replaced',
+		'installed',
 		'pass',
 
 	];

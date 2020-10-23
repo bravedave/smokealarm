@@ -11,7 +11,6 @@
 namespace smokealarm;
 
 use ParseCsv;
-use strings;
 
 abstract class utility {
   static function importcsv() {

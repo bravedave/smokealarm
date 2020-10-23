@@ -8,9 +8,7 @@
  *
 */
 
-namespace smokealarm;
-
-use strings;  ?>
+namespace smokealarm; ?>
 
 <div class="form-group row d-print-none" id="<?= $srch = strings::rand() ?>envelope">
 	<div class="col">
@@ -52,7 +50,7 @@ use strings;  ?>
 
             </div>
 
-            <div class="col-2 col-md-1 text-center px-0 align-self-end">req 2022</div>
+            <div class="col-2 col-md-1 text-center d-none d-md-block px-0 align-self-end">req 2022</div>
             <div class="col-2 col-md-1 text-center px-0 align-self-end"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
 
           </div>
@@ -73,7 +71,7 @@ use strings;  ?>
   $pid = -1;
   foreach ($this->data->dtoSet as $dto) {
     if ( $pid != $dto->properties_id) {
-      $addr = [$dto->address_street];
+      $addr = [ strings::GoodStreetString( $dto->address_street)];
       if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
       if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
@@ -105,7 +103,7 @@ use strings;  ?>
   foreach ( $items as $item) {  ?>
     <div class="card">
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
-        <h2 class="mb-0 d-flex">
+        <div class="d-flex">
           <button class="btn btn-light btn-block" type="button"
             data-toggle="collapse"
             data-target="#<?= $_collapse = strings::rand() ?>"
@@ -139,7 +137,7 @@ use strings;  ?>
                   </div>
                   <div class="col-1 text-left d-none d-lg-block text-truncate" power>%s</div>
                   <div class="col-1 text-center" compliant>%s</div>
-                  <div class="col-2 col-md-1 text-center" required>%s</div>
+                  <div class="col-2 col-md-1 d-none d-md-block text-center" required>%s</div>
                   <div class="col-2 col-md-1 text-center %s" compliance>%s</div>
                 </div>',
                 $item->address,
@@ -159,7 +157,7 @@ use strings;  ?>
 
           <button type="button" class="btn btn-light" edit-property><i class="fa fa-pencil"></i></button>
 
-        </h2>
+        </div>
 
       </div>
 

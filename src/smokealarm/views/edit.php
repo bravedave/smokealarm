@@ -6,12 +6,9 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
-
-use strings;
 
 $dto = $this->data->dto; ?>
 
@@ -151,6 +148,31 @@ $dto = $this->data->dto; ?>
                 placeholder="expiry" required
                 id="<?= $_uid ?>"
                 value="<?php if ( strtotime( $dto->expiry) > 0 ) print $dto->expiry; ?>">
+
+            </div>
+
+          </div>
+
+          <div class="form-group row"><!-- Connect -->
+            <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Connect</label>
+            <div class="col">
+              <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
+                <option></option>
+                <?php
+                foreach (config::smokealarm_connect as $v) {
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    $v,
+                    $v == $dto->connect ? 'selected' : '',
+                    $v
+
+                  );
+
+                }
+
+                ?>
+
+              </select>
 
             </div>
 

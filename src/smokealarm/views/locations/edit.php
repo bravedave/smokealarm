@@ -6,12 +6,9 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
 */
 
 namespace smokealarm;
-
-use strings;
 
 $dto = $this->data->dto; ?>
 

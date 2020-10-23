@@ -6,8 +6,11 @@
  *
  * MIT License
  *
- * styleguide : https://codeguide.co/
-*/  ?>
+*/
+
+namespace smokealarm;   ?>
+
+
 <table class="table table-sm" id="<?= $_table = strings::rand() ?>">
 	<thead class="small">
     <tr>
@@ -64,8 +67,6 @@
 
     })
     .trigger('update-line-numbers');
-
-    console.log( 'aa');
 
     $('#<?= $addBtn ?>').on( 'click', e => { $(document).trigger( 'add-smokealarm-location'); });
 

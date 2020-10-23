@@ -8,9 +8,7 @@
  *
 */
 
-namespace smokealarm;
-
-use strings;  ?>
+namespace smokealarm; ?>
 
 <div class="form-group row d-print-none" id="<?= $srch = strings::rand() ?>envelope">
 	<div class="col">

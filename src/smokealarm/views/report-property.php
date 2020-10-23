@@ -8,9 +8,7 @@
  *
 */
 
-namespace smokealarm;
-
-use strings;  ?>
+namespace smokealarm; ?>
 
 <table class="table table-sm" id="<?= $_table = strings::rand() ?>">
 	<thead class="small">
@@ -20,6 +18,7 @@ use strings;  ?>
       <td class="align-bottom d-none d-md-table-cell">make</td>
       <td class="align-bottom d-none d-md-table-cell">model</td>
       <td class="align-bottom d-none d-md-table-cell">type</td>
+      <td class="align-bottom d-none d-lg-table-cell">connect</td>
       <td class="align-bottom">expiry</td>
       <td class="align-bottom text-center">status</td>
 
@@ -52,6 +51,7 @@ use strings;  ?>
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->make);
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->model);
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->type);
+    printf( '<td class="d-none d-lg-table-cell">%s</td>', $dto->connect);
     printf( '<td>%s</td>', strings::asLocalDate( $dto->expiry));
     printf( '<td class="text-center">%s</td>', $dto->status);
 
@@ -62,7 +62,7 @@ use strings;  ?>
 
 	<tfoot class="d-print-none">
 		<tr>
-			<td colspan="7" class="text-right">
+			<td colspan="8" class="text-right">
 				<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="fa fa-plus"></i></a>
 
 			</td>

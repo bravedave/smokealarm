@@ -13,7 +13,6 @@ namespace smokealarm;
 use green;
 use Json;
 use Response;
-use strings;
 use sys;
 
 class controller extends \Controller {
@@ -330,6 +329,7 @@ class controller extends \Controller {
         'model' => $this->getPost('model'),
         'properties_id' => $this->getPost('properties_id'),
         'status' => $this->getPost('status'),
+        'connect' => $this->getPost('connect'),
 
       ];
 
