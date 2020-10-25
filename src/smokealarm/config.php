@@ -25,11 +25,14 @@ class config extends \config {
 
 	const smokealarm_status = [
 		'pass',
+		'pass (x22)',
 		'installed',
 		'expired',
 		'exp/replaced',
+		'exp/replaced (x22)',
 		'fail',
 		'fail/replaced',
+		'fail/replaced (x22)',
 		'not required',
 		'removed',
 
