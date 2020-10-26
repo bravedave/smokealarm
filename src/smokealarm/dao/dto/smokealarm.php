@@ -24,5 +24,6 @@ class smokealarm extends _dto {
 	public $created = '';
 	public $updated = '';
 	public $address_street = '';
+	public $connect = '';
 
 }
