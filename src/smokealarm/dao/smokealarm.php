@@ -62,6 +62,7 @@ class smokealarm extends _dao {
 				p.smokealarms_2022_compliant,
 				p.smokealarms_company,
 				p.smokealarms_last_inspection,
+				p.smokealarms_tags,
 				people.name people_name
 			FROM `smokealarm` sa
 				LEFT JOIN properties p on p.id = sa.properties_id

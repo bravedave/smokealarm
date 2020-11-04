@@ -40,7 +40,7 @@ namespace smokealarm; ?>
             <div class="col-3 text-left d-none d-md-block">
               <div class="row">
                 <div class="col align-self-end">company</div>
-                <div class="col align-self-end">last inspection</div>
+                <div class="col-7 align-self-end">last inspection</div>
               </div>
             </div>
             <div class="col-1 text-left d-none d-lg-block align-self-end">power</div>
@@ -85,6 +85,7 @@ namespace smokealarm; ?>
         'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
         'smokealarms_company' => $dto->smokealarms_company,
         'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
+        'smokealarms_tags' => $dto->smokealarms_tags,
         'alarms' => 0
 
       ];
@@ -100,6 +101,7 @@ namespace smokealarm; ?>
   // \sys::dump( $this->data->dtoSet);
   // \sys::dump( $items);
 
+  $dao = new dao\properties;
   foreach ( $items as $item) {  ?>
     <div class="card">
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
@@ -126,6 +128,14 @@ namespace smokealarm; ?>
 
               }
 
+              $fakeProperty = (object)[
+                'id' => $item->properties_id,
+                'smokealarms_tags' => $item->smokealarms_tags
+
+              ];
+
+              $hasCert = $dao->hasSmokeAlarmComplianceCertificate( $fakeProperty);
+
               printf(
                 '<div class="row">
                   <div class="col text-left text-truncate" address>%s</div>
@@ -133,6 +143,7 @@ namespace smokealarm; ?>
                     <div class="row">
                       <div class="col text-truncate" company>%s</div>
                       <div class="col text-truncate" last_inspection>%s</div>
+                      <div class="col-1" certificate title="%s">%s</div>
                     </div>
                   </div>
                   <div class="col-1 text-left d-none d-lg-block text-truncate" power>%s</div>
@@ -143,6 +154,8 @@ namespace smokealarm; ?>
                 $item->address,
                 $item->smokealarms_company,
                 strings::asLocalDate( $item->smokealarms_last_inspection),
+                $hasCert ? 'has certificate' : 'no certificate',
+                $hasCert ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_power,
                 $item->alarms,
                 $item->smokealarms_required,
@@ -242,6 +255,20 @@ namespace smokealarm; ?>
               .html( '&nbsp;' );
 
             }
+
+            if ( 'yes' == d.hasSmokeAlarmComplianceCertificate) {
+              $('[certificate]', _me)
+              .attr('title', 'has certificate')
+              .html( '<?= strings::html_tick ?>');
+
+            }
+            else {
+              $('[certificate]', _me)
+              .attr('title', 'no certificate')
+              .html( '&nbsp;');
+
+            }
+            console.log( d);
 
           }
           else {

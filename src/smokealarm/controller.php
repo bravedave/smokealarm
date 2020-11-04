@@ -245,12 +245,13 @@ class controller extends \Controller {
         $dao = new dao\properties;
         if ( $dto = $dao->getByID( $id)) {
 
-          $dao = new dao\smokealarm;
-          $stat = $dao->getCompliantCountForProperty( $dto->id);
+          $daoS = new dao\smokealarm;
+          $stat = $daoS->getCompliantCountForProperty( $dto->id);
 
           Json::ack( $action)
             ->add( 'dto', $dto)
             ->add( 'compliant', $stat->compliant)
+            ->add( 'hasSmokeAlarmComplianceCertificate', $dao->hasSmokeAlarmComplianceCertificate( $dto) ? 'yes' : 'no')
             ;
 
         } else { Json::nak( $action); }

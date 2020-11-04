@@ -47,8 +47,10 @@ class config extends \config {
 
 	];
 
+	const smokealarm_tag_smoke_alarm_certificate = 'Smoke Alarm Certificate';
+
 	const smokealarm_tags = [
-		'Smoke Alarm Certificate',
+		self::smokealarm_tag_smoke_alarm_certificate,
 		'Floorplan',
 		'I\'ll add more later'
 
