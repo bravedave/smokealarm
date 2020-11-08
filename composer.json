@@ -3,7 +3,6 @@
   "description": "Smoke Alarm Matrix",
   "minimum-stability": "dev",
   "license": "MIT",
-
   "authors": [
     {
       "name": "Dave Bray",
@@ -16,7 +15,13 @@
   },
   "autoload": {
     "psr-4": {
-      "smokealarm\\": "src/smokealarm/",
+      "smokealarm\\": "src/smokealarm/"
+
+    }
+
+  },
+  "autoload-dev": {
+    "psr-4": {
       "": "src/application/app/"
 
     }
