@@ -140,6 +140,7 @@ $dto = $this->data->dto; ?>
               }).then( d => {
                 if ( 'ack' == d.response) {
                   $('#<?= $_form ?>').trigger('load-documents');
+                  $('#<?= $_modal ?>').trigger( 'success');
 
                 }
                 else {

@@ -241,9 +241,28 @@ class controller extends \Controller {
 
     }
     elseif ( 'get-property-by-id' == $action) {
+
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
         if ( $dto = $dao->getByID( $id)) {
+
+          $dto->smokealarm_expired = $dto->smokealarm_warning = false;
+          if ( ( $et = \strtotime( $dto->smokealarms_last_inspection)) > 0) {
+            $etx = \strtotime( config::smokealarm_valid_time, $et);
+            if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+              $dto->smokealarm_expired = true;
+
+            }
+            else {
+              $etx = \strtotime( config::smokealarm_warn_time, $et);
+              if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+                $dto->smokealarm_warning = true;
+
+              }
+
+            }
+
+          }
 
           $daoS = new dao\smokealarm;
           $stat = $daoS->getCompliantCountForProperty( $dto->id);

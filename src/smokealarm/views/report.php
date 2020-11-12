@@ -34,7 +34,7 @@ namespace smokealarm; ?>
   <div class="card">
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
       <div class="btn-group d-flex">
-        <button class="btn btn-secondary btn-sm btn-block" type="button">
+        <button class="btn btn-secondary btn-sm flex-fill" type="button">
           <div class="row">
             <div class="col text-left align-self-end">address</div>
             <div class="col-3 text-left d-none d-md-block">
@@ -57,7 +57,7 @@ namespace smokealarm; ?>
 
         </button>
 
-        <button class="btn btn-secondary btn-sm" type="button"><i class="fa fa-circle text-muted"></i></button>
+        <button class="btn btn-secondary btn-sm flex-grow-0" type="button"><i class="fa fa-circle text-muted"></i></button>
 
       </div>
 
@@ -107,7 +107,7 @@ namespace smokealarm; ?>
     if ( ( $et = \strtotime( $item->smokealarms_last_inspection)) > 0) {
       $etx = \strtotime( config::smokealarm_valid_time, $et);
       if ( date('Y-m-d', $etx) < date('Y-m-d')) {
-        \sys::logger( sprintf('<%s> %s', time() - $etx, __METHOD__));
+        // \sys::logger( sprintf('<%s> %s', time() - $etx, __METHOD__));
         $expired = true;
 
       }
@@ -135,7 +135,7 @@ namespace smokealarm; ?>
     <div class="card">
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
-          <button class="btn <?= $btnClass ?> btn-sm btn-block" type="button"
+          <button class="btn <?= $btnClass ?> btn-sm flex-fill" type="button"
             data-toggle="collapse"
             data-target="#<?= $_collapse = strings::rand() ?>"
             data-properties_id="<?= $item->properties_id ?>"
@@ -197,7 +197,7 @@ namespace smokealarm; ?>
 
           </button>
 
-          <button type="button" class="btn btn-sm <?= $btnClass ?>" edit-property><i class="fa fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm <?= $btnClass ?> flex-grow-0" edit-property><i class="fa fa-pencil"></i></button>
 
         </div>
 
@@ -255,7 +255,6 @@ namespace smokealarm; ?>
 
         }).then( d => {
           if ( 'ack' == d.response) {
-            // console.log( d);
 
             $('[address]', _me).html( d.dto.address_street);
             $('[compliant]', _me).html( d.compliant);
@@ -295,6 +294,19 @@ namespace smokealarm; ?>
               $('[certificate]', _me)
               .attr('title', 'no certificate')
               .html( '&nbsp;');
+
+            }
+
+            if ( d.dto.smokealarm_expired) {
+              $( '> button', _me.parent()).removeClass( 'btn-warning').addClass('btn-danger');
+
+            }
+            else if ( d.dto.smokealarm_warning) {
+              $( '> button', _me.parent()).removeClass( 'btn-danger').addClass('btn-warning');
+
+            }
+            else {
+              $( '> button', _me.parent()).removeClass( 'btn-danger btn-warning');
 
             }
             console.log( d);
