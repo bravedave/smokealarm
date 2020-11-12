@@ -34,7 +34,7 @@ namespace smokealarm; ?>
   <div class="card">
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
       <div class="btn-group d-flex">
-        <button class="btn btn-secondary btn-block" type="button">
+        <button class="btn btn-secondary btn-sm btn-block" type="button">
           <div class="row">
             <div class="col text-left align-self-end">address</div>
             <div class="col-3 text-left d-none d-md-block">
@@ -57,7 +57,7 @@ namespace smokealarm; ?>
 
         </button>
 
-        <button class="btn btn-secondary" type="button"><i class="fa fa-circle text-muted"></i></button>
+        <button class="btn btn-secondary btn-sm" type="button"><i class="fa fa-circle text-muted"></i></button>
 
       </div>
 
@@ -102,11 +102,40 @@ namespace smokealarm; ?>
   // \sys::dump( $items);
 
   $dao = new dao\properties;
-  foreach ( $items as $item) {  ?>
+  foreach ( $items as $item) {
+    $expired = $warning = false;
+    if ( ( $et = \strtotime( $item->smokealarms_last_inspection)) > 0) {
+      $etx = \strtotime( config::smokealarm_valid_time, $et);
+      if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+        \sys::logger( sprintf('<%s> %s', time() - $etx, __METHOD__));
+        $expired = true;
+
+      }
+      else {
+        $etx = \strtotime( config::smokealarm_warn_time, $et);
+        if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+          $warning = true;
+
+        }
+
+      }
+
+    }
+
+    $btnClass = 'btn-light';
+    if ( $expired) {
+      $btnClass =  'btn-danger';
+
+    }
+    elseif ( $warning) {
+      $btnClass = 'btn-warning';
+
+    }
+    ?>
     <div class="card">
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
-          <button class="btn btn-light btn-block" type="button"
+          <button class="btn <?= $btnClass ?> btn-sm btn-block" type="button"
             data-toggle="collapse"
             data-target="#<?= $_collapse = strings::rand() ?>"
             data-properties_id="<?= $item->properties_id ?>"
@@ -142,7 +171,7 @@ namespace smokealarm; ?>
                   <div class="col-3 text-left d-none d-md-block">
                     <div class="row">
                       <div class="col text-truncate" company>%s</div>
-                      <div class="col text-truncate" last_inspection>%s</div>
+                      <div class="col-6 text-truncate" last_inspection>%s</div>
                       <div class="col-1" certificate title="%s">%s</div>
                     </div>
                   </div>
@@ -168,7 +197,7 @@ namespace smokealarm; ?>
 
           </button>
 
-          <button type="button" class="btn btn-light" edit-property><i class="fa fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm <?= $btnClass ?>" edit-property><i class="fa fa-pencil"></i></button>
 
         </div>
 

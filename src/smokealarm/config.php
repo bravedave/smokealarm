@@ -56,6 +56,13 @@ class config extends \config {
 
 	];
 
+	/**
+	 * format is per php strtotime
+	 * see https://www.php.net/manual/en/function.strtotime.php
+	 */
+	const smokealarm_valid_time = '+1 year';
+	const smokealarm_warn_time = '+11 months';
+
   static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
   static protected $_SMOKEALARM_VERSION = 0;
 
