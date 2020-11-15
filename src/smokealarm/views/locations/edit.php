@@ -10,6 +10,8 @@
 
 namespace smokealarm;
 
+use strings;
+
 $dto = $this->data->dto; ?>
 
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">

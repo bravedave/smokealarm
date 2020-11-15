@@ -8,7 +8,9 @@
  *
 */
 
-namespace smokealarm; ?>
+namespace smokealarm;
+
+use strings; ?>
 
 <table class="table table-sm" id="<?= $_table = strings::rand() ?>">
 	<thead class="small">

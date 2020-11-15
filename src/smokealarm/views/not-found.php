@@ -8,7 +8,9 @@
  *
 */
 
-namespace smokealarm;   ?>
+namespace smokealarm;
+
+use strings;   ?>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="<?= $_modal = strings::rand() ?>" aria-labelledby="<?= $_modal ?>Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">

@@ -13,6 +13,7 @@ namespace smokealarm;
 use green;
 use Json;
 use Response;
+use strings;
 use sys;
 
 class controller extends \Controller {
@@ -241,7 +242,6 @@ class controller extends \Controller {
 
     }
     elseif ( 'get-property-by-id' == $action) {
-
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
         if ( $dto = $dao->getByID( $id)) {
@@ -277,7 +277,44 @@ class controller extends \Controller {
 
       } else { Json::nak( $action); }
 
-		}
+    }
+    elseif ( 'get-photolog-image-of-alarm' == $action) {
+      if ( $location = $this->getPost('location')) {
+        if ( $properties_id = (int)$this->getPost('properties_id')) {
+          $dao = new dao\properties;
+          if ( $property = $dao->getByID( $properties_id)) {
+            $alarm = false;
+            if ( class_exists( 'photolog\dao\property_photolog')) {
+              $dao = new \photolog\dao\property_photolog;
+              if ($photologs = $dao->getForProperty( $property->id)) {
+                foreach ($photologs as $photolog) {
+                  $files = $dao->getFiles( $photolog, 'photolog');
+                  foreach ($files as $file) {
+                    if ( $location == $file->location) {
+                      $file->photolog = $photolog;
+                      $alarm = $file;
+
+                    }
+
+                  }
+
+                }
+
+              }
+
+            }
+
+            Json::ack( $action)
+              ->add( 'property', $property)
+              ->add( 'alarm', $alarm);
+
+          } else { Json::nak( $action); }
+
+        } else { Json::nak( $action); }
+
+      } else { Json::nak( $action); }
+
+    }
 		elseif ( 'get-tenant-of-property' == $action) {
       if ( \class_exists( 'dao\console_tenants')) {;
         if ( $properties_id = $this->getPost( 'properties_id')) {

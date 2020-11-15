@@ -10,6 +10,8 @@
 
 namespace smokealarm;
 
+use strings;
+
 $dto = $this->data->dto; ?>
 
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">
@@ -39,10 +41,15 @@ $dto = $this->data->dto; ?>
 
           </div>
 
+          <div class="form-group row"><!-- Alarm Image -->
+            <div class="offset-sm-3 col" id="<?= $_uidImage = strings::rand() ?>"></div>
+
+          </div>
+
           <div class="form-group row"><!-- Location -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Location</label>
+            <label class="col-sm-3 col-form-label" for="<?= $_uidLocation = strings::rand() ?>">Location</label>
             <div class="col">
-              <select name="location" class="form-control" id="<?= $_uid ?>" required>
+              <select name="location" class="form-control" id="<?= $_uidLocation ?>" required>
                 <option></option>
                 <?php
                 $_dao = new dao\smokealarm_locations;
@@ -221,60 +228,107 @@ $dto = $this->data->dto; ?>
   </div>
 
   <script>
-  ( _ => {
-    $(document).ready( () => {
-      $('input[name="address_street"]', '#<?= $_form ?>').autofill({
-        autoFocus : true,
-        source: _.search.address,
-        select: function(event, ui) {
-          let o = ui.item;
-          $('input[name="properties_id"]', '#<?= $_form ?>').val( o.id);
+  ( _ => $(document).ready( () => {
+    $('input[name="address_street"]', '#<?= $_form ?>').autofill({
+      autoFocus : true,
+      source: _.search.address,
+      select: function(event, ui) {
+        let o = ui.item;
+        $('input[name="properties_id"]', '#<?= $_form ?>').val( o.id);
 
-        },
-
-      });
-
-      $('input[name="make"]', '#<?= $_form ?>').autofill({
-        autoFocus : true,
-        source: _.search.alarmMake,
-        select: function(event, ui) {
-          let o = ui.item;
-
-        },
-
-      });
-
-      $('#<?= $_form ?>')
-      .on( 'submit', function( e) {
-        let _form = $(this);
-        let _data = _form.serializeFormJSON();
-        let _modalBody = $('.modal-body', _form);
-
-        // console.log( _data);
-        _.post({
-          url : _.url('<?= $this->route ?>'),
-          data : _data,
-
-        }).then( d => {
-          if ( 'ack' == d.response) {
-            $('#<?= $_modal ?>').trigger( 'success');
-            $('#<?= $_modal ?>').modal( 'hide');
-
-          }
-          else {
-            _.growl( d);
-
-          }
-
-        });
-
-        return false;
-
-      });
+      },
 
     });
 
-  }) (_brayworth_);
+    $('input[name="make"]', '#<?= $_form ?>').autofill({
+      autoFocus : true,
+      source: _.search.alarmMake,
+      select: function(event, ui) {
+        let o = ui.item;
+
+      },
+
+    });
+
+    $('#<?= $_uidLocation ?>').on( 'change', e => $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm'))
+
+    $('#<?= $_form ?>')
+    .on( 'clear-image-of-alarm', function(e) {
+      $('#<?= $_uidImage ?>').html('');
+
+    })
+    .on( 'get-photolog-image-of-alarm', function(e) {
+      let _form = $(this);
+      let _data = _form.serializeFormJSON();
+
+      if ( '' == _data.location) {
+        _form.trigger('clear-image-of-alarm');
+        return;
+
+      }
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'get-photolog-image-of-alarm',
+          properties_id : _data.properties_id,
+          location : _data.location
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          if ( !!d.alarm) {
+            let img = $('<img class="img-fluid">');
+            img.attr( 'src', d.alarm.url);
+
+            $('#<?= $_uidImage ?>').html('').append(img);
+
+          }
+          else {
+            _form.trigger('clear-image-of-alarm');
+
+          }
+
+        }
+        else {
+          _.growl( d);
+          console.log( d);
+
+        }
+
+      });
+
+    })
+    .on( 'submit', function( e) {
+      let _form = $(this);
+      let _data = _form.serializeFormJSON();
+
+      // console.log( _data);
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : _data,
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          $('#<?= $_modal ?>').trigger( 'success');
+          $('#<?= $_modal ?>').modal( 'hide');
+
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
+      return false;
+
+    });
+
+    $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+
+  }))( _brayworth_);
   </script>
 
 </form>

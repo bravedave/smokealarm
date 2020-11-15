@@ -35,6 +35,10 @@ class postUpdate extends dvc\service {
     green\properties\config::green_properties_checkdatabase();
     echo( sprintf('%s : %s%s', 'green updated', __METHOD__, PHP_EOL));
 
+    \photolog\config::photolog_checkdatabase();
+    config::route_register( 'photolog', 'photolog\controller');
+    echo( sprintf('%s : %s%s', 'photolog updated', __METHOD__, PHP_EOL));
+
     config::smokealarm_checkdatabase();
     config::route_register( 'smokealarm', 'smokealarm\controller');
     config::route_register( 'smokealarmtypes', '');

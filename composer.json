@@ -30,8 +30,9 @@
   },
   "scripts": {
     "post-update-cmd": "smokealarm\\postUpdate::upgrade",
-    "importcsv-cmd": "smokealarm\\postUpdate::importcsv",
-    "import-property-status-cmd": "smokealarm\\postUpdate::importpropertystatuscsv"
+    "cron": "photolog\\postUpdate::cron",
+    "importcsv": "smokealarm\\postUpdate::importcsv",
+    "import-property-status": "smokealarm\\postUpdate::importpropertystatuscsv"
 
   }
 

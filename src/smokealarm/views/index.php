@@ -8,7 +8,9 @@
  *
 */
 
-namespace smokealarm; ?>
+namespace smokealarm;
+
+use strings;  ?>
 
 <ul class="nav flex-column">
   <li class="h5"><a href="<?= strings::url( 'smokealarm') ?>"><?= config::label ?></a></li>
