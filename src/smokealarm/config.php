@@ -65,7 +65,8 @@ class config extends \config {
 	const smokealarm_valid_time = '+1 year';
 	const smokealarm_warn_time = '+11 months';
 
-  static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
+	static $PHOTOLOG_ROUTE = 'photolog';
+	static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
   static protected $_SMOKEALARM_VERSION = 0;
 
 	static protected function smokealarm_version( $set = null) {

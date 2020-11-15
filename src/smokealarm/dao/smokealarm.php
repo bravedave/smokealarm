@@ -11,7 +11,6 @@
 namespace smokealarm\dao;
 
 use dao\_dao;
-use db;
 use smokealarm\strings;
 class smokealarm extends _dao {
 	protected $_db_name = 'smokealarm';
@@ -260,7 +259,7 @@ class smokealarm extends _dao {
 	}
 
 	public function Insert( $a) {
-		$a[ 'created'] = $a['updated'] = db::dbTimeStamp();
+		$a[ 'created'] = $a['updated'] = self::dbTimeStamp();
 		return parent::Insert( $a);
 
 	}
@@ -290,7 +289,7 @@ class smokealarm extends _dao {
 	}
 
 	public function UpdateByID( $a, $id) {
-		$a['updated'] = db::dbTimeStamp();
+		$a['updated'] = self::dbTimeStamp();
 		return parent::UpdateByID( $a, $id);
 
   }

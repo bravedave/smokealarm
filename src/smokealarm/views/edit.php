@@ -11,8 +11,21 @@
 namespace smokealarm;
 
 use strings;
+use sys;
 
-$dto = $this->data->dto; ?>
+$dto = $this->data->dto;
+
+$_uidImage = strings::rand(); ?>
+
+<style>
+@media screen and (min-width: 768px) {
+  #<?= $_uidImage ?>uploader .has-advanced-upload::before {
+    content: "drag alarm image here to upload";
+
+  }
+
+}
+</style>
 
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">
   <input type="hidden" name="action" value="save-smokealarm">
@@ -41,8 +54,13 @@ $dto = $this->data->dto; ?>
 
           </div>
 
-          <div class="form-group row"><!-- Alarm Image -->
-            <div class="offset-sm-3 col" id="<?= $_uidImage = strings::rand() ?>"></div>
+          <div class="row"><!-- Alarm Image -->
+            <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>"></div>
+
+          </div>
+
+          <div class="form-group row"><!-- Alarm Image Uploaded -->
+            <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>uploader"></div>
 
           </div>
 
@@ -250,7 +268,11 @@ $dto = $this->data->dto; ?>
 
     });
 
-    $('#<?= $_uidLocation ?>').on( 'change', e => $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm'))
+    $('#<?= $_uidLocation ?>').on( 'change', e => {
+      $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+      $('#<?= $_form ?>').trigger( 'setup-uploader');
+
+    });
 
     $('#<?= $_form ?>')
     .on( 'clear-image-of-alarm', function(e) {
@@ -300,6 +322,50 @@ $dto = $this->data->dto; ?>
       });
 
     })
+    .on( 'setup-uploader', function( e) {
+      <?php
+      if ( $dto->id) {
+
+        $diskSpace = sys::diskspace();
+        if ( !$diskSpace->exceeded) {	?>
+          let _form = $(this);
+          let _data = _form.serializeFormJSON();
+
+          $('#<?= $_uidImage ?>uploader').html( '');
+          if ( !!_data.location) {
+            ( c => {
+
+              c.appendTo( '#<?= $_uidImage ?>uploader');
+
+              _.fileDragDropHandler.call( c, {
+                url : _.url( '<?= config::$PHOTOLOG_ROUTE ?>'),
+                queue : false,
+                multiple : false,
+                postData : {
+                  action : 'upload',
+                  tag : 'smokealarm',
+                  location : _data.location,
+                  smokealarm_id : <?= $dto->id ?>
+                },
+                onUpload : d => {
+                  if ( 'ack' == d.response) {
+                    $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+
+                  }
+
+                }
+
+              });
+
+            }) ( _.fileDragDropContainer({fileControl : true}));
+
+          }
+
+      <?php	}	// if ( !$diskSpace->exceeded)
+
+      } // $dto->id ?>
+
+    })
     .on( 'submit', function( e) {
       let _form = $(this);
       let _data = _form.serializeFormJSON();
@@ -327,6 +393,7 @@ $dto = $this->data->dto; ?>
     });
 
     $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+    $('#<?= $_form ?>').trigger( 'setup-uploader');
 
   }))( _brayworth_);
   </script>

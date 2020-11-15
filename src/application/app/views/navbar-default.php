@@ -27,7 +27,7 @@
       </li>
 
       <li class="nav-item pt-1">
-        <a class="nav-link pb-0" href="<?= strings::url('photolog') ?>">PhotoLog</a>
+        <a class="nav-link pb-0" href="<?= strings::url( smokealarm\config::$PHOTOLOG_ROUTE) ?>">PhotoLog</a>
 
       </li>
 

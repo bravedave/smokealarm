@@ -288,7 +288,7 @@ class controller extends \Controller {
               $dao = new \photolog\dao\property_photolog;
               if ($photologs = $dao->getForProperty( $property->id)) {
                 foreach ($photologs as $photolog) {
-                  $files = $dao->getFiles( $photolog, 'photolog');
+                  $files = $dao->getFiles( $photolog, config::$PHOTOLOG_ROUTE);
                   foreach ($files as $file) {
                     if ( $location == $file->location) {
                       $file->photolog = $photolog;
