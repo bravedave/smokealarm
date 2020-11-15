@@ -10,6 +10,8 @@
 
 namespace smokealarm;
 
+use Json;
+
 class config extends \config {
   const label = 'Smoke Alarms 2022';
 	const smokealarm_db_version = 0.10;
@@ -70,15 +72,11 @@ class config extends \config {
 		$ret = self::$_SMOKEALARM_VERSION;
 
 		if ( (float)$set) {
-			$config = self::smokealarm_config();
-
-			$j = file_exists( $config) ?
-				json_decode( file_get_contents( $config)):
-				(object)[];
+			$j = Json::read( $config = self::smokealarm_config());
 
 			self::$_SMOKEALARM_VERSION = $j->smokealarm_version = $set;
 
-			file_put_contents( $config, json_encode( $j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			Json::write( $config, $j);
 
 		}
 
@@ -133,7 +131,7 @@ class config extends \config {
 
 		if ( file_exists( $config = self::smokealarm_config())) {
 
-      $j = (object)array_merge( $_a, (array)json_decode( file_get_contents( $config)));
+      $j = (object)array_merge( $_a, (array)Json::read( $config));
 
       self::$SMOKEALARM_IMPORT_ADD_PROPERTIES = (float)$j->import_add_properties;
       self::$_SMOKEALARM_VERSION = (float)$j->smokealarm_version;
