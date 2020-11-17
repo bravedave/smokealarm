@@ -11,7 +11,7 @@
 namespace smokealarm\dao;
 
 use dao\_dao;
-use smokealarm\strings;
+use strings;
 class smokealarm extends _dao {
 	protected $_db_name = 'smokealarm';
 	protected $template = __NAMESPACE__ . '\dto\smokealarm';
