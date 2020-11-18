@@ -10,6 +10,7 @@
 
 namespace smokealarm;
 
+use currentUser;
 use green;
 use Json;
 use Response;
@@ -87,6 +88,16 @@ class controller extends \Controller {
     elseif ( 'delete-smokealarm-location' == $action) {
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\smokealarm_locations;
+        $dao->delete( $id);
+
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
+
+    }
+    elseif ( 'delete-smokealarm-supplier' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $dao = new dao\smokealarm_suppliers;
         $dao->delete( $id);
 
         Json::ack( $action);
@@ -366,6 +377,7 @@ class controller extends \Controller {
           'smokealarms_required' => $this->getPost('smokealarms_required'),
           'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
           'smokealarms_power' => $this->getPost('smokealarms_power'),
+          'smokealarms_company_id' => $this->getPost('smokealarms_company_id'),
           'smokealarms_company' => $this->getPost('smokealarms_company'),
           'smokealarms_last_inspection' => $this->getPost('smokealarms_last_inspection'),
 
@@ -424,11 +436,40 @@ class controller extends \Controller {
         ->add( 'id', $id);
 
 		}
+    elseif ( 'save-smokealarm-supplier' == $action) {
+      $a = [
+        'name' => $this->getPost('name'),
+        'contact' => $this->getPost('contact'),
+        'phone' => $this->getPost('phone'),
+        'email' => $this->getPost('email'),
+
+      ];
+
+      $dao = new dao\smokealarm_suppliers;
+      if ( $id = (int)$this->getPost('id')) {
+        $dao->UpdateByID( $a, $id);
+
+      }
+      else {
+        $id = $dao->Insert( $a);
+
+      }
+
+      Json::ack( $action)
+        ->add( 'id', $id);
+
+		}
     elseif ( 'search-properties' == $action) {
 			if ( $term = $this->getPost('term')) {
+        $restriction = '';
+        if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
+          $restriction = sprintf( 'smokealarms_company_id = %d', $co);
+
+        }
+
 				Json::ack( $action)
 					->add( 'term', $term)
-					->add( 'data', green\search::properties( $term));
+					->add( 'data', green\search::properties( $term, $restriction));
 
 			} else { Json::nak( $action); }
 
@@ -449,6 +490,22 @@ class controller extends \Controller {
 			} else { Json::nak( $action); }
 
     }
+    elseif ( 'search-suppliers' == $action) {
+			if ( $term = $this->getPost('term')) {
+        // \sys::logger( sprintf('<%s> %s', $term, __METHOD__));
+
+        $dao = new dao\smokealarm_suppliers;
+        $suppliers = $dao->search( $term);
+
+        \sys::logger( sprintf('<%s> %s', json_encode($suppliers), __METHOD__));
+
+				Json::ack( $action)
+					->add( 'term', $term)
+					->add( 'data', $suppliers);
+
+			} else { Json::nak( $action); }
+
+    }
     elseif ( 'set-option-exclude-inactive' == $action) {
       \currentUser::option('smokealarm-inactive-exclude', 'yes');
       Json::ack( $action);
@@ -456,6 +513,12 @@ class controller extends \Controller {
     }
     elseif ( 'set-option-exclude-inactive-undo' == $action) {
       \currentUser::option('smokealarm-inactive-exclude', '');
+      Json::ack( $action);
+
+    }
+    elseif ( 'suppliers-extract' == $action) {
+      $dao = new dao\smokealarm_suppliers;
+      $dao->extractDataSet();
       Json::ack( $action);
 
     }

@@ -30,9 +30,9 @@ $dto = $this->data->dto; ?>
         <div class="modal-body">
           <div class="form-group row">
             <div class="col">
-              <label for="<?= $_uid = strings::rand() ?>">Type</label>
+              <label for="<?= $_uid = strings::rand() ?>">Location</label>
               <input type="text" name="location" class="form-control"
-                placeholder="type"
+                placeholder="Location"
                 id="<?= $_uid ?>"
                 value="<?= $dto->location ?>">
 
@@ -52,39 +52,36 @@ $dto = $this->data->dto; ?>
 
   </div>
   <script>
-  ( _ => {
-    $(document).ready( () => {
-      $('#<?= $_form ?>')
-      .on( 'submit', function( e) {
-        let _form = $(this);
-        let _data = _form.serializeFormJSON();
-        let _modalBody = $('.modal-body', _form);
+  ( _ => $(document).ready( () => {
+    $('#<?= $_form ?>')
+    .on( 'submit', function( e) {
+      let _form = $(this);
+      let _data = _form.serializeFormJSON();
+      let _modalBody = $('.modal-body', _form);
 
-        console.log( _data);
-        _.post({
-          url : _.url('<?= $this->route ?>'),
-          data : _data,
+      console.log( _data);
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : _data,
 
-        }).then( d => {
-          if ( 'ack' == d.response) {
-            $('#<?= $_modal ?>').trigger( 'success');
-            $('#<?= $_modal ?>').modal( 'hide');
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          $('#<?= $_modal ?>').trigger( 'success');
+          $('#<?= $_modal ?>').modal( 'hide');
 
-          }
-          else {
-            _.growl( d);
+        }
+        else {
+          _.growl( d);
 
-          }
-
-        });
-
-        return false;
+        }
 
       });
 
+      return false;
+
     });
 
-  }) (_brayworth_);
+  }))( _brayworth_);
   </script>
 
 </form>

@@ -42,6 +42,7 @@ class postUpdate extends dvc\service {
     config::smokealarm_checkdatabase();
     config::route_register( 'smokealarm', 'smokealarm\controller');
     config::route_register( 'smokealarmtypes', '');
+    config::route_register( 'smokealarmsuppliers', 'smokealarm\controllerSmokeAlarmSuppliers');
     config::route_register( 'smokealarmlocations', 'smokealarm\controllerSmokeAlarmLocations');
     echo( sprintf('%s : %s%s', 'smokealarm  updated', __METHOD__, PHP_EOL));
 

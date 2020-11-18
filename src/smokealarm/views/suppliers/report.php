@@ -10,13 +10,17 @@
 
 namespace smokealarm;
 
+use currentUser;
 use strings;   ?>
 
 <table class="table table-sm" id="<?= $_table = strings::rand() ?>">
 	<thead class="small">
     <tr>
       <td line-number>#</td>
-      <td>location</td>
+      <td>name</td>
+      <td>contact</td>
+      <td>phone</td>
+      <td>email</td>
     </tr>
   </thead>
 
@@ -27,28 +31,34 @@ use strings;   ?>
     printf( '<tr data-id="%s">', $dto->id);
 
     print '<td line-number></td>';
-    printf( '<td>%s</td>', $dto->location);
+    printf( '<td>%s</td>', $dto->name);
+    printf( '<td>%s</td>', $dto->contact);
+    printf( '<td>%s</td>', $dto->phone);
+    printf( '<td>%s</td>', $dto->email);
 
     print '</tr>';
 
   } ?>
   </tbody>
 
-	<tfoot class="d-print-none">
-		<tr>
-			<td colspan="2" class="text-right">
-				<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="fa fa-plus"></i></a>
+	<?php if ( !(int)currentUser::restriction( 'smokealarm-company')) {	?>
+		<tfoot class="d-print-none">
+			<tr>
+				<td colspan="5" class="text-right">
+					<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="fa fa-plus"></i></a>
 
-			</td>
+				</td>
 
-		</tr>
+			</tr>
 
-	</tfoot>
+		</tfoot>
+
+	<?php	} ?>
 
 </table>
 <script>
 ( _ => $(document).ready( () => {
-	$(document).on( 'add-smokealarm-location', e => {
+	$(document).on( 'add-smokealarm-supplier', e => {
 		_.get.modal( _.url('<?= $this->route ?>/edit'))
 		.then( m => m.on( 'success', e => window.location.reload()));
 
@@ -68,7 +78,9 @@ use strings;   ?>
 	})
 	.trigger('update-line-numbers');
 
-	$('#<?= $addBtn ?>').on( 'click', e => { $(document).trigger( 'add-smokealarm-location'); });
+	<?php if ( !(int)currentUser::restriction( 'smokealarm-company')) {	?>
+		$('#<?= $addBtn ?>').on( 'click', e => { $(document).trigger( 'add-smokealarm-supplier'); });
+	<?php }	// if ( !(int)currentUser::restriction( 'smokealarm-company'))	?>
 
 	$('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
@@ -100,7 +112,7 @@ use strings;   ?>
 			_.post({
 				url : _.url('<?= $this->route ?>'),
 				data : {
-					action : 'delete-smokealarm-location',
+					action : 'delete-smokealarm-supplier',
 					id : _data.id
 
 				},

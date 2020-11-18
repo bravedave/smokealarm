@@ -9,8 +9,18 @@
 */
 
 class currentUser extends dvc\currentUser {
-  static public function option() {
-		return ( '');
+	static public function option( $key, $value = null) {
+		return ( false);
+
+	}
+
+	static public function restriction( $key, $value = null ) {
+		if ( 'smokealarm-company' == $key) {
+			return '1';
+
+		}
+
+		return ( false);
 
 	}
 

@@ -10,12 +10,14 @@
 
 namespace smokealarm;
 
+use currentUser;
 use strings;
 
 $dto = $this->data->dto; ?>
 
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">
   <input type="hidden" name="action" value="save-properties">
+  <input type="hidden" name="smokealarms_company_id" value="<?= $dto->smokealarms_company_id ?>">
   <input type="hidden" name="id" value="<?= $dto->id ?>">
 
   <div class="modal fade" tabindex="-1" role="dialog" id="<?= $_modal = strings::rand() ?>" aria-labelledby="<?= $_modal ?>Label" aria-hidden="true">
@@ -104,6 +106,7 @@ $dto = $this->data->dto; ?>
             <div class="col">
               <input type="text" class="form-control" name="smokealarms_company"
                 value="<?= $dto->smokealarms_company ?>"
+                <?php if ( (int)currentUser::restriction( 'smokealarm-company')) print 'readonly'; ?>
                 id="<?= $uid ?>">
 
             </div>
@@ -367,58 +370,69 @@ $dto = $this->data->dto; ?>
   </div>
 
   <script>
-  ( _ => {
-    $(document).ready( () => {
-      $('#<?= $_form ?>')
-      .on( 'submit', function( e) {
-        let _form = $(this);
-        let _data = _form.serializeFormJSON();
-        let _modalBody = $('.modal-body', _form);
+  ( _ => $(document).ready( () => {
+    <?php if ( !(int)currentUser::restriction( 'smokealarm-company')) { ?>
+      $('input[name="smokealarms_company"]', '#<?= $_form ?>').autofill({
+        autoFocus : true,
+        source: _.search.alarmCompany,
+        select: (e, ui) => {
+          let o = ui.item;
+          $('input[name="smokealarms_company_id"]', '#<?= $_form ?>').val( o.id);
 
-        _.post({
-          url : _.url('<?= $this->route ?>'),
-          data : _data,
-
-        }).then( d => {
-          if ( 'ack' == d.response) {
-            $('#<?= $_modal ?>').trigger( 'success');
-            $('#<?= $_modal ?>').modal( 'hide');
-
-          }
-          else {
-            _.growl( d);
-
-          }
-
-        });
-
-        return false;
+        },
 
       });
 
-      ( c => {
-        _.fileDragDropHandler.call( c, {
-          url : _.url( '<?= $this->route ?>'),
-          postData : {
-            action : 'document-upload',
-            properties_id : <?= (int)$dto->id ?>
+    <?php } // if ( !(int)currentUser::restriction( 'smokealarm-company')) { ?>
 
-          },
-          onUpload : d => {
-            _.growl( d);
-            $('#<?= $_form ?>').trigger('load-documents');
+    $('#<?= $_form ?>')
+    .on( 'submit', function( e) {
+      let _form = $(this);
+      let _data = _form.serializeFormJSON();
+      let _modalBody = $('.modal-body', _form);
 
-          }
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : _data,
 
-        });
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          $('#<?= $_modal ?>').trigger( 'success');
+          $('#<?= $_modal ?>').modal( 'hide');
 
-      })( _.fileDragDropContainer().appendTo( '#<?= $_form ?> div[upload]'));
+        }
+        else {
+          _.growl( d);
 
-      $('#<?= $_form ?>').trigger('load-documents');
+        }
+
+      });
+
+      return false;
 
     });
 
-  }) (_brayworth_);
+    ( c => {
+      _.fileDragDropHandler.call( c, {
+        url : _.url( '<?= $this->route ?>'),
+        postData : {
+          action : 'document-upload',
+          properties_id : <?= (int)$dto->id ?>
+
+        },
+        onUpload : d => {
+          _.growl( d);
+          $('#<?= $_form ?>').trigger('load-documents');
+
+        }
+
+      });
+
+    })( _.fileDragDropContainer().appendTo( '#<?= $_form ?> div[upload]'));
+
+    $('#<?= $_form ?>').trigger('load-documents');
+
+  })) (_brayworth_);
   </script>
 
 </form>

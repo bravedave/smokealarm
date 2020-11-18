@@ -10,6 +10,7 @@
 
 namespace smokealarm\dao;
 
+use currentUser;
 use dao\_dao;
 use strings;
 class smokealarm extends _dao {
@@ -60,6 +61,7 @@ class smokealarm extends _dao {
 				p.smokealarms_power,
 				p.smokealarms_2022_compliant,
 				p.smokealarms_company,
+				p.smokealarms_company_id,
 				p.smokealarms_last_inspection,
 				p.smokealarms_tags,
 				people.name people_name
@@ -67,7 +69,13 @@ class smokealarm extends _dao {
 				LEFT JOIN properties p on p.id = sa.properties_id
 				LEFT JOIN people on p.people_id = people.id';
 
-    $activeProperties = [];
+		$conditions = [];
+		if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
+			$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
+
+		}
+
+		$activeProperties = [];
     if ( $excludeInactive && \class_exists('dao\console_properties')) {
       $_cp_dao = new \dao\console_properties;
       if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
@@ -77,7 +85,7 @@ class smokealarm extends _dao {
         }, $_cp_res->dtoSet());
 
         if ( $activeProperties) {
-          $_sql .= sprintf( ' WHERE sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
+          $conditions[] = sprintf( 'sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
           // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
           // \sys::logger( sprintf('<%s> %s', implode( ',', $a), __METHOD__));
 
@@ -85,7 +93,12 @@ class smokealarm extends _dao {
 
       }
 
-    }
+		}
+
+		if ( $conditions) {
+			$_sql .= sprintf( ' WHERE %s', implode( ' AND ', $conditions));
+
+		}
 
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
 		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));

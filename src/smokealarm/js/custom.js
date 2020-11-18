@@ -43,4 +43,20 @@
 
   }
 
+  if ('undefined' == typeof _.search.alarmCompany) {
+    _.search.alarmCompany = (request, response) => {
+      _.post({
+        url: '{{route}}',
+        data: {
+          action: 'search-suppliers',
+          term: request.term
+
+        },
+
+      }).then(d => response('ack' == d.response ? d.data : []));
+
+    };
+
+  }
+
 })(_brayworth_);

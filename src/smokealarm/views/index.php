@@ -10,19 +10,51 @@
 
 namespace smokealarm;
 
+use currentUser;
 use strings;  ?>
 
 <ul class="nav flex-column">
   <li class="h5"><a href="<?= strings::url( 'smokealarm') ?>"><?= config::label ?></a></li>
-  <li class="nav-item">
-    <a class="nav-link" href="<?= strings::url( 'smokealarmlocations') ?>">Locations</a>
+  <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarmlocations') ?>">Locations</a></li>
+  <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarmsuppliers') ?>">Suppliers</a></li>
+  <?php
+  if ( isset( $this->data->showimport) &&$this->data->showimport) { ?>
+    <li class="nav-item pl-2"><a class="nav-link small" href="#" id="<?= $_uid = strings::rand() ?>"><em>Extract Suppliers from Dataset</em></a></li>
+    <script>
+    ( _ => $(document).ready( () => {
+      $('#<?= $_uid ?>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
 
-  </li>
+        _.post({
+          url : _.url('<?= $this->route ?>'),
+          data : {
+            action : 'suppliers-extract'
 
-  <li class="nav-item">
-    <a class="nav-link" href="<?= strings::url( 'smokealarm/propertyalarms') ?>">All Alarms</a>
+          },
 
-  </li>
+        }).then( d => {
+          if ( 'ack' == d.response) {
+            window.location.reload();
+
+          }
+          else {
+            _.growl( d);
+
+          }
+
+        });
+
+      })
+
+    }))( _brayworth_);
+    </script>
+
+  <?php
+  } ?>
+
+  <?php if ( !(int)currentUser::restriction( 'smokealarm-company')) { ?>
+  <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarm/propertyalarms') ?>">All Alarms</a></li>
+  <?php } // if ( !(int)currentUser::restriction( 'smokealarm-company')) ?>
 
   <?php if ( \class_exists('dao\console_properties')) { ?>
     <li class="nav-item">
