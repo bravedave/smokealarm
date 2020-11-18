@@ -249,7 +249,7 @@ $_uidImage = strings::rand(); ?>
   ( _ => $(document).ready( () => {
     $('input[name="address_street"]', '#<?= $_form ?>').autofill({
       autoFocus : true,
-      source: _.search.address,
+      source: _.search.alarm_address,
       select: function(event, ui) {
         let o = ui.item;
         $('input[name="properties_id"]', '#<?= $_form ?>').val( o.id);
