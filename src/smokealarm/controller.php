@@ -72,7 +72,7 @@ class controller extends \Controller {
 
 	}
 
-	protected function posthandler() {
+	protected function postHandler() {
     $action = $this->getPost('action');
 
     if ( 'delete-smokealarm' == $action) {
