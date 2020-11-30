@@ -75,12 +75,31 @@ class controller extends \Controller {
 	protected function postHandler() {
     $action = $this->getPost('action');
 
-    if ( 'delete-smokealarm' == $action) {
+    if ( 'archive-smokealarm' == $action) {
       if ( $id = (int)$this->getPost('id')) {
         $dao = new dao\smokealarm;
-        $dao->delete( $id);
+        if ( $dto = $dao->getByID( $id)) {
+          $a = [
+            'location' => $dto->location,
+            'make' => $dto->make,
+            'model' => $dto->model,
+            'type' => $dto->type,
+            'expiry' => $dto->expiry,
+            'connect' => $dto->connect,
+            'status' => $dto->status,
+            'properties_id' => $dto->properties_id,
+            'smokealarm_id' => $dto->id
 
-        Json::ack( $action);
+          ];
+
+          $daoA = new dao\smokealarm_archive;
+          $daoA->Insert( $a);
+
+          $dao->delete( $id);
+          Json::ack( $action);
+
+
+        } else { Json::nak( $action); }
 
       } else { Json::nak( $action); }
 

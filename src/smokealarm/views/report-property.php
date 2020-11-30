@@ -125,17 +125,17 @@ use strings; ?>
 
       $(tr)
       .addClass( 'pointer' )
-			.on( 'delete', function( e) {
+			.on( 'archive', function( e) {
 				let _tr = $(this);
 
 				_.ask({
 					headClass: 'text-white bg-danger',
 					text: 'Are you sure ?',
-					title: 'Confirm Delete',
+					title: 'Confirm Archive',
 					buttons : {
 						yes : function(e) {
 							$(this).modal('hide');
-							_tr.trigger( 'delete-confirmed');
+							_tr.trigger( 'archive-confirmed');
 
 						}
 
@@ -144,14 +144,14 @@ use strings; ?>
 				});
 
 			})
-			.on( 'delete-confirmed', function(e) {
+			.on( 'archive-confirmed', function(e) {
 				let _tr = $(this);
 				let _data = _tr.data();
 
 				_.post({
 					url : _.url('<?= $this->route ?>'),
 					data : {
-						action : 'delete-smokealarm',
+						action : 'archive-smokealarm',
 						id : _data.id
 
 					},
@@ -223,12 +223,12 @@ use strings; ?>
 
           }));
 
-          _context.append( $('<a href="#"><i class="fa fa-trash"></i>delete</a>').on( 'click', function( e) {
+          _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
             e.stopPropagation();e.preventDefault();
 
             _context.close();
 
-            _tr.trigger( 'delete');
+            _tr.trigger( 'archive');
 
           }));
 
