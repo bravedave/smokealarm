@@ -55,7 +55,7 @@ use strings;  ?>
   <?php
   } ?>
 
-  <?php if ( $this->data->na) { ?>
+  <?php if ( isset($this->data->na) && $this->data->na) { ?>
     <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="fa fa-check"></i>Include Inactive</a></li>
   <?php }
     else {  ?>
