@@ -25,7 +25,8 @@ class smokealarm extends _dao {
 			p.address_postcode,
 			p.smokealarms_required,
 			p.smokealarms_power,
-			p.smokealarms_2022_compliant
+			p.smokealarms_2022_compliant,
+			p.smokealarms_na
 		FROM
 			%s sa
 			LEFT JOIN properties p on p.id = sa.properties_id
@@ -42,11 +43,12 @@ class smokealarm extends _dao {
 			p.address_postcode,
 			p.smokealarms_required,
 			p.smokealarms_power,
-			p.smokealarms_2022_compliant
+			p.smokealarms_2022_compliant,
+			p.smokealarms_na
 		FROM `smokealarm` sa
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
-	public function getOrderedByStreet( bool $excludeInactive = false) : ?object {
+	public function getOrderedByStreet( bool $excludeInactive = false,  bool $IncludeNotApplicable = false) : ?object {
 
 		$_sql =
 			'SELECT
@@ -64,12 +66,18 @@ class smokealarm extends _dao {
 				p.smokealarms_company_id,
 				p.smokealarms_last_inspection,
 				p.smokealarms_tags,
+				p.smokealarms_na,
 				people.name people_name
 			FROM `smokealarm` sa
 				LEFT JOIN properties p on p.id = sa.properties_id
 				LEFT JOIN people on p.people_id = people.id';
 
 		$conditions = [];
+		if ( !$IncludeNotApplicable) {
+			$conditions[] = 'p.smokealarms_na = 0';
+
+		}
+
 		if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
 			$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
 
@@ -127,10 +135,16 @@ class smokealarm extends _dao {
 
       if ( $activeProperties) {
 				$conditions = [];
+				if ( !$IncludeNotApplicable) {
+					$conditions[] = 'p.smokealarms_na = 0';
+
+				}
+
 				if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
 					$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
 
 				}
+
 				$conditions[] = sprintf( 'p.id IN (%s)', implode( ',', $activeProperties));
 
         $_sql = sprintf( 'INSERT INTO tmp(
@@ -146,6 +160,7 @@ class smokealarm extends _dao {
           `smokealarms_2022_compliant`,
           `smokealarms_company`,
           `smokealarms_last_inspection`,
+          `smokealarms_na`,
           `people_name`)
           SELECT
             p.id,
@@ -160,6 +175,7 @@ class smokealarm extends _dao {
             p.smokealarms_2022_compliant,
             p.smokealarms_company,
             p.smokealarms_last_inspection,
+            p.smokealarms_na,
             people.name people_name
             FROM properties p
               LEFT JOIN people on p.people_id = people.id

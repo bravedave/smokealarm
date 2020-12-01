@@ -29,9 +29,11 @@ class controller extends \Controller {
 
     }
 
+    $na = 'yes' == $this->getParam('na');
     $dao = new dao\smokealarm;
     $this->data = (object)[
-      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $excludeInactive))
+      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $excludeInactive, $na)),
+      'na' => $na
 
     ];
 
@@ -373,6 +375,23 @@ class controller extends \Controller {
         } else { \Json::nak( sprintf( '%s : missing id', $action)); }
 
       } else { \Json::nak( sprintf( '%s : not enabled', $action)); }
+
+    }
+    elseif ( 'mark-property-na' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $dao = new dao\properties;
+        if ( $dto = $dao->getByID( $id)) {
+          $v = (int)$this->getPost('value');
+
+          $a = [ 'smokealarms_na' => $v ];
+
+          $dao->UpdateByID( $a, $id);
+          Json::ack( $action)
+            ->add( 'na', $v ? 'yes' : 'no');
+
+        } else { Json::nak( $action); }
+
+      } else { Json::nak( $action); }
 
     }
     elseif ( 'save-notes' == $action) {

@@ -88,6 +88,7 @@ use strings;  ?>
         'smokealarms_company' => $dto->smokealarms_company,
         'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
         'smokealarms_tags' => $dto->smokealarms_tags,
+        'smokealarms_na' => $dto->smokealarms_na,
         'alarms' => 0
 
       ];
@@ -144,6 +145,7 @@ use strings;  ?>
             data-address= "<?= htmlentities( $item->address) ?>""
             data-people_id="<?= $item->people_id ?>"
             data-people_name="<?= htmlentities( $item->people_name) ?>"
+            data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>"
             aria-expanded="false" aria-controls="<?= $_collapse ?>">
             <?php
               $complianceClass = '';
@@ -189,7 +191,7 @@ use strings;  ?>
                 $hasCert ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_power,
                 $item->alarms,
-                $item->smokealarms_required,
+                $item->smokealarms_na ? 'N/A' : $item->smokealarms_required,
                 $complianceClass,
                 $complianceHtml
 
@@ -221,378 +223,130 @@ use strings;  ?>
 
 </div>
 <script>
-  ( _ => {
-    $(document).ready( () => {
-      $('#<?= $_accordion ?> button[data-properties_id]')
-      .on( 'edit', function( e) {
-        let _me = $(this);
-        let _data = _me.data();
-
-        _.get.modal( _.url('<?= $this->route ?>/editproperty/' + _data.properties_id))
-        .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
-
-      })
-      .on( 'refresh', function( e) {
-        let _me = $(this);
-        let _data = _me.data();
-
-        // console.log( _data);
-        /*
-        _brayworth_.post({
-          url : _brayworth_.url('smokealarm'),
-          data : {
-            action : 'get-property-by-id',
-            id : 1
-          }
-        }).then( d => console.log(d));
-         */
-
-        _.post({
-          url : _.url('<?= $this->route ?>'),
-          data : {
-            action : 'get-property-by-id',
-            id : _data.properties_id
-
-          },
-
-        }).then( d => {
-          if ( 'ack' == d.response) {
-
-            $('[address]', _me).html( d.dto.address_street);
-            $('[compliant]', _me).html( d.compliant);
-            $('[required]', _me).html( d.dto.smokealarms_required);
-            $('[power]', _me).html( d.dto.smokealarms_power);
-            $('[company]', _me).html( d.dto.smokealarms_company);
-            $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
-
-            if ( 'yes' == d.dto.smokealarms_2022_compliant) {
-              $('[compliance]', _me)
-              .removeClass( 'text-danger')
-              .addClass( 'text-success')
-              .html( '<?= strings::html_tick ?>');
-
-            }
-            else if ( Number( d.compliant) < Number( d.dto.smokealarms_required)) {
-              $('[compliance]', _me)
-              .removeClass( 'text-success')
-              .addClass( 'text-danger')
-              .html( Number( d.compliant) - Number( d.dto.smokealarms_required));
-
-            }
-            else {
-              $('[compliance]', _me)
-              .removeClass( 'text-success text-danger')
-              .html( '&nbsp;' );
-
-            }
-
-            if ( 'yes' == d.hasSmokeAlarmComplianceCertificate) {
-              $('[certificate]', _me)
-              .attr('title', 'has certificate')
-              .html( '<?= strings::html_tick ?>');
-
-            }
-            else {
-              $('[certificate]', _me)
-              .attr('title', 'no certificate')
-              .html( '&nbsp;');
-
-            }
-
-            if ( d.dto.smokealarm_expired) {
-              $( '> button', _me.parent()).removeClass( 'btn-warning').addClass('btn-danger');
-
-            }
-            else if ( d.dto.smokealarm_warning) {
-              $( '> button', _me.parent()).removeClass( 'btn-danger').addClass('btn-warning');
-
-            }
-            else {
-              $( '> button', _me.parent()).removeClass( 'btn-danger btn-warning');
-
-            }
-            console.log( d);
-
-          }
-          else {
-            _.growl( d);
-
-          }
-
-        });
-
-      });
-
-      $('#<?= $_accordion ?> button[edit-property]')
-      .on( 'click', function( e) {
-        e.stopPropagation();e.preventDefault();
-
-        let _me = $(this);
-        _me.siblings('button[data-properties_id]').trigger('edit');
-
-      });
-
-      $('#<?= $_accordion ?> button[data-toggle="collapse"]')
-      .on( 'contextmenu', function( e) {
-        if ( e.shiftKey)
-          return;
-
-        e.stopPropagation();e.preventDefault();
-
-        _brayworth_.hideContexts();
-
-        let _me = $(this);
-        let _data = _me.data();
-        let _context = _brayworth_.context();
-
-        _context.append( $('<a href="#"><strong>Open/Close</strong></a>').on( 'click', function( e) {
-          e.stopPropagation();e.preventDefault();
-
-          _context.close();
-          $( _data.target).collapse('toggle');
-
-        }));
-
-        _context.append(
-          $('<a href="#">goto ' + _data.address + '</a>')
-          .attr( 'href', _.url('property/view/' + _data.properties_id))
-          .on( 'click', e => _context.close())
-
-        );
-
-        if ( Number(_data.people_id) > 0) {
-          _context.append(
-            $('<a href="#">goto ' + _data.people_name + '</a>')
-            .attr( 'href', _.url('person/view/' + _data.people_id))
-            .on( 'click', e => _context.close())
-
-          );
-
-        }
-
-        _context.open( e);
-
-      });
-
-      $('#<?= $_accordion ?> > .card > .collapse')
-      .on( 'lookup-tenant', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-
-        _.post({
-          url : _.url('<?= $this->route ?>'),
-          data : {
-            action : 'get-tenant-of-property',
-            properties_id : _data.properties_id
-
-          },
-
-        }).then( d => {
-          if ( 'ack' == d.response) {
-            /**-- [owner/tenants] --*/
-            console.log( d);
-
-            ( data => {
-              /** owner */
-              let row = $('<div class="row"></div>');
-
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
-              let col = $('<div class="col"></div>').appendTo( row);
-              let _row = $('<div class="form-group row"></div>').appendTo( col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Key);
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
-
-              $('.card-body', this).prepend( row);
-
-            })( d.data);
-
-            ( data => {
-              /** owner */
-              let row = $('<div class="row"></div>');
-
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
-              let col = $('<div class="col"></div>').appendTo( row);
-              let _row = $('<div class="form-group row"></div>').appendTo( col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerName);
-              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerEmail);
-              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.OwnerMobile).AsMobilePhone());
-              if ( _brayworth_.browser.isMobileDevice) {
-                if ( String( data.OwnerMobile).IsMobilePhone()) {
-                  let g = $('<div class="input-group"></div>');
-                  g.append( pc);
-
-                  let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
-                  a.attr( 'href', 'sms://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
-                  $( '<div class="input-group-append"></div>')
-                  .append( a)
-                  .appendTo( g);
-
-                  a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
-                  a.attr( 'href', 'tel://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
-                  $( '<div class="input-group-append"></div>')
-                  .append( a)
-                  .appendTo( g);
-
-                  pc = g;
-
-                }
-
-              }
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
-              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
-              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
-
-              $('.card-body', this).prepend( row);
-
-            })( d.data);
-
-            ( data => {
-              /** tenant */
-              let row = $('<div class="row"></div>');
-
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
-              let col = $('<div class="col"></div>').appendTo( row);
-              let _row = $('<div class="form-group row"></div>').appendTo( col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Name);
-              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Email);
-              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.Mobile).AsMobilePhone());
-              if ( _brayworth_.browser.isMobileDevice) {
-                if ( String( data.Mobile).IsMobilePhone()) {
-                  let g = $('<div class="input-group"></div>');
-                  g.append( pc);
-
-                  let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
-                  a.attr( 'href', 'sms://' + String( data.Mobile).replace( /[^0-9]/g,''));
-                  $( '<div class="input-group-append"></div>')
-                  .append( a)
-                  .appendTo( g);
-
-                  a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
-                  a.attr( 'href', 'tel://' + String( data.Mobile).replace( /[^0-9]/g,''));
-                  $( '<div class="input-group-append"></div>')
-                  .append( a)
-                  .appendTo( g);
-
-                  pc = g;
-
-                }
-
-              }
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
-              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
-              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
-
-              if ( data.cotens.length >0) {
-                $.each( data.cotens, ( i, o) => {
-                  //~ console.log( o);
-
-                  let _row = $('<div class="form-group row"></div>').appendTo( col);
-
-                  let nc = $('<div class="form-control bg-transparent"></div>').html( o.name);
-                  let ec = $('<div class="form-control bg-transparent"></div>').html( o.Email);
-                  let pc = $('<div class="form-control bg-transparent"></div>').html( String( o.Mobile).AsMobilePhone());
-
-                  if ( _brayworth_.browser.isMobileDevice) {
-                    if ( String( o.Mobile).IsMobilePhone()) {
-                      let g = $('<div class="input-group"></div>');
-                      g.append( pc);
-
-                      let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
-                      a.attr( 'href', 'sms://' + String( o.Mobile).replace( /[^0-9]/g,''));
-                      $( '<div class="input-group-append"></div>')
-                      .append( a)
-                      .appendTo( g);
-
-                      a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
-                      a.attr( 'href', 'tel://' + String( o.Mobile).replace( /[^0-9]/g,''));
-                      $( '<div class="input-group-append"></div>')
-                      .append( a)
-                      .appendTo( g);
-
-                      pc = g;
-
-                    }
-
-                  }
-
-                  $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
-                  $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
-                  $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
-
-                });
-
-              }
-
-              $('.card-body', this).prepend( row);
-
-            })( d.data);
-            /**-- [owner/tenants] --*/
-
-          }
-
-        });
-
-      })
-      .on('reload', function() {
-        let _me = $(this);
-        let _data = _me.data();
-
-        let indicator = $('<div class="text-center"></div>');
-        let sp = '<div class="spinner-grow spinner-grow-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;';
-        indicator
-        .append( sp)
-        .append( sp)
-        .append( sp)
-        .prependTo( _me);
-
-        let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
-        $('.card-body', this).load( url, d => {
-
-          indicator.remove();
-          _me.trigger('lookup-tenant');
-
-        });
-
-      })
-      .on('show.bs.collapse', function() {
-        $(this).trigger('reload');
-
-      });
-
-      let srchidx = 0;
-      $('#<?= $srch ?>').on( 'keyup', function( e) {
-        let idx = ++srchidx;
-        let txt = this.value;
-
-        if ( '' == txt.trim()) {
-          $('#<?= $_accordion ?> > .card.d-none').removeClass( 'd-none');
+  ( _ => $(document).ready( () => {
+    $('#<?= $_accordion ?> button[data-properties_id]')
+    .on( 'edit', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.get.modal( _.url('<?= $this->route ?>/editproperty/' + _data.properties_id))
+      .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
+
+    })
+    .on( 'not-applicable', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'mark-property-na',
+          id : _data.properties_id,
+          value : 'yes' == String( _data.na) ? 0 : 1
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          _me.data( 'na', d.na);
+
+          $('[required]', _me)
+          .html( 'yes' == d.na ? 'N/A' : '-');
 
         }
         else {
-          $('#<?= $_accordion ?> button[data-toggle="collapse"]').each( ( i, btn) => {
-            if ( idx != srchidx) return false;
+          _.growl( d);
 
-            let _btn = $(btn);
-            let _card = _btn.closest('.card');
-            let _data = _btn.data();
+        }
 
-            let str = _data.address;
-            if ( str.match( new RegExp(txt, 'gi'))) {
-              _card.removeClass( 'd-none');
+      });
 
-            }
-            else {
-              _card.addClass( 'd-none');
 
-            }
+    })
+    .on( 'refresh', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
 
-          });
+      // console.log( _data);
+      /*
+      _brayworth_.post({
+        url : _brayworth_.url('smokealarm'),
+        data : {
+          action : 'get-property-by-id',
+          id : 1
+        }
+      }).then( d => console.log(d));
+        */
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'get-property-by-id',
+          id : _data.properties_id
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+
+          $('[address]', _me).html( d.dto.address_street);
+          $('[compliant]', _me).html( d.compliant);
+          $('[required]', _me).html( d.dto.smokealarms_required);
+          $('[power]', _me).html( d.dto.smokealarms_power);
+          $('[company]', _me).html( d.dto.smokealarms_company);
+          $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
+
+          if ( 'yes' == d.dto.smokealarms_2022_compliant) {
+            $('[compliance]', _me)
+            .removeClass( 'text-danger')
+            .addClass( 'text-success')
+            .html( '<?= strings::html_tick ?>');
+
+          }
+          else if ( Number( d.compliant) < Number( d.dto.smokealarms_required)) {
+            $('[compliance]', _me)
+            .removeClass( 'text-success')
+            .addClass( 'text-danger')
+            .html( Number( d.compliant) - Number( d.dto.smokealarms_required));
+
+          }
+          else {
+            $('[compliance]', _me)
+            .removeClass( 'text-success text-danger')
+            .html( '&nbsp;' );
+
+          }
+
+          if ( 'yes' == d.hasSmokeAlarmComplianceCertificate) {
+            $('[certificate]', _me)
+            .attr('title', 'has certificate')
+            .html( '<?= strings::html_tick ?>');
+
+          }
+          else {
+            $('[certificate]', _me)
+            .attr('title', 'no certificate')
+            .html( '&nbsp;');
+
+          }
+
+          if ( d.dto.smokealarm_expired) {
+            $( '> button', _me.parent()).removeClass( 'btn-warning').addClass('btn-danger');
+
+          }
+          else if ( d.dto.smokealarm_warning) {
+            $( '> button', _me.parent()).removeClass( 'btn-danger').addClass('btn-warning');
+
+          }
+          else {
+            $( '> button', _me.parent()).removeClass( 'btn-danger btn-warning');
+
+          }
+          console.log( d);
+
+        }
+        else {
+          _.growl( d);
 
         }
 
@@ -600,5 +354,295 @@ use strings;  ?>
 
     });
 
-  }) (_brayworth_);
+    $('#<?= $_accordion ?> button[edit-property]')
+    .on( 'click', function( e) {
+      e.stopPropagation();e.preventDefault();
+
+      let _me = $(this);
+      _me.siblings('button[data-properties_id]').trigger('edit');
+
+    });
+
+    $('#<?= $_accordion ?> button[data-toggle="collapse"]')
+    .on( 'contextmenu', function( e) {
+      if ( e.shiftKey)
+        return;
+
+      e.stopPropagation();e.preventDefault();
+
+      _brayworth_.hideContexts();
+
+      let _me = $(this);
+      let _data = _me.data();
+      let _context = _brayworth_.context();
+
+      _context.append( $('<a href="#"><strong>Open/Close</strong></a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        $( _data.target).collapse('toggle');
+
+      }));
+
+      let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        _me.trigger('not-applicable');
+
+      });
+
+      if ( 'yes' == String( _data.na)) {
+        ctrl.prepend( '<i class="fa fa-check"></i>');
+
+      }
+
+      _context.append( ctrl);
+
+      _context.append(
+        $('<a href="#">goto ' + _data.address + '</a>')
+        .attr( 'href', _.url('property/view/' + _data.properties_id))
+        .on( 'click', e => _context.close())
+
+      );
+
+      if ( Number(_data.people_id) > 0) {
+        _context.append(
+          $('<a href="#">goto ' + _data.people_name + '</a>')
+          .attr( 'href', _.url('person/view/' + _data.people_id))
+          .on( 'click', e => _context.close())
+
+        );
+
+      }
+
+      _context.open( e);
+
+    });
+
+    $('#<?= $_accordion ?> > .card > .collapse')
+    .on( 'lookup-tenant', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'get-tenant-of-property',
+          properties_id : _data.properties_id
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          /**-- [owner/tenants] --*/
+          console.log( d);
+
+          ( data => {
+            /** owner */
+            let row = $('<div class="row"></div>');
+
+            row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
+            let col = $('<div class="col"></div>').appendTo( row);
+            let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+            let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Key);
+
+            $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+
+            $('.card-body', this).prepend( row);
+
+          })( d.data);
+
+          ( data => {
+            /** owner */
+            let row = $('<div class="row"></div>');
+
+            row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
+            let col = $('<div class="col"></div>').appendTo( row);
+            let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+            let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerName);
+            let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerEmail);
+            let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.OwnerMobile).AsMobilePhone());
+            if ( _brayworth_.browser.isMobileDevice) {
+              if ( String( data.OwnerMobile).IsMobilePhone()) {
+                let g = $('<div class="input-group"></div>');
+                g.append( pc);
+
+                let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                a.attr( 'href', 'sms://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
+                $( '<div class="input-group-append"></div>')
+                .append( a)
+                .appendTo( g);
+
+                a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                a.attr( 'href', 'tel://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
+                $( '<div class="input-group-append"></div>')
+                .append( a)
+                .appendTo( g);
+
+                pc = g;
+
+              }
+
+            }
+
+            $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+            $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+            $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+            $('.card-body', this).prepend( row);
+
+          })( d.data);
+
+          ( data => {
+            /** tenant */
+            let row = $('<div class="row"></div>');
+
+            row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
+            let col = $('<div class="col"></div>').appendTo( row);
+            let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+            let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Name);
+            let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Email);
+            let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.Mobile).AsMobilePhone());
+            if ( _brayworth_.browser.isMobileDevice) {
+              if ( String( data.Mobile).IsMobilePhone()) {
+                let g = $('<div class="input-group"></div>');
+                g.append( pc);
+
+                let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                a.attr( 'href', 'sms://' + String( data.Mobile).replace( /[^0-9]/g,''));
+                $( '<div class="input-group-append"></div>')
+                .append( a)
+                .appendTo( g);
+
+                a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                a.attr( 'href', 'tel://' + String( data.Mobile).replace( /[^0-9]/g,''));
+                $( '<div class="input-group-append"></div>')
+                .append( a)
+                .appendTo( g);
+
+                pc = g;
+
+              }
+
+            }
+
+            $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+            $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+            $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+            if ( data.cotens.length >0) {
+              $.each( data.cotens, ( i, o) => {
+                //~ console.log( o);
+
+                let _row = $('<div class="form-group row"></div>').appendTo( col);
+
+                let nc = $('<div class="form-control bg-transparent"></div>').html( o.name);
+                let ec = $('<div class="form-control bg-transparent"></div>').html( o.Email);
+                let pc = $('<div class="form-control bg-transparent"></div>').html( String( o.Mobile).AsMobilePhone());
+
+                if ( _brayworth_.browser.isMobileDevice) {
+                  if ( String( o.Mobile).IsMobilePhone()) {
+                    let g = $('<div class="input-group"></div>');
+                    g.append( pc);
+
+                    let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                    a.attr( 'href', 'sms://' + String( o.Mobile).replace( /[^0-9]/g,''));
+                    $( '<div class="input-group-append"></div>')
+                    .append( a)
+                    .appendTo( g);
+
+                    a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                    a.attr( 'href', 'tel://' + String( o.Mobile).replace( /[^0-9]/g,''));
+                    $( '<div class="input-group-append"></div>')
+                    .append( a)
+                    .appendTo( g);
+
+                    pc = g;
+
+                  }
+
+                }
+
+                $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
+                $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
+                $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
+
+              });
+
+            }
+
+            $('.card-body', this).prepend( row);
+
+          })( d.data);
+          /**-- [owner/tenants] --*/
+
+        }
+
+      });
+
+    })
+    .on('reload', function() {
+      let _me = $(this);
+      let _data = _me.data();
+
+      let indicator = $('<div class="text-center"></div>');
+      let sp = '<div class="spinner-grow spinner-grow-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;';
+      indicator
+      .append( sp)
+      .append( sp)
+      .append( sp)
+      .prependTo( _me);
+
+      let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
+      $('.card-body', this).load( url, d => {
+
+        indicator.remove();
+        _me.trigger('lookup-tenant');
+
+      });
+
+    })
+    .on('show.bs.collapse', function() {
+      $(this).trigger('reload');
+
+    });
+
+    let srchidx = 0;
+    $('#<?= $srch ?>').on( 'keyup', function( e) {
+      let idx = ++srchidx;
+      let txt = this.value;
+
+      if ( '' == txt.trim()) {
+        $('#<?= $_accordion ?> > .card.d-none').removeClass( 'd-none');
+
+      }
+      else {
+        $('#<?= $_accordion ?> button[data-toggle="collapse"]').each( ( i, btn) => {
+          if ( idx != srchidx) return false;
+
+          let _btn = $(btn);
+          let _card = _btn.closest('.card');
+          let _data = _btn.data();
+
+          let str = _data.address;
+          if ( str.match( new RegExp(txt, 'gi'))) {
+            _card.removeClass( 'd-none');
+
+          }
+          else {
+            _card.addClass( 'd-none');
+
+          }
+
+        });
+
+      }
+
+    });
+
+  }))( _brayworth_);
 </script>

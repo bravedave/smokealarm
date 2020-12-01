@@ -10,19 +10,15 @@
     }
   ],
   "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/bravedave/dvc"
-    },
-    {
-      "type": "git",
-      "url": "https://github.com/bravedave/green"
-    }
+    { "type": "git", "url": "https://github.com/bravedave/dvc"},
+    { "type": "git", "url": "https://github.com/bravedave/green"},
+    { "type": "git", "url": "https://github.com/bravedave/photolog"}
   ],
   "require": {
     "bravedave/dvc": "*",
     "bravedave/green": "*",
-    "parsecsv/php-parsecsv": "*"
+    "parsecsv/php-parsecsv": "*",
+    "bravedave/photolog": "*"
   },
   "autoload": {
     "psr-4": {

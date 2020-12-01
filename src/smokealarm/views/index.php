@@ -13,6 +13,9 @@ namespace smokealarm;
 use currentUser;
 use strings;  ?>
 
+<style>
+.nav-link > .fa:first-child { margin-left: -1rem; width: 1rem; }
+</style>
 <ul class="nav flex-column">
   <li class="h5"><a href="<?= strings::url( 'smokealarm') ?>"><?= config::label ?></a></li>
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarmlocations') ?>">Locations</a></li>
@@ -51,6 +54,13 @@ use strings;  ?>
 
   <?php
   } ?>
+
+  <?php if ( $this->data->na) { ?>
+    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="fa fa-check"></i>Include Inactive</a></li>
+  <?php }
+    else {  ?>
+    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>">Include Inactive</a></li>
+  <?php } // if ( $this->data->na) ?>
 
   <?php if ( !(int)currentUser::restriction( 'smokealarm-company')) { ?>
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarm/propertyalarms') ?>">All Alarms</a></li>
