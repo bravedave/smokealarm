@@ -11,53 +11,61 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark" role="navigation" >
 	<div class="container-fluid">
     <div class="navbar-brand" ><?= $this->data->title	?></div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+      data-target="#<?= $_uid = strings::rand() ?>" >
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <ul class="ml-auto navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="<?= strings::url() ?>">
-          <?= dvc\icon::get( dvc\icon::house ) ?>
+    <div class="collapse navbar-collapse" id="<?= $_uid ?>">
+      <ul class="ml-auto navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="<?= strings::url() ?>">
+            <?= dvc\icon::get( dvc\icon::house ) ?>
 
-        </a>
+          </a>
 
-      </li>
+        </li>
 
-      <li class="nav-item pt-1">
-        <a class="nav-link pb-0" href="<?= strings::url('smokealarm') ?>">Smoke Alarm</a>
+        <li class="nav-item pt-1">
+          <a class="nav-link pb-0" href="<?= strings::url('smokealarm') ?>">Smoke Alarm</a>
 
-      </li>
+        </li>
 
-      <li class="nav-item pt-1">
-        <a class="nav-link pb-0" href="<?= strings::url( smokealarm\config::$PHOTOLOG_ROUTE) ?>">PhotoLog</a>
+        <li class="nav-item pt-1">
+          <a class="nav-link pb-0" href="<?= strings::url( smokealarm\config::$PHOTOLOG_ROUTE) ?>">PhotoLog</a>
 
-      </li>
+        </li>
 
-      <li class="nav-item pt-1 dropdown">
-        <a class="nav-link pb-0 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Admin
+        <li class="nav-item pt-1 dropdown">
+          <a class="nav-link pb-0 dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Admin
 
-        </a>
+          </a>
 
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="<?= strings::url('properties') ?>">Properties</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="<?= strings::url('beds') ?>">Beds</a>
-          <a class="dropdown-item" href="<?= strings::url('baths') ?>">Baths</a>
-          <a class="dropdown-item" href="<?= strings::url('property_type') ?>">Property Type</a>
-          <a class="dropdown-item" href="<?= strings::url('postcodes') ?>">Postcodes</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="<?= strings::url('properties') ?>">Properties</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="<?= strings::url('beds') ?>">Beds</a>
+            <a class="dropdown-item" href="<?= strings::url('baths') ?>">Baths</a>
+            <a class="dropdown-item" href="<?= strings::url('property_type') ?>">Property Type</a>
+            <a class="dropdown-item" href="<?= strings::url('postcodes') ?>">Postcodes</a>
 
-        </div>
+          </div>
 
-      </li>
+        </li>
 
-      <li class="nav-item">
-        <a class="nav-link" href="https://github.com/bravedave/smokealarm">
-          <?= dvc\icon::get( dvc\icon::github ) ?>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/bravedave/smokealarm">
+            <?= dvc\icon::get( dvc\icon::github ) ?>
 
-        </a>
+          </a>
 
-      </li>
+        </li>
 
-    </ul>
+      </ul>
+
+    </div>
 
   </div>
 

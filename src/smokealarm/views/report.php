@@ -210,7 +210,7 @@ use strings;  ?>
         data-parent="#<?= $_accordion ?>"
         data-properties_id="<?= $item->properties_id ?>">
 
-        <div class="card-body px-0 px-md-3 py-1 py-md-2"></div>
+        <div class="card-body px-md-3 py-1 py-md-2"></div>
 
       </div>
 
@@ -439,6 +439,28 @@ use strings;  ?>
               let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Name);
               let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Email);
               let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.Mobile).AsMobilePhone());
+              if ( _brayworth_.browser.isMobileDevice) {
+                if ( String( data.Mobile).IsMobilePhone()) {
+                  let g = $('<div class="input-group"></div>');
+                  g.append( pc);
+
+                  let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                  a.attr( 'href', 'sms://' + String( data.Mobile).replace( /[^0-9]/g,''));
+                  $( '<div class="input-group-append"></div>')
+                  .append( a)
+                  .appendTo( g);
+
+                  a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                  a.attr( 'href', 'tel://' + String( data.Mobile).replace( /[^0-9]/g,''));
+                  $( '<div class="input-group-append"></div>')
+                  .append( a)
+                  .appendTo( g);
+
+                  pc = g;
+
+                }
+
+              }
 
               $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
               $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);

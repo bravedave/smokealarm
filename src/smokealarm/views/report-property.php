@@ -22,7 +22,7 @@ use strings; ?>
       <td class="align-bottom d-none d-md-table-cell">type</td>
       <td class="align-bottom d-none d-lg-table-cell">connect</td>
       <td class="align-bottom">expiry</td>
-      <td class="align-bottom text-center">status</td>
+      <td class="align-bottom d-none d-md-table-cell text-center">status</td>
 
     </tr>
 
@@ -54,8 +54,8 @@ use strings; ?>
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->model);
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->type);
     printf( '<td class="d-none d-lg-table-cell">%s</td>', $dto->connect);
-    printf( '<td>%s</td>', strings::asLocalDate( $dto->expiry));
-    printf( '<td class="text-center">%s</td>', $dto->status);
+    printf( '<td>%s<div class="d-md-none">%s</div></td>', strings::asLocalDate( $dto->expiry), $dto->status);
+    printf( '<td class="d-none d-md-table-cell text-center">%s</td>', $dto->status);
 
     print '</tr>';
 
@@ -76,7 +76,7 @@ use strings; ?>
 </table>
 
 <div class="row">
-  <div class="col position-relative">
+  <div class="col position-relative mb-2">
     <textarea name="smokealarm_notes" class="form-control" data-version="0" data-checked="no"
       placeholder="notes ..."
       id="<?= $_notes = strings::rand()  ?>"><?= $this->data->notes ?></textarea>
