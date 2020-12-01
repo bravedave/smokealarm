@@ -100,6 +100,9 @@ class smokealarm extends _dao {
 
 		}
 
+		\sys::logSQL( sprintf('<%s> %s', $sql, __METHOD__));
+
+
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
 		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
 
