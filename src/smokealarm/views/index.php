@@ -14,9 +14,9 @@ use currentUser;
 use strings;  ?>
 
 <style>
-.nav-link > .fa:first-child { margin-left: -1rem; width: 1rem; }
+#<?= $_uid = strings::rand() ?> .nav-link > .fa:first-child { margin-left: -1rem; width: 1rem; }
 </style>
-<ul class="nav flex-column">
+<ul class="nav flex-column" id="<?= $_uid ?>">
   <li class="h5"><a href="<?= strings::url( 'smokealarm') ?>"><?= config::label ?></a></li>
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarmlocations') ?>">Locations</a></li>
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'smokealarmsuppliers') ?>">Suppliers</a></li>
