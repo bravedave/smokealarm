@@ -123,7 +123,9 @@ $_uidImage = strings::rand(); ?>
                   value="<?= $dto->type ?>">
 
                 <div class="input-group-append">
-                  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                  <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    id="<?= $_uid ?>toggle"></button>
                   <div class="dropdown-menu" id="<?= $_uid ?>items">
                     <?php
                     $_dao = new dao\smokealarm;
@@ -149,7 +151,8 @@ $_uidImage = strings::rand(); ?>
                         let _data = _el.data();
 
                         $('#<?= $_uid ?>').val( _data.value);
-                        $('#<?= $_uid ?>items').dropdown('hide');
+                        console.log( $('#<?= $_uid ?>items'));
+                        $('#<?= $_uid ?>toggle').dropdown('hide');
 
                       })
 

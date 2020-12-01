@@ -414,6 +414,7 @@ class controller extends \Controller {
         'expiry' => $this->getPost('expiry'),
         'location' => $this->getPost('location'),
         'make' => $this->getPost('make'),
+        'type' => $this->getPost('type'),
         'model' => $this->getPost('model'),
         'properties_id' => $this->getPost('properties_id'),
         'status' => $this->getPost('status'),
