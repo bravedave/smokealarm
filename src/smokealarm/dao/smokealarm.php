@@ -100,7 +100,7 @@ class smokealarm extends _dao {
 
 		}
 
-		\sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+		// \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
 
 
 		$this->Q( 'DROP TABLE IF EXISTS tmp');
@@ -126,6 +126,13 @@ class smokealarm extends _dao {
       // \sys::logger( sprintf('<%s> %s', count( $activeProperties), __METHOD__));
 
       if ( $activeProperties) {
+				$conditions = [];
+				if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
+					$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
+
+				}
+				$conditions[] = sprintf( 'p.id IN (%s)', implode( ',', $activeProperties));
+
         $_sql = sprintf( 'INSERT INTO tmp(
           `properties_id`,
           `address_street`,
@@ -156,7 +163,7 @@ class smokealarm extends _dao {
             people.name people_name
             FROM properties p
               LEFT JOIN people on p.people_id = people.id
-            WHERE p.id IN (%s)', implode( ',', $activeProperties));
+            WHERE %s', implode( ' AND ', $conditions));
 
           // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
 
