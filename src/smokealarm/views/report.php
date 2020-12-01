@@ -412,13 +412,35 @@ use strings;  ?>
               /** owner */
               let row = $('<div class="row"></div>');
 
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title="owner">owner</div>');
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
               let col = $('<div class="col"></div>').appendTo( row);
               let _row = $('<div class="form-group row"></div>').appendTo( col);
 
               let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerName);
               let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerEmail);
               let pc = $('<input type="text" readonly class="form-control bg-transparent">').val( String( data.OwnerMobile).AsMobilePhone());
+              if ( _brayworth_.browser.isMobileDevice) {
+                if ( String( data.OwnerMobile).IsMobilePhone()) {
+                  let g = $('<div class="input-group"></div>');
+                  g.append( pc);
+
+                  let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                  a.attr( 'href', 'sms://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
+                  $( '<div class="input-group-append"></div>')
+                  .append( a)
+                  .appendTo( g);
+
+                  a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                  a.attr( 'href', 'tel://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
+                  $( '<div class="input-group-append"></div>')
+                  .append( a)
+                  .appendTo( g);
+
+                  pc = g;
+
+                }
+
+              }
 
               $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
               $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
@@ -432,7 +454,7 @@ use strings;  ?>
               /** tenant */
               let row = $('<div class="row"></div>');
 
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title="co tenants">tenants</div>');
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
               let col = $('<div class="col"></div>').appendTo( row);
               let _row = $('<div class="form-group row"></div>').appendTo( col);
 
@@ -475,6 +497,29 @@ use strings;  ?>
                   let nc = $('<div class="form-control bg-transparent"></div>').html( o.name);
                   let ec = $('<div class="form-control bg-transparent"></div>').html( o.Email);
                   let pc = $('<div class="form-control bg-transparent"></div>').html( String( o.Mobile).AsMobilePhone());
+
+                  if ( _brayworth_.browser.isMobileDevice) {
+                    if ( String( o.Mobile).IsMobilePhone()) {
+                      let g = $('<div class="input-group"></div>');
+                      g.append( pc);
+
+                      let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                      a.attr( 'href', 'sms://' + String( o.Mobile).replace( /[^0-9]/g,''));
+                      $( '<div class="input-group-append"></div>')
+                      .append( a)
+                      .appendTo( g);
+
+                      a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                      a.attr( 'href', 'tel://' + String( o.Mobile).replace( /[^0-9]/g,''));
+                      $( '<div class="input-group-append"></div>')
+                      .append( a)
+                      .appendTo( g);
+
+                      pc = g;
+
+                    }
+
+                  }
 
                   $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
                   $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
