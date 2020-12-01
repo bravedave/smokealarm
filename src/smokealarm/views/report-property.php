@@ -99,12 +99,23 @@ use strings; ?>
 
       ));
 
-      printf(
-        '<a target="_blank" href="%s"><img class="img-fluid" alt="compliance certificate" src="%s"></a>',
-        $url,
-        $url
+      if ( strings::endswith( $this->data->certificate, '.pdf')) {
+        printf(
+          '<a class="btn btn-light text-danger" target="_blank" href="%s"><i class="fa fa-2x fa-file-pdf-o"></i></a>',
+          $url
 
-      );
+        );
+
+      }
+      else {
+        printf(
+          '<a target="_blank" href="%s"><img class="img-fluid" alt="compliance certificate" src="%s"></a>',
+          $url,
+          $url
+
+        );
+
+      }
 
     ?>
     </div>
