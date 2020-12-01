@@ -101,7 +101,7 @@ use strings; ?>
 
       if ( strings::endswith( $this->data->certificate, '.pdf')) {
         printf(
-          '<a class="btn btn-light btn-block text-danger" target="_blank" href="%s"><i class="fa fa-2x fa-file-pdf-o"></i></a>',
+          '<a class="btn btn-light btn-block" target="_blank" href="%s"><i class="fa fa-file-pdf-o text-danger"></i> compliance cert</a>',
           $url
 
         );
