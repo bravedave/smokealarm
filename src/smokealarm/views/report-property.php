@@ -88,6 +88,29 @@ use strings; ?>
 
   </div>
 
+  <?php if ( $this->data->certificate) { ?>
+    <div class="col-md-3">
+    <?php
+      $url = strings::url( sprintf(
+        '%s/documentView/%d?d=%s',
+        $this->route,
+        $this->data->property->id,
+        \urlencode( $this->data->certificate)
+
+      ));
+
+      printf(
+        '<a target="_blank" href="%s"><img class="img-fluid" alt="compliance certificate" src="%s"></a>',
+        $url,
+        $url
+
+      );
+
+    ?>
+    </div>
+
+  <?php } // if ( $this->data->hasCertificate) ?>
+
 </div>
 
 <script>

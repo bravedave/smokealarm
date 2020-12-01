@@ -16,6 +16,11 @@ use strings;
 
 class properties extends green\properties\dao\properties {
   public function hasSmokeAlarmComplianceCertificate( $dto) : bool {
+    return (bool)$this->smokeAlarmComplianceCertificatePath( $dto);
+
+  }
+
+  public function smokeAlarmComplianceCertificatePath( $dto) : string {
     if ( $dto->smokealarms_tags) {
       // \sys::dump( $dto);
 
@@ -30,7 +35,7 @@ class properties extends green\properties\dao\properties {
 
           if ( \file_exists( $certPath)) {
             // \sys::logger( sprintf('<%s> %s', $certPath, __METHOD__));
-            return true;
+            return (string)$certPath;
 
           }
 

@@ -14,6 +14,7 @@ use currentUser;
 use green;
 use Json;
 use Response;
+use SplFileInfo;
 use strings;
 use sys;
 
@@ -714,18 +715,26 @@ class controller extends \Controller {
   public function propertyalarms( $id = 0) {
 
     if ( $id = (int)$id) {
-      $dao = new dao\properties;
-      if ( $dto = $dao->getByID( $id)) {
+      $daoP = new dao\properties;
+      if ( $dto = $daoP->getByID( $id)) {
 
-        $notes = $dao->smokealarmNotes( $dto);
+        $notes = $daoP->smokealarmNotes( $dto);
 
         $dao = new dao\smokealarm;
         $this->data = (object)[
           'dtoSet' => $dao->dtoSet( $dao->getForProperty( $id)),
           'property' => $dto,
-          'notes' => $notes
+          'notes' => $notes,
+          'certificate' => $daoP->hasSmokeAlarmComplianceCertificate( $dto),
 
         ];
+
+        if ( $this->data->certificate) {
+          $certInfo = new \SplFileInfo( $daoP->smokeAlarmComplianceCertificatePath( $dto));
+          // \sys::logger( sprintf('<%s> %s', $certInfo->getFilename(), __METHOD__));
+          $this->data->certificate = $certInfo->getFilename();
+
+        }
 
         $this->title = config::label;
         $this->load( 'report-property');
