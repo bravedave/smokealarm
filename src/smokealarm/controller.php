@@ -132,13 +132,12 @@ class controller extends \Controller {
       // $debug = true;
       if ( $properties_id = (int)$this->getPost('properties_id')) {
         if ( $file = $this->getPost('file')) {
-          \sys::logger( sprintf('<%s> %s', $file, __METHOD__));
+          \sys::logger( sprintf('<%s> %s/%s', $file, __METHOD__, $action));
           $dao = new dao\properties;
           if ( $dto = $dao->getByID( $properties_id)) {
             if ( $store = $dao->smokealarmStore( $dto)) {
               $target = implode( DIRECTORY_SEPARATOR, [ $store, $file ]);
 
-              // \sys::logger( sprintf('<%s> %s', $target, __METHOD__));
               if ( \file_exists( $target)) unlink( $target);
               Json::ack( $action);
 
@@ -516,12 +515,8 @@ class controller extends \Controller {
 		}
     elseif ( 'search-makes' == $action) {
 			if ( $term = $this->getPost('term')) {
-        // \sys::logger( sprintf('<%s> %s', $term, __METHOD__));
-
         $dao = new dao\smokealarm;
         $makes = $dao->searchMakes( $term);
-
-        // \sys::logger( sprintf('<%s> %s', json_encode($makes), __METHOD__));
 
 				Json::ack( $action)
 					->add( 'term', $term)
@@ -532,12 +527,10 @@ class controller extends \Controller {
     }
     elseif ( 'search-suppliers' == $action) {
 			if ( $term = $this->getPost('term')) {
-        // \sys::logger( sprintf('<%s> %s', $term, __METHOD__));
-
         $dao = new dao\smokealarm_suppliers;
         $suppliers = $dao->search( $term);
 
-        \sys::logger( sprintf('<%s> %s', json_encode($suppliers), __METHOD__));
+        \sys::logger( sprintf('<%s> %s/%s', json_encode($suppliers), __METHOD__, $action));
 
 				Json::ack( $action)
 					->add( 'term', $term)
@@ -568,13 +561,6 @@ class controller extends \Controller {
 
           $dao = new dao\properties;
           if ( $dto = $dao->getByID( $properties_id)) {
-            // $_tags = [];
-            // foreach (config::smokealarm_tags as $_tag) $_tags[ $_tag] = '';
-
-            // $tags = $dto->smokealarms_tags ?
-            //   \array_merge( $_tags, (array)\json_decode( $dto->smokealarms_tags)) :
-            //   $_tags;
-
             $tags = (array)\json_decode( $dto->smokealarms_tags);
             foreach ($tags as $k => $v) {
               if ( $file == $v) unset( $tags[$k]);
@@ -585,9 +571,6 @@ class controller extends \Controller {
               $tags[$tag] = $file;
 
             }
-
-            // \sys::logger( sprintf('<%s> %s', json_encode( $tags), __METHOD__));
-            // \sys::logger( sprintf('<done %s> %s', $tag, __METHOD__));
 
             $dao->UpdateByID(
               ['smokealarms_tags' => json_encode( $tags)],
@@ -618,13 +601,11 @@ class controller extends \Controller {
 
   public function documentView( $id = 0) {
 		if ( $id = (int)$id) {
-      // \sys::logger( sprintf('<%s> %s', $id, __METHOD__));
 			$dao = new dao\properties;
 			if ( $dto = $dao->getByID( $id)) {
         if ( $document = $this->getParam( 'd')) {
           if ( $store = $dao->smokealarmStore( $dto)) {
             $target = implode( DIRECTORY_SEPARATOR, [ $store, $document ]);
-            // \sys::logger( sprintf('<%s> %s', $target, __METHOD__));
 
             if ( \file_exists( $target)) {
               \sys::serve( $target);
@@ -750,7 +731,6 @@ class controller extends \Controller {
 
         if ( $this->data->certificate) {
           $certInfo = new \SplFileInfo( $daoP->smokeAlarmComplianceCertificatePath( $dto));
-          // \sys::logger( sprintf('<%s> %s', $certInfo->getFilename(), __METHOD__));
           $this->data->certificate = $certInfo->getFilename();
 
         }
