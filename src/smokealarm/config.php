@@ -14,7 +14,7 @@ use Json;
 
 class config extends \config {
   const label = 'Smoke Alarms 2022';
-	const smokealarm_db_version = 0.14;
+	const smokealarm_db_version = 0.16;
 
 	const smokealarm_connect = [
 		'HW - I/C',

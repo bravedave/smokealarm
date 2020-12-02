@@ -20,5 +20,6 @@ $dbc->defineField( 'smokealarms_company', 'varchar');
 $dbc->defineField( 'smokealarms_company_id', 'bigint');
 $dbc->defineField( 'smokealarms_last_inspection', 'date');
 $dbc->defineField( 'smokealarms_na', 'tinyint');
+$dbc->defineField( 'smokealarms_annual', 'varchar');
 
 $dbc->check();

@@ -113,6 +113,19 @@ $dto = $this->data->dto; ?>
 
           </div>
 
+          <div class="form-row mb-2"><!-- smokealarms_annual -->
+            <div class="col-sm-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Annual Month</div>
+            <div class="col">
+              <input type="month" name="smokealarms_annual" class="form-control"
+                id="?<?= $uid ?>"
+                <?php
+                if ( preg_match('@^[0-9]{4}-[0-9]{2}$@', $dto->smokealarms_annual)) printf( ' value="%s"', $dto->smokealarms_annual);
+                ?>>
+
+            </div>
+
+          </div>
+
           <div class="form-row mb-2"><!-- smokealarms_last_inspection -->
             <div class="col-sm-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Last inspection</div>
             <div class="col">
