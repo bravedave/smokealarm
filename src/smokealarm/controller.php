@@ -299,10 +299,17 @@ class controller extends \Controller {
           $daoS = new dao\smokealarm;
           $stat = $daoS->getCompliantCountForProperty( $dto->id);
 
+          $addr = [ strings::GoodStreetString( $dto->address_street)];
+          if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
+          // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
+
           Json::ack( $action)
             ->add( 'dto', $dto)
             ->add( 'compliant', $stat->compliant)
             ->add( 'hasSmokeAlarmComplianceCertificate', $dao->hasSmokeAlarmComplianceCertificate( $dto) ? 'yes' : 'no')
+            ->add( 'smokealarms_workorder_sent', strtotime( $dto->smokealarms_workorder_sent) > 0 ? 'yes' : 'no')
+            ->add( 'smokealarms_workorder_date', strings::asLocalDate( $dto->smokealarms_workorder_sent))
+            ->add( 'address', implode( ' ', $addr))
             ;
 
         } else { Json::nak( $action); }
@@ -421,6 +428,44 @@ class controller extends \Controller {
           'smokealarms_annual' => $this->getPost('smokealarms_annual'),
 
         ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'save-properties-upgrade-preferences' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $a = [
+          'smokealarms_upgrade_preference' => $this->getPost('smokealarms_upgrade_preference')
+
+        ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'save-properties-workorder-sent' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+
+        $a = [ 'smokealarms_workorder_sent' => \db::dbTimeStamp() ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
+
+		}
+    elseif ( 'save-properties-workorder-sent-clear' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+
+        $a = [ 'smokealarms_workorder_sent' => ''];
 
         $dao = new dao\properties;
         $dao->UpdateByID( $a, $id);
@@ -699,17 +744,30 @@ class controller extends \Controller {
 
 				$this->load('edit-property');
 
-			}
-			else {
-				$this->load('not-found-property');
+			} else { $this->load('not-found-property'); }
 
-			}
+		} else { $this->load('not-found-property'); }
 
-		}
-    else {
-      $this->load('not-found-property');
+  }
 
-    }
+	public function editUpgradePreferences( $id = 0) {
+    $this->title = 'Edit Upgrade Preferences';
+
+    if ( $id = (int)$id) {
+
+      $dao = new dao\properties;
+      if ( $dto = $dao->getByID( $id)) {
+
+        $this->data = (object)[
+          'dto' => $dto
+
+        ];
+
+				$this->load('edit-property-upgrade-preferences');
+
+			} else { $this->load('not-found-property'); }
+
+		} else { $this->load('not-found-property'); }
 
   }
 

@@ -67,6 +67,8 @@ class smokealarm extends _dao {
 				p.smokealarms_last_inspection,
 				p.smokealarms_tags,
 				p.smokealarms_na,
+				p.smokealarms_upgrade_preference,
+				p.smokealarms_workorder_sent,
 				people.name people_name
 			FROM `smokealarm` sa
 				LEFT JOIN properties p on p.id = sa.properties_id
@@ -161,6 +163,8 @@ class smokealarm extends _dao {
           `smokealarms_company`,
           `smokealarms_last_inspection`,
           `smokealarms_na`,
+          `smokealarms_upgrade_preference`,
+          `smokealarms_workorder_sent`,
           `people_name`)
           SELECT
             p.id,
@@ -176,6 +180,8 @@ class smokealarm extends _dao {
             p.smokealarms_company,
             p.smokealarms_last_inspection,
             p.smokealarms_na,
+            p.smokealarms_upgrade_preference,
+            p.smokealarms_workorder_sent,
             people.name people_name
             FROM properties p
               LEFT JOIN people on p.people_id = people.id

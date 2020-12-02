@@ -38,22 +38,31 @@ use strings;  ?>
       <div class="btn-group d-flex">
         <button class="btn btn-secondary btn-sm flex-fill" type="button">
           <div class="row">
-            <div class="col text-left align-self-end">address</div>
-            <div class="col-3 text-left d-none d-md-block">
+            <div class="col text-left text-truncate">address</div>
+            <div class="col-3 text-left d-none d-lg-block">
               <div class="row">
-                <div class="col align-self-end">company</div>
-                <div class="col-7 align-self-end">last inspection</div>
+                <div class="col text-truncate">company</div>
+                <div class="col-7 text-truncate">last inspection</div>
               </div>
             </div>
-            <div class="col-1 text-left d-none d-lg-block align-self-end">power</div>
-            <div class="col-1 text-center d-flex">
-              <div class="d-md-none align-self-end">#</div>
-              <div class="d-none d-md-block align-self-end">count</div>
+            <div class="col-1 col-xl-3 text-left d-none d-lg-block">
+              <div class="row">
+                <div class="col d-none d-xl-block text-truncate">upgrade</div>
+                <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
+                <div class="col text-truncate">power</div>
+
+              </div>
 
             </div>
 
-            <div class="col-2 col-md-1 text-center d-none d-md-block px-0 align-self-end">req 2022</div>
-            <div class="col-2 col-md-1 text-center px-0 align-self-end"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
+            <div class="col-1 text-center d-flex">
+              <div class="d-md-none">#</div>
+              <div class="d-none d-md-block text-truncate">count</div>
+
+            </div>
+
+            <div class="col-2 col-md-1 text-center d-none d-md-block px-0 text-truncate">req 2022</div>
+            <div class="col-2 col-md-1 text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
 
           </div>
 
@@ -75,7 +84,7 @@ use strings;  ?>
     if ( $pid != $dto->properties_id) {
       $addr = [ strings::GoodStreetString( $dto->address_street)];
       if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
-      if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
+      // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
       $items[] = (object)[
         'properties_id' => $pid = $dto->properties_id,
@@ -89,6 +98,8 @@ use strings;  ?>
         'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
         'smokealarms_tags' => $dto->smokealarms_tags,
         'smokealarms_na' => $dto->smokealarms_na,
+        'smokealarms_upgrade_preference' => $dto->smokealarms_upgrade_preference,
+        'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
         'alarms' => 0
 
       ];
@@ -146,6 +157,7 @@ use strings;  ?>
             data-people_id="<?= $item->people_id ?>"
             data-people_name="<?= htmlentities( $item->people_name) ?>"
             data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>"
+            data-workorder_sent="<?= strtotime( $item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>"
             aria-expanded="false" aria-controls="<?= $_collapse ?>">
             <?php
               $complianceClass = '';
@@ -172,14 +184,22 @@ use strings;  ?>
               printf(
                 '<div class="row">
                   <div class="col text-left text-truncate" address>%s</div>
-                  <div class="col-3 text-left d-none d-md-block">
+                  <div class="col-3 text-left d-none d-lg-block">
                     <div class="row">
                       <div class="col text-truncate" company>%s</div>
                       <div class="col-6 text-truncate" last_inspection>%s</div>
                       <div class="col-1" certificate title="%s">%s</div>
                     </div>
                   </div>
-                  <div class="col-1 text-left d-none d-lg-block text-truncate" power>%s</div>
+                  <div class="col-1 col-xl-3 text-left d-none d-lg-block">
+                    <div class="row">
+                      <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
+                      <div class="col-3 d-none d-xl-block text-center" title="%s" work-order>%s</div>
+                      <div class="col text-truncate">%s</div>
+
+                    </div>
+
+                  </div>
                   <div class="col-1 text-center" compliant>%s</div>
                   <div class="col-2 col-md-1 d-none d-md-block text-center" required>%s</div>
                   <div class="col-2 col-md-1 text-center %s" compliance>%s</div>
@@ -189,6 +209,9 @@ use strings;  ?>
                 strings::asLocalDate( $item->smokealarms_last_inspection),
                 $hasCert ? 'has certificate' : 'no certificate',
                 $hasCert ? strings::html_tick : '&nbsp;',
+                $item->smokealarms_upgrade_preference,
+                strings::asLocalDate( $item->smokealarms_workorder_sent),
+                strtotime( $item->smokealarms_workorder_sent) > 0 ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_power,
                 $item->alarms,
                 $item->smokealarms_na ? 'N/A' : $item->smokealarms_required,
@@ -289,11 +312,20 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
 
-          $('[address]', _me).html( d.dto.address_street);
+          // console.log( d.dto);
+
+          $('[address]', _me).html( d.address);
           $('[compliant]', _me).html( d.compliant);
           $('[required]', _me).html( d.dto.smokealarms_required);
           $('[power]', _me).html( d.dto.smokealarms_power);
           $('[company]', _me).html( d.dto.smokealarms_company);
+          $('[upgrade-pref]', _me).html( d.dto.smokealarms_upgrade_preference);
+
+          $('[work-order]', _me)
+          .html( 'yes' == d.smokealarms_workorder_sent ? '<?= strings::html_tick ?>' : '&nbsp;')
+          .attr( 'title', d.smokealarms_workorder_date);
+          _me.data('workorder_sent', d.smokealarms_workorder_sent);
+
           $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
 
           if ( 'yes' == d.dto.smokealarms_2022_compliant) {
@@ -342,7 +374,7 @@ use strings;  ?>
             $( '> button', _me.parent()).removeClass( 'btn-danger btn-warning');
 
           }
-          console.log( d);
+          // console.log( d);
 
         }
         else {
@@ -381,6 +413,35 @@ use strings;  ?>
 
       }));
 
+      _context.append( $('<a href="#">Upgrade Preference</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        _me.trigger('upgrade-preferences');
+
+      }));
+
+      if ( 'yes' == _data.workorder_sent) {
+        _context.append( $('<a href="#"><i class="fa fa-check"></i>Workorder Sent</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+          _me.trigger('workorder-sent-clear');
+
+        }));
+
+      }
+      else {
+        _context.append( $('<a href="#">Workorder Sent</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+          _me.trigger('workorder-sent');
+
+        }));
+
+      }
+
       let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
         e.stopPropagation();e.preventDefault();
 
@@ -410,6 +471,63 @@ use strings;  ?>
       }
 
       _context.open( e);
+
+    })
+    .on( 'upgrade-preferences', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.get.modal( _.url('<?= $this->route ?>/editUpgradePreferences/' + _data.properties_id))
+      .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
+
+    })
+    .on( 'workorder-sent', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'save-properties-workorder-sent',
+          id : _data.properties_id
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          _me.trigger( 'refresh');
+
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
+    })
+    .on( 'workorder-sent-clear', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'save-properties-workorder-sent-clear',
+          id : _data.properties_id
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          _me.trigger( 'refresh');
+
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
 
     });
 

@@ -21,5 +21,7 @@ $dbc->defineField( 'smokealarms_company_id', 'bigint');
 $dbc->defineField( 'smokealarms_last_inspection', 'date');
 $dbc->defineField( 'smokealarms_na', 'tinyint');
 $dbc->defineField( 'smokealarms_annual', 'varchar');
+$dbc->defineField( 'smokealarms_upgrade_preference', 'varchar');
+$dbc->defineField( 'smokealarms_workorder_sent', 'datetime');
 
 $dbc->check();
