@@ -42,14 +42,12 @@ use strings; ?>
     );
 
     print '<td class="text-center" line-number></td>';
-    printf(
-      '<td>%s<div class="d-md-none">&nbsp;%s</div><div class="d-md-none">&nbsp;%s</div><div class="d-md-none">&nbsp;%s</div></td>',
-      $dto->location,
-      $dto->make,
-      $dto->model,
-      $dto->type
+    $bits = [$dto->location];
+    $bits[] = sprintf('<div class="d-md-none">&nbsp;%s</div>', $dto->make);
+    if ( $dto->model) $bits[] = sprintf('<div class="d-md-none">&nbsp;%s</div>', $dto->model);
+    $bits[] = sprintf('<div class="d-md-none">&nbsp;%s</div>', $dto->type);
 
-    );
+    printf( '<td>%s</td>', implode( $bits));
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->make);
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->model);
     printf( '<td class="d-none d-md-table-cell">%s</td>', $dto->type);
@@ -155,6 +153,59 @@ use strings; ?>
 
     $('#<?= $addBtn ?>').on( 'click', e => $('#<?= $_table ?>').trigger( 'add-smokealarm'));
 
+    let click = function(e) {
+      e.stopPropagation(); e.preventDefault();
+
+      $(this).trigger( 'edit');
+
+    };
+
+    let contextMenu = function( e) {
+      if ( e.shiftKey)
+        return;
+
+      e.stopPropagation();e.preventDefault();
+
+      let _tr = $(this);
+      let _data = _tr.data();
+
+      _.hideContexts();
+      let _context = _.context();
+
+      _context.append( $('<a href="#"><b>edit</b></a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+
+        _tr.trigger( 'edit');
+
+      }));
+
+      if ( !!_data.id) {
+        _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+
+          _tr.trigger( 'copy');
+
+        }));
+
+        _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+
+          _tr.trigger( 'archive');
+
+        }));
+
+      }
+
+      _context.open( e);
+
+    };
+
     $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
       $(tr)
@@ -220,57 +271,8 @@ use strings; ?>
         .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
 
       })
-      .on( 'click', function(e) {
-        e.stopPropagation(); e.preventDefault();
-
-        $(this).trigger( 'edit');
-
-      })
-			.on( 'contextmenu', function( e) {
-				if ( e.shiftKey)
-					return;
-
-				e.stopPropagation();e.preventDefault();
-
-				let _tr = $(this);
-				let _data = _tr.data();
-
-				_.hideContexts();
-				let _context = _.context();
-
-				_context.append( $('<a href="#"><b>edit</b></a>').on( 'click', function( e) {
-          e.stopPropagation();e.preventDefault();
-
-					_context.close();
-
-					_tr.trigger( 'edit');
-
-				}));
-
-        if ( !!_data.id) {
-          _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
-            e.stopPropagation();e.preventDefault();
-
-            _context.close();
-
-            _tr.trigger( 'copy');
-
-          }));
-
-          _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
-            e.stopPropagation();e.preventDefault();
-
-            _context.close();
-
-            _tr.trigger( 'archive');
-
-          }));
-
-        }
-
-				_context.open( e);
-
-			});
+      .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
+			.on( 'contextmenu', contextMenu);
 
     });
 

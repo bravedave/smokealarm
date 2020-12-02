@@ -65,7 +65,7 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Location -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uidLocation = strings::rand() ?>">Location</label>
+            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uidLocation = strings::rand() ?>">Location</label>
             <div class="col">
               <select name="location" class="form-control" id="<?= $_uidLocation ?>" required>
                 <option></option>
@@ -90,7 +90,7 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Make -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Make</label>
+            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Make</label>
             <div class="col">
               <input type="text" name="make" class="form-control"
                 placeholder="make" required
@@ -102,7 +102,7 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Model -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Model</label>
+            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Model</label>
             <div class="col">
               <input type="text" name="model" class="form-control"
                 placeholder="model"
@@ -114,7 +114,7 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Types -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Type</label>
+            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Type</label>
             <div class="col">
               <div class="input-group">
                 <input type="text" name="type" class="form-control"
@@ -170,7 +170,7 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Expiry -->
-            <label class="col-sm-3 col-form-label" for="<?= $_uid = strings::rand() ?>">Expiry</label>
+            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Expiry</label>
             <div class="col">
               <input type="date" name="expiry" class="form-control"
                 placeholder="expiry" required
@@ -182,54 +182,68 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-group row"><!-- Connect -->
-            <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Connect</label>
-            <div class="col">
-              <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
-                <option></option>
-                <?php
-                foreach (config::smokealarm_connect as $v) {
-                  printf(
-                    '<option value="%s" %s>%s</option>',
-                    $v,
-                    $v == $dto->connect ? 'selected' : '',
-                    $v
+            <div class="offset-sm-3 col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="<?= $_uid = strings::rand() ?>">connect</label>
 
-                  );
+                </div>
 
-                }
+                <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
+                  <option></option>
+                  <?php
+                  foreach (config::smokealarm_connect as $v) {
+                    printf(
+                      '<option value="%s" %s>%s</option>',
+                      $v,
+                      $v == $dto->connect ? 'selected' : '',
+                      $v
 
-                ?>
+                    );
 
-              </select>
+                  }
+
+                  ?>
+
+                </select>
+
+              </div>
 
             </div>
 
           </div>
 
           <div class="form-group row"><!-- Status -->
-            <label class="col-sm-3" for="<?= $_uid = strings::rand() ?>">Status</label>
-            <div class="col">
-              <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
-                <option></option>
-                <?php
-                if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
-                if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
-                if ( 'required' == $dto->status) print '<option value="required" selected>required</option>';
+            <div class="offset-sm-3 col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <label class="input-group-text" for="<?= $_uid = strings::rand() ?>">status</label>
 
-                foreach (config::smokealarm_status as $v) {
-                  printf(
-                    '<option value="%s" %s>%s</option>',
-                    $v,
-                    $v == $dto->status ? 'selected' : '',
-                    $v
+                </div>
 
-                  );
+                <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
+                  <option></option>
+                  <?php
+                  if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
+                  if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
+                  if ( 'required' == $dto->status) print '<option value="required" selected>required</option>';
 
-                }
+                  foreach (config::smokealarm_status as $v) {
+                    printf(
+                      '<option value="%s" %s>%s</option>',
+                      $v,
+                      $v == $dto->status ? 'selected' : '',
+                      $v
 
-                ?>
+                    );
 
-              </select>
+                  }
+
+                  ?>
+
+                </select>
+
+              </div>
 
             </div>
 

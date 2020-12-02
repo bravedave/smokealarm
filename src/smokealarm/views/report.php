@@ -352,18 +352,7 @@ use strings;  ?>
 
       });
 
-    });
-
-    $('#<?= $_accordion ?> button[edit-property]')
-    .on( 'click', function( e) {
-      e.stopPropagation();e.preventDefault();
-
-      let _me = $(this);
-      _me.siblings('button[data-properties_id]').trigger('edit');
-
-    });
-
-    $('#<?= $_accordion ?> button[data-toggle="collapse"]')
+    })
     .on( 'contextmenu', function( e) {
       if ( e.shiftKey)
         return;
@@ -384,6 +373,14 @@ use strings;  ?>
 
       }));
 
+      _context.append( $('<a href="#">Edit Property</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        _me.trigger('edit');
+
+      }));
+
       let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
         e.stopPropagation();e.preventDefault();
 
@@ -392,11 +389,7 @@ use strings;  ?>
 
       });
 
-      if ( 'yes' == String( _data.na)) {
-        ctrl.prepend( '<i class="fa fa-check"></i>');
-
-      }
-
+      if ( 'yes' == String( _data.na)) ctrl.prepend( '<i class="fa fa-check"></i>');
       _context.append( ctrl);
 
       _context.append(
@@ -417,6 +410,16 @@ use strings;  ?>
       }
 
       _context.open( e);
+
+    });
+
+
+    $('#<?= $_accordion ?> button[edit-property]')
+    .on( 'click', function( e) {
+      e.stopPropagation();e.preventDefault();
+
+      let _me = $(this);
+      _me.siblings('button[data-properties_id]').trigger('edit');
 
     });
 
