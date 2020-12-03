@@ -323,6 +323,48 @@ $_uidImage = strings::rand(); ?>
 
             $('#<?= $_uidImage ?>').html('').append(img);
 
+            img.on( 'contextmenu', function( e) {
+              if ( e.shiftKey)
+                return;
+
+              e.stopPropagation();e.preventDefault();
+
+              _brayworth_.hideContexts();
+
+              let _context = _brayworth_.context();
+
+              _context.append( $('<a href="#">clear image</a>').on( 'click', function( e) {
+                e.stopPropagation();e.preventDefault();
+
+                _.post({
+                  url : _.url( '<?= config::$PHOTOLOG_ROUTE ?>'),
+                  data : {
+                    action : 'set-alarm-location-clear',
+                    id : d.alarm.photolog.id,
+                    file : d.alarm.description
+
+                  },
+
+                }).then( d => {
+                  if ( 'ack' == d.response) {
+                    _form.trigger('get-photolog-image-of-alarm');
+
+                  }
+                  else {
+                    _.growl( d);
+
+                  }
+
+                });
+
+                _context.close()
+
+              }));
+
+              _context.open( e);
+
+            });
+
           }
           else {
             _form.trigger('clear-image-of-alarm');
