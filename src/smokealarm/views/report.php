@@ -10,6 +10,7 @@
 
 namespace smokealarm;
 
+use currentUser;
 use strings;  ?>
 
 <div class="form-group row d-print-none" id="<?= $srch = strings::rand() ?>envelope">
@@ -413,45 +414,48 @@ use strings;  ?>
 
       }));
 
-      _context.append( $('<a href="#">Upgrade Preference</a>').on( 'click', function( e) {
-        e.stopPropagation();e.preventDefault();
-
-        _context.close();
-        _me.trigger('upgrade-preferences');
-
-      }));
-
-      if ( 'yes' == _data.workorder_sent) {
-        _context.append( $('<a href="#"><i class="fa fa-check"></i>Workorder Sent</a>').on( 'click', function( e) {
+      <?php if ( currentUser::isadmin()) {  ?>
+        _context.append( $('<a href="#">Upgrade Preference</a>').on( 'click', function( e) {
           e.stopPropagation();e.preventDefault();
 
           _context.close();
-          _me.trigger('workorder-sent-clear');
+          _me.trigger('upgrade-preferences');
 
         }));
 
-      }
-      else {
-        _context.append( $('<a href="#">Workorder Sent</a>').on( 'click', function( e) {
+        if ( 'yes' == _data.workorder_sent) {
+          _context.append( $('<a href="#"><i class="fa fa-check"></i>Workorder Sent</a>').on( 'click', function( e) {
+            e.stopPropagation();e.preventDefault();
+
+            _context.close();
+            _me.trigger('workorder-sent-clear');
+
+          }));
+
+        }
+        else {
+          _context.append( $('<a href="#">Workorder Sent</a>').on( 'click', function( e) {
+            e.stopPropagation();e.preventDefault();
+
+            _context.close();
+            _me.trigger('workorder-sent');
+
+          }));
+
+        }
+
+        let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
           e.stopPropagation();e.preventDefault();
 
           _context.close();
-          _me.trigger('workorder-sent');
+          _me.trigger('not-applicable');
 
-        }));
+        });
 
-      }
+        if ( 'yes' == String( _data.na)) ctrl.prepend( '<i class="fa fa-check"></i>');
+        _context.append( ctrl);
 
-      let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
-        e.stopPropagation();e.preventDefault();
-
-        _context.close();
-        _me.trigger('not-applicable');
-
-      });
-
-      if ( 'yes' == String( _data.na)) ctrl.prepend( '<i class="fa fa-check"></i>');
-      _context.append( ctrl);
+      <?php } ?>
 
       _context.append(
         $('<a href="#">goto ' + _data.address + '</a>')
@@ -530,7 +534,6 @@ use strings;  ?>
 
 
     });
-
 
     $('#<?= $_accordion ?> button[edit-property]')
     .on( 'click', function( e) {

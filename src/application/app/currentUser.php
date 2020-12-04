@@ -14,6 +14,12 @@ class currentUser extends dvc\currentUser {
 
 	}
 
+	static public function isadmin() {
+		// return ( true);
+		return ( false);
+
+	}
+
 	static public function restriction( $key, $value = null ) {
 		// if ( 'smokealarm-company' == $key) {
 		// 	return '1';
