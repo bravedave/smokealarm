@@ -68,7 +68,7 @@ $_uidImage = strings::rand(); ?>
             <label class="col-sm-3 col-form-label pb-0" for="<?= $_uidLocation = strings::rand() ?>">Location</label>
             <div class="col">
               <select name="location" class="form-control" id="<?= $_uidLocation ?>" required>
-                <option></option>
+                <option value=""></option>
                 <?php
                 $_dao = new dao\smokealarm_locations;
                 $_dtoSet = $_dao->dtoSet( $_dao->getAll());
@@ -172,8 +172,7 @@ $_uidImage = strings::rand(); ?>
           <div class="form-group row"><!-- Expiry -->
             <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Expiry</label>
             <div class="col">
-              <input type="date" name="expiry" class="form-control"
-                placeholder="expiry" required
+              <input type="date" name="expiry" class="form-control" required
                 id="<?= $_uid ?>"
                 value="<?php if ( strtotime( $dto->expiry) > 0 ) print $dto->expiry; ?>">
 
@@ -222,7 +221,7 @@ $_uidImage = strings::rand(); ?>
                 </div>
 
                 <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
-                  <option></option>
+                  <option value=""></option>
                   <?php
                   if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
                   if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';

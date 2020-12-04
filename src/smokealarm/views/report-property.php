@@ -268,11 +268,11 @@ use strings; ?>
 
       _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id))
       .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
-      console.error('edit ...');
 
     })
-    .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
+    .on( 'click', click)
     .on( 'contextmenu', contextMenu);
+    // .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
 
   });
 
