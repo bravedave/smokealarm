@@ -724,10 +724,6 @@ use strings;  ?>
       .prependTo( _me);
 
       let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
-      // console.log( $('> .card-body', this));
-      // console.log( $('.card-body', this));
-      alert( 'loading ..');
-
       $('> .card-body', this).html('').load( url, d => {
 
         indicator.remove();

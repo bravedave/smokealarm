@@ -207,8 +207,6 @@ use strings; ?>
 
   };
 
-  alert( 'load ..');
-
   $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
     $(tr)
@@ -269,8 +267,6 @@ use strings; ?>
     .on( 'edit', function(e) {
       let _tr = $(this);
       let _data = _tr.data();
-
-      alert( 'edit');
 
       _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id))
       .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
