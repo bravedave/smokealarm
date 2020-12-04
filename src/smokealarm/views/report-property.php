@@ -205,6 +205,8 @@ use strings; ?>
 
   };
 
+  alert( 'load ..');
+
   $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
     $(tr)
