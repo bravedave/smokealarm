@@ -737,7 +737,6 @@ use strings;  ?>
 
     })
     .on('show.bs.collapse', function() {
-      alert( 'show.bs.collapse');
       $(this).trigger('reload');
 
     });

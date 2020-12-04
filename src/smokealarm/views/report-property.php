@@ -132,6 +132,8 @@ use strings; ?>
 
   $('#<?= $_table ?>')
   .on('reload', function(e) {
+    e.stopPropagation();
+
     let _me = $(this);
     let _container = _me.closest('.collapse');
     _container.trigger('reload');
