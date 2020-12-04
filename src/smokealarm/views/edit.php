@@ -42,7 +42,7 @@ $_uidImage = strings::rand(); ?>
           </button>
         </div>
         <div class="modal-body">
-          <div class="form-group row"><!-- Address -->
+          <div class="form-row row mb-2"><!-- Address -->
             <div class="col">
               <label class="mb-0" for="<?= $_uid = strings::rand() ?>">Address</label>
               <input type="text" name="address_street" class="form-control"
@@ -54,18 +54,18 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="row"><!-- Alarm Image -->
+          <div class="form-row row mb-2"><!-- Alarm Image -->
             <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>"></div>
 
           </div>
 
-          <div class="form-group row"><!-- Alarm Image Uploaded -->
+          <div class="form-row row mb-2"><!-- Alarm Image Uploaded -->
             <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>uploader"></div>
 
           </div>
 
-          <div class="form-group row"><!-- Location -->
-            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uidLocation = strings::rand() ?>">Location</label>
+          <div class="form-row row mb-2"><!-- Location -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uidLocation = strings::rand() ?>">location</label>
             <div class="col">
               <select name="location" class="form-control" id="<?= $_uidLocation ?>" required>
                 <option value=""></option>
@@ -89,8 +89,8 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-group row"><!-- Make -->
-            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Make</label>
+          <div class="form-row row mb-2"><!-- Make -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">make</label>
             <div class="col">
               <input type="text" name="make" class="form-control"
                 placeholder="make" required
@@ -101,8 +101,8 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-group row"><!-- Model -->
-            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Model</label>
+          <div class="form-row row mb-2"><!-- Model -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">model</label>
             <div class="col">
               <input type="text" name="model" class="form-control"
                 placeholder="model"
@@ -113,8 +113,8 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-group row"><!-- Types -->
-            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Type</label>
+          <div class="form-row row mb-2"><!-- Type -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">type</label>
             <div class="col">
               <div class="input-group">
                 <input type="text" name="type" class="form-control"
@@ -169,8 +169,8 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-group row"><!-- Expiry -->
-            <label class="col-sm-3 col-form-label pb-0" for="<?= $_uid = strings::rand() ?>">Expiry</label>
+          <div class="form-row row mb-2"><!-- Expiry -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">expiry</label>
             <div class="col">
               <input type="date" name="expiry" class="form-control" required
                 id="<?= $_uid ?>"
@@ -180,69 +180,55 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-group row"><!-- Connect -->
-            <div class="offset-sm-3 col">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <label class="input-group-text" for="<?= $_uid = strings::rand() ?>">connect</label>
+          <div class="form-row row mb-2"><!-- Connect -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">connect</label>
+            <div class="col">
+              <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
+                <option value=""></option>
+                <?php
+                foreach (config::smokealarm_connect as $v) {
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    $v,
+                    $v == $dto->connect ? 'selected' : '',
+                    $v
 
-                </div>
+                  );
 
-                <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
-                  <option></option>
-                  <?php
-                  foreach (config::smokealarm_connect as $v) {
-                    printf(
-                      '<option value="%s" %s>%s</option>',
-                      $v,
-                      $v == $dto->connect ? 'selected' : '',
-                      $v
+                }
 
-                    );
+                ?>
 
-                  }
-
-                  ?>
-
-                </select>
-
-              </div>
+              </select>
 
             </div>
 
           </div>
 
-          <div class="form-group row"><!-- Status -->
-            <div class="offset-sm-3 col">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <label class="input-group-text" for="<?= $_uid = strings::rand() ?>">status</label>
+          <div class="form-row row mb-2"><!-- Status -->
+            <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">status</label>
+            <div class="col">
+              <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
+                <option value=""></option>
+                <?php
+                if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
+                if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
+                if ( 'required' == $dto->status) print '<option value="required" selected>required</option>';
 
-                </div>
+                foreach (config::smokealarm_status as $v) {
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    $v,
+                    $v == $dto->status ? 'selected' : '',
+                    $v
 
-                <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">
-                  <option value=""></option>
-                  <?php
-                  if ( 'compliant' == $dto->status) print '<option value="compliant" selected>compliant</option>';
-                  if ( 'non compliant' == $dto->status) print '<option value="non compliant" selected>non compliant</option>';
-                  if ( 'required' == $dto->status) print '<option value="required" selected>required</option>';
+                  );
 
-                  foreach (config::smokealarm_status as $v) {
-                    printf(
-                      '<option value="%s" %s>%s</option>',
-                      $v,
-                      $v == $dto->status ? 'selected' : '',
-                      $v
+                }
 
-                    );
+                ?>
 
-                  }
-
-                  ?>
-
-                </select>
-
-              </div>
+              </select>
 
             </div>
 
