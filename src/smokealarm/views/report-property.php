@@ -123,202 +123,127 @@ use strings; ?>
 </div>
 
 <script>
-( _ => {
-  $(document).ready( () => {
-    $('#<?= $_table ?>').on( 'add-smokealarm', e => {
-      _.get.modal( _.url('<?= $this->route ?>/edit?pid=<?= $this->data->property->id ?>'))
-      .then( m => m.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
+( _ => $(document).ready( () => {
+  $('#<?= $_table ?>').on( 'add-smokealarm', e => {
+    _.get.modal( _.url('<?= $this->route ?>/edit?pid=<?= $this->data->property->id ?>'))
+    .then( m => m.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
+
+  });
+
+  $('#<?= $_table ?>')
+  .on('reload', function(e) {
+    let _me = $(this);
+    let _container = _me.closest('.collapse');
+    _container.trigger('reload');
+
+  })
+  .on('update-line-numbers', function(e) {
+    let t = 0;
+    $('> tbody > tr:not(.d-none) >td[line-number]', this).each( ( i, e) => {
+      $(e).data('line', i+1).html( i+1);
+      t++;
 
     });
 
-    $('#<?= $_table ?>')
-    .on('reload', function(e) {
-      let _me = $(this);
-      let _container = _me.closest('.collapse');
-      _container.trigger('reload');
+    $('> thead > tr >td[line-number]', this).html( t);
 
-    })
-    .on('update-line-numbers', function(e) {
-      let t = 0;
-      $('> tbody > tr:not(.d-none) >td[line-number]', this).each( ( i, e) => {
-        $(e).data('line', i+1).html( i+1);
-        t++;
+  })
+  .trigger('update-line-numbers');
 
-      });
+  $('#<?= $addBtn ?>').on( 'click', e => $('#<?= $_table ?>').trigger( 'add-smokealarm'));
 
-      $('> thead > tr >td[line-number]', this).html( t);
+  let click = function(e) {
+    e.stopPropagation(); e.preventDefault();
 
-    })
-		.trigger('update-line-numbers');
+    $(this).trigger( 'edit');
 
-    $('#<?= $addBtn ?>').on( 'click', e => $('#<?= $_table ?>').trigger( 'add-smokealarm'));
+  };
 
-    let click = function(e) {
-      e.stopPropagation(); e.preventDefault();
+  let contextMenu = function( e) {
+    if ( e.shiftKey)
+      return;
 
-      $(this).trigger( 'edit');
+    e.stopPropagation();e.preventDefault();
 
-    };
+    let _tr = $(this);
+    let _data = _tr.data();
 
-    let contextMenu = function( e) {
-      if ( e.shiftKey)
-        return;
+    _.hideContexts();
+    let _context = _.context();
 
+    _context.append( $('<a href="#"><b>edit</b></a>').on( 'click', function( e) {
       e.stopPropagation();e.preventDefault();
 
-      let _tr = $(this);
-      let _data = _tr.data();
+      _context.close();
 
-      _.hideContexts();
-      let _context = _.context();
+      _tr.trigger( 'edit');
 
-      _context.append( $('<a href="#"><b>edit</b></a>').on( 'click', function( e) {
+    }));
+
+    if ( !!_data.id) {
+      _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
         e.stopPropagation();e.preventDefault();
 
         _context.close();
 
-        _tr.trigger( 'edit');
+        _tr.trigger( 'copy');
 
       }));
 
-      if ( !!_data.id) {
-        _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
-          e.stopPropagation();e.preventDefault();
+      _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
 
-          _context.close();
+        _context.close();
 
-          _tr.trigger( 'copy');
+        _tr.trigger( 'archive');
 
-        }));
+      }));
 
-        _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
-          e.stopPropagation();e.preventDefault();
+    }
 
-          _context.close();
+    _context.open( e);
 
-          _tr.trigger( 'archive');
+  };
 
-        }));
+  $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
 
-      }
+    $(tr)
+    .addClass( 'pointer' )
+    .on( 'archive', function( e) {
+      let _tr = $(this);
 
-      _context.open( e);
+      _.ask({
+        headClass: 'text-white bg-danger',
+        text: 'Are you sure ?',
+        title: 'Confirm Archive',
+        buttons : {
+          yes : function(e) {
+            $(this).modal('hide');
+            _tr.trigger( 'archive-confirmed');
 
-    };
+          }
 
-    $('#<?= $_table ?> > tbody > tr').each( ( i, tr) => {
+        }
 
-      $(tr)
-      .addClass( 'pointer' )
-			.on( 'archive', function( e) {
-				let _tr = $(this);
-
-				_.ask({
-					headClass: 'text-white bg-danger',
-					text: 'Are you sure ?',
-					title: 'Confirm Archive',
-					buttons : {
-						yes : function(e) {
-							$(this).modal('hide');
-							_tr.trigger( 'archive-confirmed');
-
-						}
-
-					}
-
-				});
-
-			})
-			.on( 'archive-confirmed', function(e) {
-				let _tr = $(this);
-				let _data = _tr.data();
-
-				_.post({
-					url : _.url('<?= $this->route ?>'),
-					data : {
-						action : 'archive-smokealarm',
-						id : _data.id
-
-					},
-
-				}).then( d => {
-					if ( 'ack' == d.response) {
-						_tr.remove();
-						$('#<?= $_table ?>').trigger('update-line-numbers');
-
-					}
-					else {
-						_.growl( d);
-
-					}
-
-				});
-
-      })
-      .on( 'copy', function(e) {
-        let _tr = $(this);
-        let _data = _tr.data();
-
-        _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id + '/copy'))
-        .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
-
-      })
-      .on( 'edit', function(e) {
-        let _tr = $(this);
-        let _data = _tr.data();
-
-        _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id))
-        .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
-        console.log( 'edit');
-
-      })
-      .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
-			.on( 'contextmenu', contextMenu);
-
-    });
-
-    $('#<?= $_notes ?>')
-    .autoResize()
-    .on( 'keypress', function( e) {
-      let _me = $(this);
-      _me.trigger( 'changed');
+      });
 
     })
-    .on( 'changed', function( e) {
-      let _me = $(this);
-      let _data = _me.data();
-      if ( 'yes' == _data.changed) return;
+    .on( 'archive-confirmed', function(e) {
+      let _tr = $(this);
+      let _data = _tr.data();
 
-      _me
-      .data('version', Number(_data.version) +1)
-      .data('changed', 'yes');
-      _me.siblings('button[save]').removeClass('d-none');
-
-    })
-    .on( 'saved', function( e) {
-      let _me = $(this);
-      _me.siblings('button[save]').addClass('d-none');
-
-    })
-    .on( 'change', function( e) {
-      let _me = $(this);
-      let _data = _me.data();
-      let version = _data.vesion;
-
-      _me.data('changed', 'no');
       _.post({
         url : _.url('<?= $this->route ?>'),
         data : {
-          action : 'save-notes',
-          id : <?= (int)$this->data->property->id ?>,
-          text : _me.val()
+          action : 'archive-smokealarm',
+          id : _data.id
 
         },
 
       }).then( d => {
         if ( 'ack' == d.response) {
-          let _data = _me.data();
-          if ( version == _data.vesion) _me.trigger( 'saved');
+          _tr.remove();
+          $('#<?= $_table ?>').trigger('update-line-numbers');
 
         }
         else {
@@ -328,10 +253,81 @@ use strings; ?>
 
       });
 
-    });
+    })
+    .on( 'copy', function(e) {
+      let _tr = $(this);
+      let _data = _tr.data();
 
+      _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id + '/copy'))
+      .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
+
+    })
+    .on( 'edit', function(e) {
+      let _tr = $(this);
+      let _data = _tr.data();
+
+      _.get.modal( _.url('<?= $this->route ?>/edit/' + _data.id))
+      .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
+      console.error('edit ...');
+
+    })
+    .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
+    .on( 'contextmenu', contextMenu);
 
   });
 
-}) (_brayworth_);
+  $('#<?= $_notes ?>')
+  .autoResize()
+  .on( 'keypress', function( e) {
+    let _me = $(this);
+    _me.trigger( 'changed');
+
+  })
+  .on( 'changed', function( e) {
+    let _me = $(this);
+    let _data = _me.data();
+    if ( 'yes' == _data.changed) return;
+
+    _me
+    .data('version', Number(_data.version) +1)
+    .data('changed', 'yes');
+    _me.siblings('button[save]').removeClass('d-none');
+
+  })
+  .on( 'saved', function( e) {
+    let _me = $(this);
+    _me.siblings('button[save]').addClass('d-none');
+
+  })
+  .on( 'change', function( e) {
+    let _me = $(this);
+    let _data = _me.data();
+    let version = _data.vesion;
+
+    _me.data('changed', 'no');
+    _.post({
+      url : _.url('<?= $this->route ?>'),
+      data : {
+        action : 'save-notes',
+        id : <?= (int)$this->data->property->id ?>,
+        text : _me.val()
+
+      },
+
+    }).then( d => {
+      if ( 'ack' == d.response) {
+        let _data = _me.data();
+        if ( version == _data.vesion) _me.trigger( 'saved');
+
+      }
+      else {
+        _.growl( d);
+
+      }
+
+    });
+
+  });
+
+})) (_brayworth_);
 </script>
