@@ -709,7 +709,9 @@ use strings;  ?>
       });
 
     })
-    .on('reload', function() {
+    .on('reload', function(e) {
+      e.stopPropagation();
+
       let _me = $(this);
       let _data = _me.data();
 
@@ -722,7 +724,9 @@ use strings;  ?>
       .prependTo( _me);
 
       let url = _.url( '<?= $this->route ?>/propertyalarms/' + _data.properties_id);
-      $('.card-body', this).load( url, d => {
+      // console.log( $('> .card-body', this));
+      // console.log( $('.card-body', this));
+      $('> .card-body', this).html('').load( url, d => {
 
         indicator.remove();
         _me.trigger('lookup-tenant');
