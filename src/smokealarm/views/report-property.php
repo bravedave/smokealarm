@@ -272,9 +272,9 @@ use strings; ?>
       .then( modal => modal.on( 'success', e => $('#<?= $_table ?>').trigger( 'reload')));
 
     })
-    .on( 'click', click)
+    .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
     .on( 'contextmenu', contextMenu);
-    // .on( 'click', _.browser.isMobileDevice ? contextMenu : click)
+    // .on( 'click', click)
 
   });
 
