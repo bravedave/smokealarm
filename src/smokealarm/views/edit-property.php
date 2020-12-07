@@ -11,6 +11,7 @@
 namespace smokealarm;
 
 use currentUser;
+use dvc\icon;
 use strings;
 
 $dto = $this->data->dto; ?>
@@ -114,7 +115,7 @@ $dto = $this->data->dto; ?>
           </div>
 
           <div class="form-row mb-2"><!-- smokealarms_annual -->
-            <div class="col-sm-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Annual Month</div>
+            <div class="col-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Annual Month</div>
             <div class="col">
               <input type="month" name="smokealarms_annual" class="form-control"
                 id="?<?= $uid ?>"
@@ -127,15 +128,37 @@ $dto = $this->data->dto; ?>
           </div>
 
           <div class="form-row mb-2"><!-- smokealarms_last_inspection -->
-            <div class="col-sm-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Last inspection</div>
+            <div class="col-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Last inspection</div>
             <div class="col">
-              <input type="date" class="form-control" name="smokealarms_last_inspection"
-                value="<?= $dto->smokealarms_last_inspection ?>"
-                id="<?= $uid ?>">
+              <div class="input-group">
+
+                <input type="date" class="form-control" name="smokealarms_last_inspection"
+                  value="<?= $dto->smokealarms_last_inspection ?>"
+                  id="<?= $uid ?>">
+
+                <div class="input-group-append" id="<?= $uid ?>today">
+                  <button type="button" tabindex="-1"
+                    title="today"
+                    class="btn input-group-text"><?= icon::get( icon::calendar_day) ?></button>
+
+                </div>
+
+              </div>
 
             </div>
 
           </div>
+          <script>
+          ( _ => {
+            $('#<?= $uid ?>today').on( 'click', e => {
+              e.stopPropagation();
+
+              $('#<?= $uid ?>').val( _.dayjs().format( 'YYYY-MM-DD')).focus();
+
+            });
+
+          })( _brayworth_);
+          </script>
 
           <div class="row">
             <div class="col" id="<?= $_uid = strings::rand() ?>">&nbsp;</div>

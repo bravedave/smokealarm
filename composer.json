@@ -18,7 +18,8 @@
     "bravedave/dvc": "*",
     "bravedave/green": "*",
     "parsecsv/php-parsecsv": "*",
-    "bravedave/photolog": "*"
+    "bravedave/photolog": "*",
+    "twbs/bootstrap": "<5"
   },
   "autoload": {
     "psr-4": {
