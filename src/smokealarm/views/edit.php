@@ -54,13 +54,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Alarm Image -->
-            <div class="offset-sm-3 col-sm-6">
-              <div class="row" id="<?= $_uidImage ?>"></div>
-
-            </div>
-
-          </div>
+          <div class="form-row row mb-2" id="<?= $_uidImage ?>"></div><!-- Alarm Image -->
 
           <div class="form-row row mb-2"><!-- Alarm Image Uploaded -->
             <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>uploader"></div>
@@ -314,8 +308,8 @@ $_uidImage = strings::rand(); ?>
               let img = $('<img class="img-fluid">');
               img.attr( 'src', alarm.url);
 
-              $('<div class="col-4"></div>').append(img).appendTo( parent);
-              img.on( 'contextmenu', function( e) {
+              $('<div class="col-4 mx-auto"></div>').append(img).appendTo( parent);
+              img.on( 'click', function( e) {
                 if ( e.shiftKey)
                   return;
 
@@ -324,6 +318,13 @@ $_uidImage = strings::rand(); ?>
                 _.hideContexts();
 
                 let _context = _.context();
+
+                _context.append(
+                  $('<a target="_blank">open in new window</a>')
+                  .attr( 'href', alarm.url)
+                  .on( 'click', e => _context.close())
+
+                );
 
                 _context.append( $('<a href="#">clear image</a>').on( 'click', function( e) {
                   e.stopPropagation();e.preventDefault();
