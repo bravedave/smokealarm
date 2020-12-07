@@ -317,12 +317,12 @@ class controller extends \Controller {
       } else { Json::nak( $action); }
 
     }
-    elseif ( 'get-photolog-image-of-alarm' == $action) {
+    elseif ( 'get-photolog-images-of-alarm' == $action) {
       if ( $location = $this->getPost('location')) {
         if ( $properties_id = (int)$this->getPost('properties_id')) {
           $dao = new dao\properties;
           if ( $property = $dao->getByID( $properties_id)) {
-            $alarm = false;
+            $alarms = [];
             if ( class_exists( 'photolog\dao\property_photolog')) {
               $dao = new \photolog\dao\property_photolog;
               if ($photologs = $dao->getForProperty( $property->id)) {
@@ -331,7 +331,7 @@ class controller extends \Controller {
                   foreach ($files as $file) {
                     if ( $location == $file->location) {
                       $file->photolog = $photolog;
-                      $alarm = $file;
+                      $alarms[] = $file;
 
                     }
 
@@ -345,7 +345,7 @@ class controller extends \Controller {
 
             Json::ack( $action)
               ->add( 'property', $property)
-              ->add( 'alarm', $alarm);
+              ->add( 'alarms', $alarms);
 
           } else { Json::nak( $action); }
 

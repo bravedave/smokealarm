@@ -55,7 +55,10 @@ $_uidImage = strings::rand(); ?>
           </div>
 
           <div class="form-row row mb-2"><!-- Alarm Image -->
-            <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>"></div>
+            <div class="offset-sm-3 col-sm-6">
+              <div class="row" id="<?= $_uidImage ?>"></div>
+
+            </div>
 
           </div>
 
@@ -271,97 +274,99 @@ $_uidImage = strings::rand(); ?>
     });
 
     $('#<?= $_uidLocation ?>').on( 'change', e => {
-      $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+      $('#<?= $_form ?>').trigger( 'get-photolog-images-of-alarm');
       $('#<?= $_form ?>').trigger( 'setup-uploader');
 
     });
 
-    $('#<?= $_form ?>')
-    .on( 'clear-image-of-alarm', function(e) {
-      $('#<?= $_uidImage ?>').html('');
+    let clearAlarmImages = () => {
+      return new Promise( resolve => {
 
-    })
-    .on( 'get-photolog-image-of-alarm', function(e) {
+        let el = $('#<?= $_uidImage ?>');
+        el.html('');
+
+        resolve( el);
+
+      });
+
+    };
+
+    $('#<?= $_form ?>')
+    .on( 'get-photolog-images-of-alarm', function(e) {
       let _form = $(this);
       let _data = _form.serializeFormJSON();
 
-      if ( '' == _data.location) {
-        _form.trigger('clear-image-of-alarm');
-        return;
+      clearAlarmImages().then( parent => {
+        if ( '' == _data.location) return;
 
-      }
+        _.post({
+          url : _.url('<?= $this->route ?>'),
+          data : {
+            action : 'get-photolog-images-of-alarm',
+            properties_id : _data.properties_id,
+            location : _data.location
 
-      _.post({
-        url : _.url('<?= $this->route ?>'),
-        data : {
-          action : 'get-photolog-image-of-alarm',
-          properties_id : _data.properties_id,
-          location : _data.location
+          }
 
-        },
+        }).then( d => {
+          if ( 'ack' == d.response) {
+            $.each( d.alarms, ( i, alarm) => {
+              let img = $('<img class="img-fluid">');
+              img.attr( 'src', d.alarm.url);
 
-      }).then( d => {
-        if ( 'ack' == d.response) {
-          if ( !!d.alarm) {
-            let img = $('<img class="img-fluid">');
-            img.attr( 'src', d.alarm.url);
+              $('<div clas="col-4"></div>').append(img).appendTo( parent);
+              img.on( 'contextmenu', function( e) {
+                if ( e.shiftKey)
+                  return;
 
-            $('#<?= $_uidImage ?>').html('').append(img);
-
-            img.on( 'contextmenu', function( e) {
-              if ( e.shiftKey)
-                return;
-
-              e.stopPropagation();e.preventDefault();
-
-              _brayworth_.hideContexts();
-
-              let _context = _brayworth_.context();
-
-              _context.append( $('<a href="#">clear image</a>').on( 'click', function( e) {
                 e.stopPropagation();e.preventDefault();
 
-                _.post({
-                  url : _.url( '<?= config::$PHOTOLOG_ROUTE ?>'),
-                  data : {
-                    action : 'set-alarm-location-clear',
-                    id : d.alarm.photolog.id,
-                    file : d.alarm.description
+                _.hideContexts();
 
-                  },
+                let _context = _.context();
 
-                }).then( d => {
-                  if ( 'ack' == d.response) {
-                    _form.trigger('get-photolog-image-of-alarm');
+                _context.append( $('<a href="#">clear image</a>').on( 'click', function( e) {
+                  e.stopPropagation();e.preventDefault();
 
-                  }
-                  else {
-                    _.growl( d);
+                  _.post({
+                    url : _.url( '<?= config::$PHOTOLOG_ROUTE ?>'),
+                    data : {
+                      action : 'set-alarm-location-clear',
+                      id : d.alarm.photolog.id,
+                      file : d.alarm.description
 
-                  }
+                    },
 
-                });
+                  }).then( d => {
+                    if ( 'ack' == d.response) {
+                      _form.trigger('get-photolog-images-of-alarm');
 
-                _context.close()
+                    }
+                    else {
+                      _.growl( d);
 
-              }));
+                    }
 
-              _context.open( e);
+                  });
+
+                  _context.close()
+
+                }));
+
+                _context.open( e);
+
+              });
 
             });
 
           }
           else {
-            _form.trigger('clear-image-of-alarm');
+            _.growl( d);
+            console.log( d);
 
           }
 
-        }
-        else {
-          _.growl( d);
-          console.log( d);
-
-        }
+        });
 
       });
 
@@ -393,7 +398,7 @@ $_uidImage = strings::rand(); ?>
                 },
                 onUpload : d => {
                   if ( 'ack' == d.response) {
-                    $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+                    $('#<?= $_form ?>').trigger( 'get-photolog-images-of-alarm');
 
                   }
 
@@ -436,7 +441,7 @@ $_uidImage = strings::rand(); ?>
 
     });
 
-    $('#<?= $_form ?>').trigger( 'get-photolog-image-of-alarm');
+    $('#<?= $_form ?>').trigger( 'get-photolog-images-of-alarm');
     $('#<?= $_form ?>').trigger( 'setup-uploader');
 
   }))( _brayworth_);
