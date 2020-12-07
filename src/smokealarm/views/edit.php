@@ -314,7 +314,7 @@ $_uidImage = strings::rand(); ?>
               let img = $('<img class="img-fluid">');
               img.attr( 'src', alarm.url);
 
-              $('<div clas="col-4"></div>').append(img).appendTo( parent);
+              $('<div class="col-4"></div>').append(img).appendTo( parent);
               img.on( 'contextmenu', function( e) {
                 if ( e.shiftKey)
                   return;
