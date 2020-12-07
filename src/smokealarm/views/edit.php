@@ -312,7 +312,7 @@ $_uidImage = strings::rand(); ?>
           if ( 'ack' == d.response) {
             $.each( d.alarms, ( i, alarm) => {
               let img = $('<img class="img-fluid">');
-              img.attr( 'src', d.alarm.url);
+              img.attr( 'src', alarm.url);
 
               $('<div clas="col-4"></div>').append(img).appendTo( parent);
               img.on( 'contextmenu', function( e) {
@@ -332,8 +332,8 @@ $_uidImage = strings::rand(); ?>
                     url : _.url( '<?= config::$PHOTOLOG_ROUTE ?>'),
                     data : {
                       action : 'set-alarm-location-clear',
-                      id : d.alarm.photolog.id,
-                      file : d.alarm.description
+                      id : alarm.photolog.id,
+                      file : alarm.description
 
                     },
 
