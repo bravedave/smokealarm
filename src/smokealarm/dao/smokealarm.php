@@ -256,7 +256,7 @@ class smokealarm extends _dao {
 
 		}
 
-		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index');
+		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 1000');
 
 	}
 
