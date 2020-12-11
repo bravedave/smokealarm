@@ -82,8 +82,8 @@ class smokealarm extends _dao {
 
 		}
 
-		if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
-			$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
+		if ( $company = (int)currentUser::restriction( 'smokealarm-company')) {
+			$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $company);
 
 		}
 
@@ -155,8 +155,8 @@ class smokealarm extends _dao {
 
 			}
 
-			if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
-				$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
+			if ( $company = (int)currentUser::restriction( 'smokealarm-company')) {
+				$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $company);
 
 			}
 
@@ -208,7 +208,7 @@ class smokealarm extends _dao {
 					FROM properties p
 						LEFT JOIN people on p.people_id = people.id';
 
-			if ($activeProperties) {
+			if ($activeProperties || $company) {
 				/**
 				 * currently this blow the machine memory
 				 */
