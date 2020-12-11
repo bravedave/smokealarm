@@ -49,6 +49,8 @@ class smokealarm extends _dao {
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
 	public function getOrderedByStreet( bool $excludeInactive = false,  bool $IncludeNotApplicable = false) : ?object {
+		$debug = FALSE;
+		// $debug = TRUE;
 
 		$_sql =
 			'SELECT
@@ -110,11 +112,11 @@ class smokealarm extends _dao {
 
 		}
 
-		// \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+		$this->Q( $_z = 'DROP TABLE IF EXISTS tmp');
+		if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
 
-
-		$this->Q( 'DROP TABLE IF EXISTS tmp');
-		$this->Q( sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
+		$this->Q( $_z = sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
+		if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
 
     if ($activeProperties) {
       $_sql = 'SELECT properties_id FROM tmp WHERE properties_id > 0';
@@ -131,69 +133,92 @@ class smokealarm extends _dao {
         });
 
       }
-
-      // \sys::logger( sprintf('<%s> %s', implode( ',', $activeProperties), __METHOD__));
-      // \sys::logger( sprintf('<%s> %s', count( $activeProperties), __METHOD__));
-
-      if ( $activeProperties) {
-				$conditions = [];
-				if ( !$IncludeNotApplicable) {
-					$conditions[] = 'p.smokealarms_na = 0';
-
-				}
-
-				if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
-					$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
-
-				}
-
-				$conditions[] = sprintf( 'p.id IN (%s)', implode( ',', $activeProperties));
-
-        $_sql = sprintf( 'INSERT INTO tmp(
-          `properties_id`,
-          `address_street`,
-          `people_id`,
-          `street_index`,
-          `address_suburb`,
-          `address_state`,
-          `address_postcode`,
-          `smokealarms_required`,
-          `smokealarms_power`,
-          `smokealarms_2022_compliant`,
-          `smokealarms_company`,
-          `smokealarms_last_inspection`,
-          `smokealarms_na`,
-          `smokealarms_upgrade_preference`,
-          `smokealarms_workorder_sent`,
-          `people_name`)
-          SELECT
-            p.id,
-            p.address_street,
-            p.people_id,
-            p.street_index,
-            p.address_suburb,
-            p.address_state,
-            p.address_postcode,
-            p.smokealarms_required,
-            p.smokealarms_power,
-            p.smokealarms_2022_compliant,
-            p.smokealarms_company,
-            p.smokealarms_last_inspection,
-            p.smokealarms_na,
-            p.smokealarms_upgrade_preference,
-            p.smokealarms_workorder_sent,
-            people.name people_name
-            FROM properties p
-              LEFT JOIN people on p.people_id = people.id
-            WHERE %s', implode( ' AND ', $conditions));
-
-          // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
-
-        $this->Q( $_sql);
-
-      }
+			if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
 
     }
+
+		// if ( $activeProperties) {
+		if ( $activeProperties ||!$excludeInactive) {
+			/**
+			 * So it's either:
+			 * - console was active and have active properties .. I should be here ..
+			 * or
+			 * - we simple have excludeInactive off .. I should be here ..
+			 * or
+			 * - console was active and had no active properties .. should I be here ?
+			 */
+
+
+			$conditions = [];
+			if ( !$IncludeNotApplicable) {
+				$conditions[] = 'p.smokealarms_na = 0';
+
+			}
+
+			if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
+				$conditions[] = sprintf( 'p.smokealarms_company_id = %d', $co);
+
+			}
+
+			if ($activeProperties) {
+				$conditions[] = sprintf( 'p.id IN (%s)', implode( ',', $activeProperties));
+
+			}
+			else {
+				$this->Q( $_z = 'CREATE TEMPORARY TABLE tmpx AS SELECT id FROM tmp');
+				if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
+				$conditions[] = 'p.id NOT IN (SELECT id FROM tmpx)';
+
+			}
+
+			$_sql = $__sql = 'INSERT INTO tmp(
+				`properties_id`,
+				`address_street`,
+				`people_id`,
+				`street_index`,
+				`address_suburb`,
+				`address_state`,
+				`address_postcode`,
+				`smokealarms_required`,
+				`smokealarms_power`,
+				`smokealarms_2022_compliant`,
+				`smokealarms_company`,
+				`smokealarms_last_inspection`,
+				`smokealarms_na`,
+				`smokealarms_upgrade_preference`,
+				`smokealarms_workorder_sent`,
+				`people_name`)
+				SELECT
+					p.id,
+					p.address_street,
+					p.people_id,
+					p.street_index,
+					p.address_suburb,
+					p.address_state,
+					p.address_postcode,
+					p.smokealarms_required,
+					p.smokealarms_power,
+					p.smokealarms_2022_compliant,
+					p.smokealarms_company,
+					p.smokealarms_last_inspection,
+					p.smokealarms_na,
+					p.smokealarms_upgrade_preference,
+					p.smokealarms_workorder_sent,
+					people.name people_name
+					FROM properties p
+						LEFT JOIN people on p.people_id = people.id';
+
+			$_sql = sprintf(
+				'%s WHERE %s',
+				$__sql,
+				implode( ' AND ', $conditions)
+
+			);
+			if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+
+			$this->Q( $_sql);
+
+		}
 
 		$_sql = 'SELECT
 				id,

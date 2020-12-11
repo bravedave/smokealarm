@@ -139,7 +139,7 @@ use strings;  ?>
 
     $btnClass = 'btn-light';
     if ( $expired) {
-      $btnClass =  'btn-danger';
+      $btnClass = 'btn-danger';
 
     }
     elseif ( $warning) {
