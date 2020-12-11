@@ -208,15 +208,21 @@ class smokealarm extends _dao {
 					FROM properties p
 						LEFT JOIN people on p.people_id = people.id';
 
-			$_sql = sprintf(
-				'%s WHERE %s',
-				$__sql,
-				implode( ' AND ', $conditions)
+			if ($activeProperties) {
+				/**
+				 * currently this blow the machine memory
+				 */
+				$_sql = sprintf(
+					'%s WHERE %s',
+					$__sql,
+					implode( ' AND ', $conditions)
 
-			);
-			if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
+				);
+				if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
 
-			$this->Q( $_sql);
+				$this->Q( $_sql);
+
+			}
 
 		}
 
@@ -256,7 +262,7 @@ class smokealarm extends _dao {
 
 		}
 
-		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 1000');
+		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 3000');
 
 	}
 
