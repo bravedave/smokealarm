@@ -236,7 +236,7 @@ $dto = $this->data->dto; ?>
 
                       });
 
-                      if ( tag == _data.tag) ctrl.prepend('<i class="fa fa-check"></i>');
+                      if ( tag == _data.tag) ctrl.prepend('<i class="bi bi-check"></i>');
 
                       _context.append( ctrl);
 
@@ -251,7 +251,7 @@ $dto = $this->data->dto; ?>
 
                     }));
 
-                    _context.append( $('<a href="#"><i class="fa fa-trash"></i>delete document</a>').on( 'click', function( e) {
+                    _context.append( $('<a href="#"><i class="bi bi-trash"></i>delete document</a>').on( 'click', function( e) {
                       e.stopPropagation();e.preventDefault();
 
                       _context.close();

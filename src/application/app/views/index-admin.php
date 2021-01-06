@@ -17,6 +17,6 @@
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'baths') ?>">Baths</a></li>
   <li class="nav-item"><a class="nav-link" href="<?= strings::url( 'property_type') ?>">Property type</a></li>
   <!-- li class="nav-item"><a class="nav-link" href="<?= strings::url( 'users') ?>">Users</a></li -->
-  <li class="nav-item"><a class="nav-link" href="<?= strings::url() ?>"><i class="fa fa-fw fa-reply" style="margin-left: -1.1rem"></i>back</a></li>
+  <li class="nav-item"><a class="nav-link" href="<?= strings::url() ?>"><i class="bi bi-arrow-left-short" style="margin-left: -1.1rem"></i> back</a></li>
 
 </ul>

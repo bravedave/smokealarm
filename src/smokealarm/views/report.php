@@ -69,7 +69,7 @@ use strings;  ?>
 
         </button>
 
-        <button class="btn btn-secondary btn-sm flex-grow-0" type="button"><i class="fa fa-circle text-muted"></i></button>
+        <button class="btn btn-secondary btn-sm flex-grow-0" type="button"><i class="bi bi-circle text-muted"></i></button>
 
       </div>
 
@@ -225,7 +225,7 @@ use strings;  ?>
 
           </button>
 
-          <button type="button" class="btn btn-sm <?= $btnClass ?> flex-grow-0" edit-property><i class="fa fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm <?= $btnClass ?> flex-grow-0" edit-property><i class="bi bi-pencil"></i></button>
 
         </div>
 
@@ -424,7 +424,7 @@ use strings;  ?>
         }));
 
         if ( 'yes' == _data.workorder_sent) {
-          _context.append( $('<a href="#"><i class="fa fa-check"></i>Workorder Sent</a>').on( 'click', function( e) {
+          _context.append( $('<a href="#"><i class="bi bi-check"></i>Workorder Sent</a>').on( 'click', function( e) {
             e.stopPropagation();e.preventDefault();
 
             _context.close();
@@ -452,7 +452,7 @@ use strings;  ?>
 
         });
 
-        if ( 'yes' == String( _data.na)) ctrl.prepend( '<i class="fa fa-check"></i>');
+        if ( 'yes' == String( _data.na)) ctrl.prepend( '<i class="bi bi-check"></i>');
         _context.append( ctrl);
 
       <?php } ?>
@@ -594,13 +594,13 @@ use strings;  ?>
                 let g = $('<div class="input-group"></div>');
                 g.append( pc);
 
-                let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                let a = $( '<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
                 a.attr( 'href', 'sms://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
                 $( '<div class="input-group-append"></div>')
                 .append( a)
                 .appendTo( g);
 
-                a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                a = $( '<a class="input-group-text"><i class="bi bi-phone"></i></a>')
                 a.attr( 'href', 'tel://' + String( data.OwnerMobile).replace( /[^0-9]/g,''));
                 $( '<div class="input-group-append"></div>')
                 .append( a)
@@ -636,13 +636,13 @@ use strings;  ?>
                 let g = $('<div class="input-group"></div>');
                 g.append( pc);
 
-                let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                let a = $( '<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
                 a.attr( 'href', 'sms://' + String( data.Mobile).replace( /[^0-9]/g,''));
                 $( '<div class="input-group-append"></div>')
                 .append( a)
                 .appendTo( g);
 
-                a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                a = $( '<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
                 a.attr( 'href', 'tel://' + String( data.Mobile).replace( /[^0-9]/g,''));
                 $( '<div class="input-group-append"></div>')
                 .append( a)
@@ -673,13 +673,13 @@ use strings;  ?>
                     let g = $('<div class="input-group"></div>');
                     g.append( pc);
 
-                    let a = $( '<a class="input-group-text"><i class="fa fa-commenting-o"></i></a>')
+                    let a = $( '<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
                     a.attr( 'href', 'sms://' + String( o.Mobile).replace( /[^0-9]/g,''));
                     $( '<div class="input-group-append"></div>')
                     .append( a)
                     .appendTo( g);
 
-                    a = $( '<a class="input-group-text"><i class="fa fa-phone"></i></a>')
+                    a = $( '<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
                     a.attr( 'href', 'tel://' + String( o.Mobile).replace( /[^0-9]/g,''));
                     $( '<div class="input-group-append"></div>')
                     .append( a)
@@ -709,11 +709,29 @@ use strings;  ?>
       });
 
     })
+    .on('refresh-summary', function(e) {
+      e.stopPropagation();
+
+      let _me = $(this);
+      let card = _me.closest('.card');
+      if ( card.length > 0) {
+        console.log( card[0]);
+        let btn = $('button[data-properties_id]', card)
+        if ( btn.length > 0) {
+          btn.trigger('refresh');
+
+        }
+        // let _data = _me.data();
+
+      }
+
+    })
     .on('reload', function(e) {
       e.stopPropagation();
 
       let _me = $(this);
       let _data = _me.data();
+      // console.log( 'reload ....');
 
       let indicator = $('<div class="text-center"></div>');
       let sp = '<div class="spinner-grow spinner-grow-sm" role="status"><span class="sr-only">Loading...</span></div>&nbsp;';

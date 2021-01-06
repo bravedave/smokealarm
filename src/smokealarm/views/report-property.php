@@ -63,7 +63,7 @@ use strings; ?>
 	<tfoot class="d-print-none">
 		<tr>
 			<td colspan="8" class="text-right">
-				<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="fa fa-plus"></i></a>
+				<button type="button" class="btn btn-outline-secondary" id="<?= $addBtn = strings::rand() ?>"><i class="bi bi-plus bi-2x"></i></a>
 
 			</td>
 
@@ -79,8 +79,8 @@ use strings; ?>
       placeholder="notes ..."
       id="<?= $_notes = strings::rand()  ?>"><?= $this->data->notes ?></textarea>
 
-    <button type="button" class="btn btn-primary rounded-circle position-absolute d-none" save style="right: 15px; top: -12px">
-      <i class="fa fa-save"></i>
+    <button type="button" class="btn btn-sm btn-outline-primary bg-white position-absolute d-none" save style="right: 15px; top: -12px">
+      save
 
     </button>
 
@@ -99,7 +99,7 @@ use strings; ?>
 
       if ( strings::endswith( $this->data->certificate, '.pdf')) {
         printf(
-          '<a class="btn btn-light btn-block" target="_blank" href="%s"><i class="fa fa-file-pdf-o text-danger"></i> compliance cert</a>',
+          '<a class="btn btn-light btn-block" target="_blank" href="%s"><i class="bi bi-file-ppt text-danger"></i> compliance cert</a>',
           $url
 
         );
@@ -135,8 +135,9 @@ use strings; ?>
     e.stopPropagation();
 
     let _me = $(this);
-    let _container = _me.closest('.collapse');
-    _container.trigger('reload');
+    // console.log('reload ..');
+    _me.closest('.collapse').trigger('refresh-summary');  // first
+    _me.closest('.collapse').trigger('reload'); // i'm history ..
 
   })
   .on('update-line-numbers', function(e) {
@@ -183,7 +184,7 @@ use strings; ?>
     }));
 
     if ( !!_data.id) {
-      _context.append( $('<a href="#"><i class="fa fa-copy"></i>copy</a>').on( 'click', function( e) {
+      _context.append( $('<a href="#"><i class="bi bi-file-plus"></i>copy</a>').on( 'click', function( e) {
         e.stopPropagation();e.preventDefault();
 
         _context.close();
@@ -192,7 +193,7 @@ use strings; ?>
 
       }));
 
-      _context.append( $('<a href="#"><i class="fa fa-archive"></i>archive</a>').on( 'click', function( e) {
+      _context.append( $('<a href="#"><i class="bi bi-archive"></i>archive</a>').on( 'click', function( e) {
         e.stopPropagation();e.preventDefault();
 
         _context.close();

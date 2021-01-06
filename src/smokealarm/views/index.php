@@ -14,7 +14,7 @@ use currentUser;
 use strings;  ?>
 
 <style>
-#<?= $_uid = strings::rand() ?> .nav-link > .fa:first-child { margin-left: -1rem; width: 1rem; }
+#<?= $_uid = strings::rand() ?> .nav-link > .bi:first-child { margin-left: -1rem; width: 1rem; }
 </style>
 <ul class="nav flex-column" id="<?= $_uid ?>">
   <li class="h5"><a href="<?= strings::url( 'smokealarm') ?>"><?= config::label ?></a></li>
@@ -56,7 +56,7 @@ use strings;  ?>
   } ?>
 
   <?php if ( isset($this->data->na) && $this->data->na) { ?>
-    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="fa fa-check"></i>Include Inactive</a></li>
+    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="bi bi-check"></i>Include Inactive</a></li>
   <?php }
     else {  ?>
     <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>">Include Inactive</a></li>
