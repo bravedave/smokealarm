@@ -458,7 +458,7 @@ use strings;  ?>
       <?php } ?>
 
       _context.append(
-        $('<a href="#">goto ' + _data.address + '</a>')
+        $('<a href="#" target="_blank">goto ' + _data.address + '</a>')
         .attr( 'href', _.url('property/view/' + _data.properties_id))
         .on( 'click', e => _context.close())
 
@@ -466,7 +466,7 @@ use strings;  ?>
 
       if ( Number(_data.people_id) > 0) {
         _context.append(
-          $('<a href="#">goto ' + _data.people_name + '</a>')
+          $('<a href="#" target="_blank">goto ' + _data.people_name + '</a>')
           .attr( 'href', _.url('person/view/' + _data.people_id))
           .on( 'click', e => _context.close())
 
