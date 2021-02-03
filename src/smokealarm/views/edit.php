@@ -43,7 +43,7 @@ $_uidImage = strings::rand(); ?>
         </div>
 
         <div class="modal-body">
-          <div class="form-row row mb-2"><!-- Address -->
+          <div class="form-row mb-2"><!-- Address -->
             <div class="col">
               <label class="mb-0" for="<?= $_uid = strings::rand() ?>">Address</label>
               <input type="text" name="address_street" class="form-control"
@@ -55,21 +55,21 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2" id="<?= $_uidImage ?>"></div><!-- Alarm Image -->
+          <div class="form-row mb-2" id="<?= $_uidImage ?>"></div><!-- Alarm Image -->
 
-          <div class="form-row row mb-2"><!-- Alarm Image Uploader -->
+          <div class="form-row mb-2"><!-- Alarm Image Uploader -->
             <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>uploader"></div>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Location -->
+          <div class="form-row mb-2"><!-- Location -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uidLocation = strings::rand() ?>">location</label>
             <div class="col">
               <select name="location" class="form-control" id="<?= $_uidLocation ?>" required>
                 <option value=""></option>
                 <?php
                 $_dao = new dao\smokealarm_locations;
-                $_dtoSet = $_dao->dtoSet( $_dao->getAll());
+                $_dtoSet = $_dao->dtoSet( $_dao->getAll('*','ORDER BY `location`'));
                 foreach ($_dtoSet as $_dto) {
                   printf(
                     '<option value="%s" %s>%s</option>',
@@ -87,7 +87,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Make -->
+          <div class="form-row mb-2"><!-- Make -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">make</label>
             <div class="col">
               <input type="text" name="make" class="form-control"
@@ -99,7 +99,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Model -->
+          <div class="form-row mb-2"><!-- Model -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">model</label>
             <div class="col">
               <input type="text" name="model" class="form-control"
@@ -111,7 +111,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Type -->
+          <div class="form-row mb-2"><!-- Type -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">type</label>
             <div class="col">
               <div class="input-group">
@@ -167,7 +167,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Expiry -->
+          <div class="form-row mb-2"><!-- Expiry -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">expiry</label>
             <div class="col">
               <input type="date" name="expiry" class="form-control" required
@@ -178,7 +178,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Connect -->
+          <div class="form-row mb-2"><!-- Connect -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">connect</label>
             <div class="col">
               <select class="form-control" title="connect" name="connect" id="<?= $_uid ?>">
@@ -203,7 +203,7 @@ $_uidImage = strings::rand(); ?>
 
           </div>
 
-          <div class="form-row row mb-2"><!-- Status -->
+          <div class="form-row mb-2"><!-- Status -->
             <label class="col-2 col-form-label text-truncate" for="<?= $_uid = strings::rand() ?>">status</label>
             <div class="col">
               <select class="form-control" title="smoke alarm status" name="status" required id="<?= $_uid ?>">

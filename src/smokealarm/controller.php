@@ -746,21 +746,6 @@ class controller extends \Controller {
 
   }
 
-  public function js( $lib = '') {
-    $s = [];
-    $r = [];
-
-    $s[] = '@{{route}}@';
-    $r[] = strings::url( $this->route);
-
-    $js = \file_get_contents( __DIR__ . '/js/custom.js');
-    $js = preg_replace( $s, $r, $js);
-
-    Response::javascript_headers();
-    print $js;
-
-  }
-
 	public function editproperty( $id = 0) {
     $this->title = 'Edit Property';
 
@@ -820,6 +805,21 @@ class controller extends \Controller {
 			} else { $this->load('not-found-property'); }
 
 		} else { $this->load('not-found-property'); }
+
+  }
+
+  public function js( $lib = '') {
+    $s = [];
+    $r = [];
+
+    $s[] = '@{{route}}@';
+    $r[] = strings::url( $this->route);
+
+    $js = \file_get_contents( __DIR__ . '/js/custom.js');
+    $js = preg_replace( $s, $r, $js);
+
+    Response::javascript_headers();
+    print $js;
 
   }
 
