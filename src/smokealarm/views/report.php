@@ -176,8 +176,7 @@ use strings;  ?>
 
               }
               elseif ( $item->alarms < $item->smokealarms_required) {
-                $complianceClass = 'text-danger';
-                $complianceHtml = $item->alarms - $item->smokealarms_required;
+                $complianceHtml = sprintf( '<span class="badge badge-danger">%s</span>', $item->alarms - $item->smokealarms_required);
 
               }
 
