@@ -37,13 +37,14 @@ use strings;  ?>
   <div class="card">
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
       <div class="btn-group d-flex">
-        <button class="btn btn-secondary btn-sm flex-fill" type="button">
+        <div class="btn btn-secondary btn-sm flex-fill" style="cursor: default;">
           <div class="row">
-            <div class="col text-left text-truncate">address</div>
+            <div class="col text-left text-truncate" id="<?= $_uidSortByAddress = strings::rand() ?>">address</div>
             <div class="col-3 text-left d-none d-lg-block">
               <div class="row">
-                <div class="col text-truncate">company</div>
-                <div class="col-7 text-truncate">last inspection</div>
+                <div class="col text-truncate" id="<?= $_uidSortByCompany = strings::rand() ?>">company</div>
+                <div class="col-6 text-truncate" id="<?= $_uidSortLastInspection = strings::rand() ?>">last inspection</div>
+                <div class="col-1">&nbsp;</div>
               </div>
             </div>
             <div class="col-1 col-xl-3 text-left d-none d-lg-block">
@@ -67,7 +68,7 @@ use strings;  ?>
 
           </div>
 
-        </button>
+        </div>
 
         <button class="btn btn-secondary btn-sm flex-grow-0" type="button"><i class="bi bi-circle text-muted"></i></button>
 
@@ -90,6 +91,7 @@ use strings;  ?>
       $items[] = (object)[
         'properties_id' => $pid = $dto->properties_id,
         'address' => implode( ' ', $addr),
+        'street_index' => $dto->street_index,
         'people_id' => $dto->people_id,
         'people_name' => $dto->people_name,
         'smokealarms_power' => $dto->smokealarms_power,
@@ -147,14 +149,18 @@ use strings;  ?>
 
     }
     ?>
-    <div class="card">
+    <div class="card"
+      data-address="<?= htmlentities( $item->street_index) ?>"
+      data-company="<?= htmlentities( $item->smokealarms_company) ?>"
+      data-inspect="<?= $item->smokealarms_last_inspection ?>"
+      >
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
           <button class="btn <?= $btnClass ?> btn-sm flex-fill" type="button"
             data-toggle="collapse"
             data-target="#<?= $_collapse = strings::rand() ?>"
             data-properties_id="<?= $item->properties_id ?>"
-            data-address= "<?= htmlentities( $item->address) ?>""
+            data-address="<?= htmlentities( $item->address) ?>"
             data-people_id="<?= $item->people_id ?>"
             data-people_name="<?= htmlentities( $item->people_name) ?>"
             data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>"
@@ -247,7 +253,114 @@ use strings;  ?>
 
 </div>
 <script>
-  ( _ => $(document).ready( () => {
+  ( _ => {
+    let cursor = 'url(<?= \dvc\icon::base64_data( \dvc\icon::arrow_down_up) ?>),auto';
+
+    $('#<?= $_uidSortByAddress ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-address');
+
+    });
+
+    $('#<?= $_uidSortByCompany ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-company');
+
+    });
+
+    $('#<?= $_uidSortLastInspection ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-last-inspection');
+
+    });
+
+    let sortFunc = (a, b, key, sorttype) => {
+      let ae = $(a).data(key);
+      let be = $(b).data(key);
+
+      if ('numeric' == sorttype) {
+        if ( 'undefined' == typeof ae) ae = 0;
+        if ( 'undefined' == typeof be) be = 0;
+        return ( Number(ae) - Number(be));
+
+      }
+      else {
+        if ( 'undefined' == typeof ae) ae = '';
+        if ( 'undefined' == typeof be) be = '';
+        return ( String( ae).toUpperCase().localeCompare( String( be).toUpperCase()));
+
+      }
+
+    };
+
+    $('#<?= $_accordion ?>')
+    .on( 'sort-address', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-address]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'address', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    })
+    .on( 'sort-company', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-company]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'company', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    })
+    .on( 'sort-last-inspection', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-inspect]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'inspect', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    });
+
     $('#<?= $_accordion ?> button[data-properties_id]')
     .on( 'edit', function( e) {
       let _me = $(this);
@@ -788,5 +901,7 @@ use strings;  ?>
 
     });
 
-  }))( _brayworth_);
+    $(document).ready( () => {});
+
+  })( _brayworth_);
 </script>
