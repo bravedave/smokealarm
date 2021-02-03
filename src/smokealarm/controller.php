@@ -309,6 +309,7 @@ class controller extends \Controller {
             ->add( 'hasSmokeAlarmComplianceCertificate', $dao->hasSmokeAlarmComplianceCertificate( $dto) ? 'yes' : 'no')
             ->add( 'smokealarms_workorder_sent', strtotime( $dto->smokealarms_workorder_sent) > 0 ? 'yes' : 'no')
             ->add( 'smokealarms_workorder_date', strings::asLocalDate( $dto->smokealarms_workorder_sent))
+            ->add( 'smokealarms_workorder_schedule', $dto->smokealarms_workorder_schedule)
             ->add( 'address', implode( ' ', $addr))
             ;
 
@@ -544,6 +545,20 @@ class controller extends \Controller {
         ->add( 'id', $id);
 
 		}
+    elseif ( 'save-workorder-schedule' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $a = [
+          'smokealarms_workorder_schedule' => $this->getPost('smokealarms_workorder_schedule')
+
+        ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
+
+		}
     elseif ( 'search-properties' == $action) {
 			if ( $term = $this->getPost('term')) {
         $restriction = '';
@@ -636,6 +651,22 @@ class controller extends \Controller {
     elseif ( 'tags-get-available' == $action) {
       Json::ack( $action)
         ->add( 'tags', config::smokealarm_tags);
+
+		}
+    elseif ( 'workorder-clear' == $action) {
+      if ( $id = (int)$this->getPost('id')) {
+        $a = [
+          'smokealarms_workorder_schedule' => '0000-00-00',
+          'smokealarms_workorder_sent' => '',
+          'smokealarms_upgrade_preference' => ''
+
+        ];
+
+        $dao = new dao\properties;
+        $dao->UpdateByID( $a, $id);
+        Json::ack( $action);
+
+      } else { Json::nak( $action); }
 
 		}
 		else {
@@ -744,6 +775,26 @@ class controller extends \Controller {
         ];
 
 				$this->load('edit-property');
+
+			} else { $this->load('not-found-property'); }
+
+		} else { $this->load('not-found-property'); }
+
+  }
+
+	public function editScheduleWorkorder( $id = 0) {
+    if ( $id = (int)$id) {
+
+      $dao = new dao\properties;
+      if ( $dto = $dao->getByID( $id)) {
+
+        $this->data = (object)[
+          'title' => $this->title = 'Schedule Workorder',
+          'dto' => $dto
+
+        ];
+
+				$this->load('edit-workorder-schedule');
 
 			} else { $this->load('not-found-property'); }
 

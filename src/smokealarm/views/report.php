@@ -103,6 +103,7 @@ use strings;  ?>
         'smokealarms_na' => $dto->smokealarms_na,
         'smokealarms_upgrade_preference' => $dto->smokealarms_upgrade_preference,
         'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
+        'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
         'alarms' => 0
 
       ];
@@ -188,6 +189,18 @@ use strings;  ?>
 
               $hasCert = $dao->hasSmokeAlarmComplianceCertificate( $fakeProperty);
 
+              $wo = strtotime( $item->smokealarms_workorder_sent) > 0 ? strings::html_tick : '&nbsp;';
+              $woTitle = sprintf( 'title="%s"', strings::asLocalDate( $item->smokealarms_workorder_sent));
+              if ( strtotime( $item->smokealarms_workorder_schedule) > 0) {
+                $wo = sprintf(
+                  '<i class="bi bi-clock" data-toggle="popover" data-trigger="hover" data-content="%s" title="Workorder Scheduled"></i>',
+                  strings::asLocalDate( $item->smokealarms_workorder_schedule)
+
+                );
+                $woTitle = '';
+
+              }
+
               printf(
                 '<div class="row">
                   <div class="col text-left text-truncate" address>%s</div>
@@ -201,7 +214,7 @@ use strings;  ?>
                   <div class="col-1 col-xl-3 text-left d-none d-lg-block">
                     <div class="row">
                       <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
-                      <div class="col-3 d-none d-xl-block text-center" title="%s" work-order>%s</div>
+                      <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
                       <div class="col text-truncate">%s</div>
 
                     </div>
@@ -217,8 +230,7 @@ use strings;  ?>
                 $hasCert ? 'has certificate' : 'no certificate',
                 $hasCert ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_upgrade_preference,
-                strings::asLocalDate( $item->smokealarms_workorder_sent),
-                strtotime( $item->smokealarms_workorder_sent) > 0 ? strings::html_tick : '&nbsp;',
+                $woTitle, $wo,
                 $item->smokealarms_power,
                 $item->alarms,
                 $item->smokealarms_na ? 'N/A' : $item->smokealarms_required,
@@ -426,7 +438,7 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
 
-          // console.log( d.dto);
+          // console.log( d);
 
           $('[address]', _me).html( d.address);
           $('[compliant]', _me).html( d.compliant);
@@ -435,9 +447,37 @@ use strings;  ?>
           $('[company]', _me).html( d.dto.smokealarms_company);
           $('[upgrade-pref]', _me).html( d.dto.smokealarms_upgrade_preference);
 
-          $('[work-order]', _me)
-          .html( 'yes' == d.smokealarms_workorder_sent ? '<?= strings::html_tick ?>' : '&nbsp;')
-          .attr( 'title', d.smokealarms_workorder_date);
+          let wod = _.dayjs(d.smokealarms_workorder_schedule);
+          if ( wod.isValid() && wod.unix() > 0) {
+            let icon = $('<i class="bi bi-clock" title="Workorder Scheduled"></i>');
+            icon.attr({
+              'data-trigger' : 'hover',
+              'data-content' : wod.format('L'),
+
+            });
+
+            $('[work-order]', _me)
+            .html( '')
+            .append( icon)
+            .removeAttr( 'title');
+
+            icon.popover();
+
+          }
+          else {
+            if ( 'yes' == d.smokealarms_workorder_sent) {
+              $('[work-order]', _me)
+              .html( '<?= strings::html_tick ?>')
+              .attr( 'title', d.smokealarms_workorder_date);
+
+            }
+            else {
+              $('[work-order]', _me).html( '&nbsp;').removeAttr( 'title');
+
+            }
+
+          }
+
           _me.data('workorder_sent', d.smokealarms_workorder_sent);
 
           $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
@@ -557,6 +597,22 @@ use strings;  ?>
 
         }
 
+        _context.append( $('<a href="#">Schedule Workorder</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+          _me.trigger('workorder-schedule');
+
+        }));
+
+        _context.append( $('<a href="#"><i class="bi bi-eraser"></i>Clear Workorder Data</a>').on( 'click', function( e) {
+          e.stopPropagation();e.preventDefault();
+
+          _context.close();
+          _me.trigger('workorder-clear');
+
+        }));
+
         let ctrl = $('<a href="#">Not Applicable</a>').on( 'click', function( e) {
           e.stopPropagation();e.preventDefault();
 
@@ -595,6 +651,39 @@ use strings;  ?>
       let _data = _me.data();
 
       _.get.modal( _.url('<?= $this->route ?>/editUpgradePreferences/' + _data.properties_id))
+      .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
+
+    })
+    .on( 'workorder-clear', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.post({
+        url : _.url('<?= $this->route ?>'),
+        data : {
+          action : 'workorder-clear',
+          id : _data.properties_id
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+          _me.trigger( 'refresh');
+
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
+    })
+    .on( 'workorder-schedule', function( e) {
+      let _me = $(this);
+      let _data = _me.data();
+
+      _.get.modal( _.url('<?= $this->route ?>/editScheduleWorkorder/' + _data.properties_id))
       .then( modal => modal.on( 'success', e => _me.trigger( 'refresh')));
 
     })
@@ -901,7 +990,10 @@ use strings;  ?>
 
     });
 
-    $(document).ready( () => {});
+    $(document).ready( () => {
+      $('#<?= $_accordion ?> [data-toggle="popover"]').popover()
+
+    });
 
   })( _brayworth_);
 </script>

@@ -23,5 +23,6 @@ $dbc->defineField( 'smokealarms_na', 'tinyint');
 $dbc->defineField( 'smokealarms_annual', 'varchar');
 $dbc->defineField( 'smokealarms_upgrade_preference', 'varchar');
 $dbc->defineField( 'smokealarms_workorder_sent', 'datetime');
+$dbc->defineField( 'smokealarms_workorder_schedule', 'date');
 
 $dbc->check();
