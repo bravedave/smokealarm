@@ -80,6 +80,26 @@ $dto = $this->data->dto; ?>
 
               </div>
 
+              <div class="form-check">
+                <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
+                  value="Owner"
+                  <?php if ( 'Owner' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
+                  id="<?= $_uid = strings::rand() ?>">
+
+                <label class="form-check-label" for="<?= $_uid ?>">Owner to Upgrade</label>
+
+              </div>
+
+              <div class="form-check">
+                <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
+                  value="Quote"
+                  <?php if ( 'Quote' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
+                  id="<?= $_uid = strings::rand() ?>">
+
+                <label class="form-check-label" for="<?= $_uid ?>">Quote</label>
+
+              </div>
+
               <?php if ( $dto->smokealarms_upgrade_preference) { ?>
                 <br>
                 <div class="form-check">
