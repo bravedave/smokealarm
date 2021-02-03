@@ -437,7 +437,7 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
 
-          // console.log( d);
+          console.log( d);
 
           $('[address]', _me).html( d.address);
           $('[compliant]', _me).html( d.compliant);
@@ -465,12 +465,14 @@ use strings;  ?>
           }
           else {
             if ( 'yes' == d.smokealarms_workorder_sent) {
+              console.log( 'workorder-sent');
               $('[work-order]', _me)
               .html( '<?= strings::html_tick ?>')
               .attr( 'title', d.smokealarms_workorder_date);
 
             }
             else {
+              console.log( 'workorder-clear');
               $('[work-order]', _me).html( '&nbsp;').removeAttr( 'title');
 
             }

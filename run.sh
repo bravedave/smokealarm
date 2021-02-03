@@ -2,6 +2,7 @@
 
 WD=`pwd`
 PORT=16254
+php=php
 if [[ -x /usr/bin/php8 ]]; then php=php8; fi
 
 cd www

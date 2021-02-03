@@ -419,20 +419,45 @@ class controller extends \Controller {
 		}
     elseif ( 'save-properties' == $action) {
       if ( $id = (int)$this->getPost('id')) {
-        $a = [
-          'smokealarms_required' => $this->getPost('smokealarms_required'),
-          'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
-          'smokealarms_power' => $this->getPost('smokealarms_power'),
-          'smokealarms_company_id' => $this->getPost('smokealarms_company_id'),
-          'smokealarms_company' => $this->getPost('smokealarms_company'),
-          'smokealarms_last_inspection' => $this->getPost('smokealarms_last_inspection'),
-          'smokealarms_annual' => $this->getPost('smokealarms_annual'),
-
-        ];
-
         $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
+        if ( $dto = $dao->getByID( $id)) {
+          $a = [
+            'smokealarms_required' => $this->getPost('smokealarms_required'),
+            'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
+            'smokealarms_power' => $this->getPost('smokealarms_power'),
+            'smokealarms_company_id' => $this->getPost('smokealarms_company_id'),
+            'smokealarms_company' => $this->getPost('smokealarms_company'),
+            'smokealarms_last_inspection' => $this->getPost('smokealarms_last_inspection'),
+            'smokealarms_annual' => $this->getPost('smokealarms_annual'),
+
+          ];
+
+          if (
+            strtotime($dto->smokealarms_workorder_schedule) > 0
+            &&
+            strtotime($dto->smokealarms_workorder_schedule) < strtotime($a['smokealarms_last_inspection'])
+            ) {
+
+            $a['smokealarms_workorder_schedule'] = '0000-00-00';
+            $a['smokealarms_workorder_sent'] = '';
+            $a['smokealarms_upgrade_preference'] = '';
+
+          }
+          elseif (
+            strtotime($dto->smokealarms_workorder_sent) > 0
+            &&
+            strtotime($dto->smokealarms_workorder_sent) < strtotime($a['smokealarms_last_inspection'])
+            ) {
+
+            $a['smokealarms_workorder_sent'] = '';
+            $a['smokealarms_upgrade_preference'] = '';
+
+          }
+
+          $dao->UpdateByID( $a, $id);
+          Json::ack( $action);
+
+        } else { Json::nak( $action); }
 
       } else { Json::nak( $action); }
 
