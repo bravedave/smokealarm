@@ -13,6 +13,7 @@ namespace smokealarm;
 use currentUser;
 use dvc\icon;
 use strings;
+use theme;
 
 $dto = $this->data->dto; ?>
 
@@ -24,7 +25,7 @@ $dto = $this->data->dto; ?>
   <div class="modal fade" tabindex="-1" role="dialog" id="<?= $_modal = strings::rand() ?>" aria-labelledby="<?= $_modal ?>Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header bg-secondary text-white py-2">
+        <div class="modal-header py-2 <?= theme::modalHeader() ?>">
           <h5 class="modal-title" id="<?= $_modal ?>Label"><?php
             $addr = [$dto->address_street];
             if ($dto->address_suburb) $addr[] = $dto->address_suburb;
@@ -37,6 +38,7 @@ $dto = $this->data->dto; ?>
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+
         <div class="modal-body">
           <div class="form-row mb-2"><!-- smokealarms_required -->
             <div class="col-sm-4 col-form-label" for="<?= $uid = strings::rand() ?>">Required 2022</div>
@@ -118,6 +120,7 @@ $dto = $this->data->dto; ?>
             <div class="col-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Annual Month</div>
             <div class="col">
               <input type="month" name="smokealarms_annual" class="form-control"
+                <?php if ( !currentUser::isAdmin()) print 'readonly'; ?>
                 id="?<?= $uid ?>"
                 <?php
                 if ( preg_match('@^[0-9]{4}-[0-9]{2}$@', $dto->smokealarms_annual)) printf( ' value="%s"', $dto->smokealarms_annual);

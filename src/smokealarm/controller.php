@@ -428,9 +428,13 @@ class controller extends \Controller {
             'smokealarms_company_id' => $this->getPost('smokealarms_company_id'),
             'smokealarms_company' => $this->getPost('smokealarms_company'),
             'smokealarms_last_inspection' => $this->getPost('smokealarms_last_inspection'),
-            'smokealarms_annual' => $this->getPost('smokealarms_annual'),
 
           ];
+
+          if ( currentUser::isAdmin()) {
+            $a['smokealarms_annual'] = $this->getPost('smokealarms_annual');
+
+          }
 
           if (
             strtotime($dto->smokealarms_workorder_schedule) > 0

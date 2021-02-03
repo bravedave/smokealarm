@@ -437,7 +437,7 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
 
-          console.log( d);
+          // console.log( d);
 
           $('[address]', _me).html( d.address);
           $('[compliant]', _me).html( d.compliant);
@@ -465,14 +465,14 @@ use strings;  ?>
           }
           else {
             if ( 'yes' == d.smokealarms_workorder_sent) {
-              console.log( 'workorder-sent');
+              // console.log( 'workorder-sent');
               $('[work-order]', _me)
               .html( '<?= strings::html_tick ?>')
               .attr( 'title', d.smokealarms_workorder_date);
 
             }
             else {
-              console.log( 'workorder-clear');
+              // console.log( 'workorder-clear');
               $('[work-order]', _me).html( '&nbsp;').removeAttr( 'title');
 
             }
@@ -763,7 +763,7 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
           /**-- [owner/tenants] --*/
-          console.log( d);
+          // console.log( d);
 
           ( data => {
             /** owner */
@@ -863,7 +863,7 @@ use strings;  ?>
 
             if ( data.cotens.length >0) {
               $.each( data.cotens, ( i, o) => {
-                //~ console.log( o);
+                // console.log( o);
 
                 let _row = $('<div class="form-group row"></div>').appendTo( col);
 
@@ -918,7 +918,7 @@ use strings;  ?>
       let _me = $(this);
       let card = _me.closest('.card');
       if ( card.length > 0) {
-        console.log( card[0]);
+        // console.log( card[0]);
         let btn = $('button[data-properties_id]', card)
         if ( btn.length > 0) {
           btn.trigger('refresh');
