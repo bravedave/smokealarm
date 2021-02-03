@@ -107,17 +107,17 @@ class smokealarm extends _dao {
 
 			}
 
-			if ( $_cp_res = $_cp_dao->getActiveWithCurrentTenant()) {
-        $leaseDetails = array_map( function( $dto) {
-          return (object)[
-						'property_id' => $dto->properties_id,
-						'leaseStop' => $dto->leaseStop
+			// if ( $_cp_res = $_cp_dao->getActiveWithCurrentTenant()) {
+      //   $leaseDetails = array_map( function( $dto) {
+      //     return (object)[
+			// 			'property_id' => $dto->properties_id,
+			// 			'leaseStop' => $dto->leaseStop
 
-					];
+			// 		];
 
-        }, $_cp_res->dtoSet());
+      //   }, $_cp_res->dtoSet());
 
-			}
+			// }
 
 		}
 
