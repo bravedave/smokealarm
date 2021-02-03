@@ -59,7 +59,7 @@ $dto = $this->data->dto; ?>
       let _data = _form.serializeFormJSON();
       let _modalBody = $('.modal-body', _form);
 
-      console.log( _data);
+      // console.log( _data);
       _.post({
         url : _.url('<?= $this->route ?>'),
         data : _data,

@@ -41,6 +41,7 @@ $_uidImage = strings::rand(); ?>
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+
         <div class="modal-body">
           <div class="form-row row mb-2"><!-- Address -->
             <div class="col">
@@ -56,7 +57,7 @@ $_uidImage = strings::rand(); ?>
 
           <div class="form-row row mb-2" id="<?= $_uidImage ?>"></div><!-- Alarm Image -->
 
-          <div class="form-row row mb-2"><!-- Alarm Image Uploaded -->
+          <div class="form-row row mb-2"><!-- Alarm Image Uploader -->
             <div class="offset-sm-3 col-sm-6" id="<?= $_uidImage ?>uploader"></div>
 
           </div>

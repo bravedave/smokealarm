@@ -681,6 +681,7 @@ class controller extends \Controller {
 
         if ( 'copy' == $mode) {
           $dto->id = 0;
+          $dto->location = '';
 
         }
         else {
