@@ -66,6 +66,7 @@ class smokealarm extends _dao {
 				p.smokealarms_2022_compliant,
 				p.smokealarms_company,
 				p.smokealarms_company_id,
+				p.smokealarms_annual,
 				p.smokealarms_last_inspection,
 				p.smokealarms_tags,
 				p.smokealarms_na,

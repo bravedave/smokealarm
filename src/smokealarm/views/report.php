@@ -13,7 +13,7 @@ namespace smokealarm;
 use currentUser;
 use strings;  ?>
 
-<div class="form-group row d-print-none" id="<?= $srch = strings::rand() ?>envelope">
+<div class="form-row mb-2 d-print-none" id="<?= $srch = strings::rand() ?>envelope">
 	<div class="col">
     <input type="search" class="form-control" autofocus id="<?= $srch ?>">
 
@@ -38,17 +38,18 @@ use strings;  ?>
     <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
       <div class="btn-group d-flex">
         <div class="btn btn-secondary btn-sm flex-fill" style="cursor: default;">
-          <div class="row">
+          <div class="form-row">
             <div class="col text-left text-truncate" id="<?= $_uidSortByAddress = strings::rand() ?>">address</div>
             <div class="col-3 text-left d-none d-lg-block">
-              <div class="row">
+              <div class="form-row">
                 <div class="col text-truncate" id="<?= $_uidSortByCompany = strings::rand() ?>">company</div>
-                <div class="col-6 text-truncate" id="<?= $_uidSortLastInspection = strings::rand() ?>">last inspection</div>
+                <div class="col-3 d-none d-xl-block text-center text-truncate">month</div>
+                <div class="col-6 col-xl-5 text-truncate" id="<?= $_uidSortLastInspection = strings::rand() ?>">last inspection</div>
                 <div class="col-1">&nbsp;</div>
               </div>
             </div>
             <div class="col-1 col-xl-3 text-left d-none d-lg-block">
-              <div class="row">
+              <div class="form-row">
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
                 <div class="col text-truncate">power</div>
@@ -57,14 +58,20 @@ use strings;  ?>
 
             </div>
 
-            <div class="col-1 text-center d-flex">
-              <div class="d-md-none">#</div>
-              <div class="d-none d-md-block text-truncate">count</div>
+            <div class="col-4 col-md-3">
+              <div class="form-row">
+                <div class="col-3 text-center d-flex">
+                  <div class="d-md-none">#</div>
+                  <div class="d-none d-md-block text-truncate" title="count">count</div>
+
+                </div>
+
+                <div class="col text-center d-none d-md-block px-0 text-truncate">req 2022</div>
+                <div class="col text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
+
+              </div>
 
             </div>
-
-            <div class="col-2 col-md-1 text-center d-none d-md-block px-0 text-truncate">req 2022</div>
-            <div class="col-2 col-md-1 text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
 
           </div>
 
@@ -98,6 +105,7 @@ use strings;  ?>
         'smokealarms_required' => $dto->smokealarms_required,
         'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
         'smokealarms_company' => $dto->smokealarms_company,
+        'smokealarms_annual' => $dto->smokealarms_annual,
         'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
         'smokealarms_tags' => $dto->smokealarms_tags,
         'smokealarms_na' => $dto->smokealarms_na,
@@ -201,17 +209,18 @@ use strings;  ?>
               }
 
               printf(
-                '<div class="row">
+                '<div class="form-row">
                   <div class="col text-left text-truncate" address>%s</div>
                   <div class="col-3 text-left d-none d-lg-block">
-                    <div class="row">
+                    <div class="form-row">
                       <div class="col text-truncate" company>%s</div>
-                      <div class="col-6 text-truncate" last_inspection>%s</div>
+                      <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s">%s</div>
+                      <div class="col-6 col-xl-5 text-truncate" last_inspection>%s</div>
                       <div class="col-1" certificate title="%s">%s</div>
                     </div>
                   </div>
                   <div class="col-1 col-xl-3 text-left d-none d-lg-block">
-                    <div class="row">
+                    <div class="form-row">
                       <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
                       <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
                       <div class="col text-truncate">%s</div>
@@ -219,12 +228,18 @@ use strings;  ?>
                     </div>
 
                   </div>
-                  <div class="col-1 text-center" compliant>%s</div>
-                  <div class="col-2 col-md-1 d-none d-md-block text-center" required>%s</div>
-                  <div class="col-2 col-md-1 text-center %s" compliance>%s</div>
+                  <div class="col-4 col-md-3">
+                    <div class="form-row">
+                      <div class="col-3 text-center" compliant>%s</div>
+                      <div class="col d-none d-md-block text-center" required>%s</div>
+                      <div class="col text-center %s" compliance>%s</div>
+                    </div>
+                  </div>
                 </div>',
                 $item->address,
                 $item->smokealarms_company,
+                $item->smokealarms_annual,
+                strtotime( $item->smokealarms_annual) > 0 ? date( 'n/y', strtotime( $item->smokealarms_annual)) : '&nbsp;',
                 strings::asLocalDate( $item->smokealarms_last_inspection),
                 $hasCert ? 'has certificate' : 'no certificate',
                 $hasCert ? strings::html_tick : '&nbsp;',
@@ -767,27 +782,27 @@ use strings;  ?>
 
           ( data => {
             /** owner */
-            let row = $('<div class="row"></div>');
+            let row = $('<div class="form-row"></div>');
 
             row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
-            let col = $('<div class="col"></div>').appendTo( row);
-            let _row = $('<div class="form-group row"></div>').appendTo( col);
+            let col = $('<div class="col"></div>').appendTo(row);
+            let _row = $('<div class="form-row mb-2"></div>').appendTo( col);
 
             let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Key);
 
             $('<div class="col-md-5 mb-1 mb-md-0"></div>').append( nc).appendTo( _row);
 
-            $('.card-body', this).prepend( row);
+            $('.card-body', this).prepend(row);
 
           })( d.data);
 
           ( data => {
             /** owner */
-            let row = $('<div class="row"></div>');
+            let row = $('<div class="form-row"></div>');
 
             row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
-            let col = $('<div class="col"></div>').appendTo( row);
-            let _row = $('<div class="form-group row"></div>').appendTo( col);
+            let col = $('<div class="col"></div>').appendTo(row);
+            let _row = $('<div class="form-row mb-2"></div>').appendTo( col);
 
             let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerName);
             let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.OwnerEmail);
@@ -819,17 +834,17 @@ use strings;  ?>
             $('<div class="col-md-4 mb-1 mb-md-0"></div>').append( ec).appendTo( _row);
             $('<div class="col-md-3 mb-1 mb-md-0"></div>').append( pc).appendTo( _row);
 
-            $('.card-body', this).prepend( row);
+            $('.card-body', this).prepend(row);
 
           })( d.data);
 
           ( data => {
             /** tenant */
-            let row = $('<div class="row"></div>');
+            let row = $('<div class="form-row"></div>');
 
             row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
-            let col = $('<div class="col"></div>').appendTo( row);
-            let _row = $('<div class="form-group row"></div>').appendTo( col);
+            let col = $('<div class="col"></div>').appendTo(row);
+            let _row = $('<div class="form-row mb-2"></div>').appendTo( col);
 
             let nc = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Name);
             let ec = $('<input type="text" readonly class="form-control bg-transparent">').val( data.Email);
@@ -865,7 +880,7 @@ use strings;  ?>
               $.each( data.cotens, ( i, o) => {
                 // console.log( o);
 
-                let _row = $('<div class="form-group row"></div>').appendTo( col);
+                let _row = $('<div class="form-row mb-2"></div>').appendTo( col);
 
                 let nc = $('<div class="form-control bg-transparent"></div>').html( o.name);
                 let ec = $('<div class="form-control bg-transparent"></div>').html( o.Email);
@@ -902,7 +917,7 @@ use strings;  ?>
 
             }
 
-            $('.card-body', this).prepend( row);
+            $('.card-body', this).prepend(row);
 
           })( d.data);
           /**-- [owner/tenants] --*/
@@ -991,10 +1006,7 @@ use strings;  ?>
 
     });
 
-    $(document).ready( () => {
-      $('#<?= $_accordion ?> [data-toggle="popover"]').popover()
-
-    });
+    $(document).ready( () => $('#<?= $_accordion ?> [data-toggle="popover"]').popover());
 
   })( _brayworth_);
 </script>
