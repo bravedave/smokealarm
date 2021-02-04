@@ -803,7 +803,7 @@ class controller extends \Controller {
       if ( $dto = $dao->getByID( $id)) {
 
         $this->data = (object)[
-          'title' => $this->title = 'Schedule Workorder',
+          'title' => $this->title = 'Next Inspection Sceduled',
           'dto' => $dto
 
         ];

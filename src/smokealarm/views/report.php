@@ -613,7 +613,7 @@ use strings;  ?>
 
         }
 
-        _context.append( $('<a href="#">Schedule Workorder</a>').on( 'click', function( e) {
+        _context.append( $('<a href="#">Schedule Next Inspection</a>').on( 'click', function( e) {
           e.stopPropagation();e.preventDefault();
 
           _context.close();
