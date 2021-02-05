@@ -92,11 +92,11 @@ class smokealarm extends _dao {
 		$activeProperties = [];
 		$leaseDetails = [];
     if ( \class_exists('dao\console_properties')) {
+			$_cp_dao = new \dao\console_properties;
+
 			if ( $excludeInactive) {
 
 				if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console data', \application::timer()->elapsed(), __METHOD__));
-
-				$_cp_dao = new \dao\console_properties;
 				if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
 					$activeProperties = array_map( function( $dto) {
 						return $dto->properties_id;
@@ -113,7 +113,6 @@ class smokealarm extends _dao {
 			}
 
 			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console lease data', \application::timer()->elapsed(), __METHOD__));
-
 			if ( $_cp_res = $_cp_dao->getActiveWithCurrentTenant()) {
         $leaseDetails = array_map( function( $dto) {
           return (object)[
