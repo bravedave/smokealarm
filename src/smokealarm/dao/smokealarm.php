@@ -306,7 +306,7 @@ class smokealarm extends _dao {
 			// console_properties only exists if leaseDetails has content
 			$this->Q( 'UPDATE tmp
 				LEFT JOIN
-					console_properties cp ON cp.id = tmp.properties_id
+					console_properties cp ON cp.properties_id = tmp.properties_id
 				SET
 					tmp.PropertyManager = cp.`PropertyManager`');
 
