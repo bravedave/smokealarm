@@ -50,7 +50,7 @@ class smokealarm extends _dao {
 
 	public function getOrderedByStreet( bool $excludeInactive = false,  bool $IncludeNotApplicable = false) : ?object {
 		$debug = false;
-		$debug = true;
+		// $debug = true;
 
 		$_sql =
 			'SELECT
@@ -211,6 +211,7 @@ class smokealarm extends _dao {
 				`smokealarms_last_inspection`,
 				`smokealarms_na`,
 				`smokealarms_upgrade_preference`,
+				`smokealarms_annual`,
 				`smokealarms_workorder_sent`,
 				`smokealarms_workorder_schedule`,
 				`people_name`)
@@ -229,6 +230,7 @@ class smokealarm extends _dao {
 					p.smokealarms_last_inspection,
 					p.smokealarms_na,
 					p.smokealarms_upgrade_preference,
+					p.smokealarms_annual,
 					p.smokealarms_workorder_sent,
 					p.smokealarms_workorder_schedule,
 					people.name people_name
