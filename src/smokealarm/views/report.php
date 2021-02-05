@@ -53,7 +53,7 @@ use strings;  ?>
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
                 <?php if ( $this->data->console) {  ?>
-                <div class="col text-center text-truncate">L.End</div>
+                <div class="col text-center text-truncate">L.Start</div>
                 <?php } // if ( $this->data->console)  ?>
 
               </div>
@@ -62,13 +62,16 @@ use strings;  ?>
 
             <div class="col-4 col-md-3">
               <div class="form-row">
-                <div class="col-3 text-center d-flex">
+                <?php if ( $this->data->console) {  ?>
+                <div class="col text-center d-none d-md-block px-0 text-truncate">L.End</div>
+                <?php } // if ( $this->data->console)  ?>
+
+                <div class="<?= $this->data->console ? 'col-3' : 'col' ?> text-center d-flex">
                   <div class="d-md-none">#</div>
-                  <div class="d-none d-md-block text-truncate" title="count">count</div>
+                  <div class="d-none d-md-block flex-fill text-center text-truncate" title="count">count</div>
 
                 </div>
 
-                <div class="col text-center d-none d-md-block px-0 text-truncate">req 2022</div>
                 <div class="col text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
 
               </div>
@@ -218,10 +221,17 @@ use strings;  ?>
 
               }
 
+              $leaseStart = '';
               $leaseEnd = '';
               if ( $this->data->console) {
-                $leaseEnd = sprintf(
+                $leaseStart = sprintf(
                   '<div class="col text-center text-truncate">%s</div>',
+                  strings::asLocalDate( $item->LeaseFirstStart)
+
+                );
+
+                $leaseEnd = sprintf(
+                  '<div class="col d-none d-md-block text-center">%s</div>',
                   strings::asLocalDate( $item->LeaseStop)
 
                 );
@@ -254,9 +264,10 @@ use strings;  ?>
 
                   <div class="col-4 col-md-3">
                     <div class="form-row">
-                      <div class="col-3 text-center" compliant>%s</div>
-                      <div class="col d-none d-md-block text-center" required>%s</div>
+                      %s
+                      <div class="%s text-center" compliant>%s</div>
                       <div class="col text-center %s" compliance>%s</div>
+
                     </div>
 
                   </div>
@@ -271,9 +282,10 @@ use strings;  ?>
                 $hasCert ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_upgrade_preference,
                 $woTitle, $wo,
+                $leaseStart,
                 $leaseEnd,
+                $this->data->console ? 'col-3' : 'col',
                 $item->alarms,
-                $item->smokealarms_na ? 'N/A' : $item->smokealarms_required,
                 $complianceClass,
                 $complianceHtml
 
@@ -439,9 +451,6 @@ use strings;  ?>
         if ( 'ack' == d.response) {
           _me.data( 'na', d.na);
 
-          $('[required]', _me)
-          .html( 'yes' == d.na ? 'N/A' : '-');
-
         }
         else {
           _.growl( d);
@@ -482,7 +491,6 @@ use strings;  ?>
 
           $('[address]', _me).html( d.address);
           $('[compliant]', _me).html( d.compliant);
-          $('[required]', _me).html( d.dto.smokealarms_required);
           $('[power]', _me).html( d.dto.smokealarms_power);
           $('[company]', _me).html( d.dto.smokealarms_company);
           $('[upgrade-pref]', _me).html( d.dto.smokealarms_upgrade_preference);

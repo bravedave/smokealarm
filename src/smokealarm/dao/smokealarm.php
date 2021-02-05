@@ -136,10 +136,10 @@ class smokealarm extends _dao {
 		}
 
 		$this->Q( $_z = 'DROP TABLE IF EXISTS tmp');
-		if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
+		// if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
 
 		$this->Q( $_z = sprintf( 'CREATE TEMPORARY TABLE tmp AS %s', $_sql));
-		if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
+		// if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
 
     if ($activeProperties) {
       $_sql = 'SELECT properties_id FROM tmp WHERE properties_id > 0';
