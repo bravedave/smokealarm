@@ -286,7 +286,7 @@ class smokealarm extends _dao {
 			$this->Q( 'ALTER TABLE tmp
 				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00"');
 
-			$_sql = 'SELECT uid, properties_id FROM tmp';
+			$_sql = 'SELECT id, properties_id FROM tmp';
 			if ( $res = $this->Result( $_sql)) {
 				$res->dtoSet( function( $dto) use ( $leaseDetails) {
 					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
