@@ -338,7 +338,7 @@ class smokealarm extends _dao {
 		// $this->Q('DROP TABLE IF EXISTS _smokealarm_tmp');
 		// $this->Q('CREATE TABLE IF NOT EXISTS _smokealarm_tmp SELECT * FROM tmp');
 
-		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 3000');
+		return $this->Result( 'SELECT * FROM tmp ORDER BY `smokealarms_last_inspection` LIMIT 3000');
 
 	}
 
