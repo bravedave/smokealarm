@@ -63,7 +63,7 @@ use strings;  ?>
             <div class="col-4 col-md-3">
               <div class="form-row">
                 <?php if ( $this->data->console) {  ?>
-                <div class="col text-center d-none d-md-block px-0 text-truncate">L.End</div>
+                <div class="col-5 text-center d-none d-md-block px-0 text-truncate">L.End</div>
                 <div class="col-2 d-none d-md-block text-center">PM</div>
                 <?php } // if ( $this->data->console)  ?>
 
@@ -236,10 +236,10 @@ use strings;  ?>
                 );
 
                 $leaseEnd = sprintf(
-                  '<div class="col d-none d-md-block text-center">%s</div>',
-                  '<div class="col-2 d-none d-md-block text-center">%s</div>',
+                  '<div class="col-5 d-none d-md-block text-center">%s</div>
+                  <div class="col-2 d-none d-md-block text-center">%s</div>',
                   strings::asLocalDate( $item->LeaseStop),
-                  strings::initials( $dto->PropertyManager)
+                  strings::initials( $item->PropertyManager)
 
                 );
 

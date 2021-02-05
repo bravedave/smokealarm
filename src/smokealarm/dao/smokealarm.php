@@ -293,8 +293,6 @@ class smokealarm extends _dao {
 
 			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'updating console lease data', \application::timer()->elapsed(), __METHOD__));
 
-			// ADD COLUMN `LeaseFirstStart` DATE,
-			// ADD COLUMN `LeaseStart` DATE,
 			$this->Q( 'ALTER TABLE tmp
 				ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
 				ADD COLUMN `LeaseFirstStart` DATE DEFAULT "0000-00-00",
@@ -334,6 +332,9 @@ class smokealarm extends _dao {
 			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'updated console lease data', \application::timer()->elapsed(), __METHOD__));
 
 		}
+
+		// $this->Q('DROP TABLE IF EXISTS _smokealarm_tmp');
+		// $this->Q('CREATE TABLE IF NOT EXISTS _smokealarm_tmp SELECT * FROM tmp');
 
 		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 3000');
 
