@@ -283,7 +283,7 @@ class smokealarm extends _dao {
 			// ADD COLUMN `LeaseFirstStart` DATE,
 			// ADD COLUMN `LeaseStart` DATE,
 				// ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
-			$this->Q( 'ALTER TABLE _tmp
+			$this->Q( 'ALTER TABLE tmp
 				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00"');
 
 			$_sql = 'SELECT uid, properties_id FROM tmp';
