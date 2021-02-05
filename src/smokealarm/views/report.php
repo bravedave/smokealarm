@@ -118,11 +118,13 @@ use strings;  ?>
         'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
         'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
         'alarms' => 0,
-        'LeaseStop' => ''
+        'LeaseFirstStart' => '',
+        'LeaseStop' => '',
 
       ];
 
       if ( $this->data->console) {
+        $item->LeaseFirstStart = $dto->LeaseFirstStart;
         $item->LeaseStop = $dto->LeaseStop;
 
       }
