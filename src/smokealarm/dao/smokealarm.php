@@ -91,21 +91,24 @@ class smokealarm extends _dao {
 
 		$activeProperties = [];
 		$leaseDetails = [];
-    if ( $excludeInactive && \class_exists('dao\console_properties')) {
+    if ( \class_exists('dao\console_properties')) {
+			if ( $excludeInactive) {
 
-			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console data', \application::timer()->elapsed(), __METHOD__));
+				if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console data', \application::timer()->elapsed(), __METHOD__));
 
-      $_cp_dao = new \dao\console_properties;
-      if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
-        $activeProperties = array_map( function( $dto) {
-          return $dto->properties_id;
+				$_cp_dao = new \dao\console_properties;
+				if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
+					$activeProperties = array_map( function( $dto) {
+						return $dto->properties_id;
 
-        }, $_cp_res->dtoSet());
+					}, $_cp_res->dtoSet());
 
-        if ( $activeProperties) {
-          $conditions[] = sprintf( 'sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
+					if ( $activeProperties) {
+						$conditions[] = sprintf( 'sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
 
-        }
+					}
+
+				}
 
 			}
 
