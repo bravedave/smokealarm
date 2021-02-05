@@ -297,7 +297,7 @@ class smokealarm extends _dao {
 				ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
 				ADD COLUMN `LeaseFirstStart` DATE DEFAULT "0000-00-00",
 				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00",
-				ADD COLUMN `PropertyManager` VARCHAR,
+				ADD COLUMN `PropertyManager` VARCHAR(100),
 				ADD COLUMN `property_manager_id` INT,
 				ADD PRIMARY KEY (`uid`)');
 
