@@ -303,18 +303,25 @@ class smokealarm extends _dao {
 				ADD COLUMN `property_manager_id` INT,
 				ADD PRIMARY KEY (`uid`)');
 
+			// console_properties only exists if leaseDetails has content
+			$this->Q( 'UPDATE tmp
+				LEFT JOIN
+					console_properties cp ON cp.id = tmp.properties_id
+				SET
+					tmp.PropertyManager = cp.`PropertyManager`');
+
 			$_sql = 'SELECT uid, properties_id FROM tmp';
 			if ( $res = $this->Result( $_sql)) {
 				$res->dtoSet( function( $dto) use ( $leaseDetails) {
 					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
 					if ( $key !== false) {
 						if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
+							// 'property_manager_id' => $leaseDetails[$key]->property_manager_id,
+							// 'PropertyManager' => $leaseDetails[$key]->PropertyManager
 							$this->db->Update(
 								'tmp', [
 									'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
-									'LeaseStop' => $leaseDetails[$key]->LeaseStop,
-									'property_manager_id' => $leaseDetails[$key]->property_manager_id,
-									'PropertyManager' => $leaseDetails[$key]->PropertyManager
+									'LeaseStop' => $leaseDetails[$key]->LeaseStop
 
 								],
 								'WHERE uid = ' . (int)$dto->uid,
