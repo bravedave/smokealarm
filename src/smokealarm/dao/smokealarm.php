@@ -279,6 +279,23 @@ class smokealarm extends _dao {
 
 		}
 
+		if ( $leaseDetails) {
+			$_sql = 'SELECT id, properties_id FROM tmp';
+			if ( $res = $this->Result( $_sql)) {
+				$res->dtoSet( function( $dto) use ( $leaseDetails) {
+					$key = array_search( $dto->properties_id, \array_column( $leaseDetails, 'property_id'));
+					if ( $key !== false) {
+						\sys::logger( sprintf('<%s> %s', $key, __METHOD__));
+
+
+					}
+
+				});
+
+			}
+
+		}
+
 		return $this->Result( 'SELECT * FROM tmp ORDER BY street_index LIMIT 3000');
 
 	}
