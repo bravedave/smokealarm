@@ -115,7 +115,10 @@ class smokealarm extends _dao {
         $leaseDetails = array_map( function( $dto) {
           return (object)[
 						'property_id' => $dto->properties_id,
-						'LeaseStop' => $dto->LeaseStop
+						'LeaseFirstStart' => $dto->LeaseFirstStart,
+						'LeaseStop' => $dto->LeaseStop,
+						'PropertyManager' => $dto->PropertyManager,
+						'property_manager_id' => $dto->property_manager_id
 
 					];
 
@@ -292,7 +295,10 @@ class smokealarm extends _dao {
 			// ADD COLUMN `LeaseStart` DATE,
 			$this->Q( 'ALTER TABLE tmp
 				ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
+				ADD COLUMN `LeaseFirstStart` DATE DEFAULT "0000-00-00",
 				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00",
+				ADD COLUMN `PropertyManager` VARCHAR,
+				ADD COLUMN `property_manager_id` INT,
 				ADD PRIMARY KEY (`uid`)');
 
 			$_sql = 'SELECT uid, properties_id FROM tmp';
@@ -301,8 +307,14 @@ class smokealarm extends _dao {
 					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
 					if ( $key !== false) {
 						if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
-							$this->db->Update( 'tmp',
-								[ 'LeaseStop' => $leaseDetails[$key]->LeaseStop ],
+							$this->db->Update(
+								'tmp', [
+									'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
+									'LeaseStop' => $leaseDetails[$key]->LeaseStop,
+									'property_manager_id' => $leaseDetails[$key]->property_manager_id,
+									'PropertyManager' => $leaseDetails[$key]->PropertyManager
+
+								],
 								'WHERE uid = ' . (int)$dto->uid,
 								$flushCache = false
 
