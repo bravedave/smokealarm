@@ -280,12 +280,24 @@ class smokealarm extends _dao {
 		}
 
 		if ( $leaseDetails) {
-			$_sql = 'SELECT id, properties_id FROM tmp';
+			// ADD COLUMN `LeaseFirstStart` DATE,
+			// ADD COLUMN `LeaseStart` DATE,
+				// ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
+			$this->Q( 'ALTER TABLE _tmp
+				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00"');
+
+			$_sql = 'SELECT uid, properties_id FROM tmp';
 			if ( $res = $this->Result( $_sql)) {
 				$res->dtoSet( function( $dto) use ( $leaseDetails) {
-					$key = array_search( $dto->properties_id, \array_column( $leaseDetails, 'property_id'));
+					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
 					if ( $key !== false) {
 						if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
+							$this->db->Update( 'tmp',
+								[ 'LeaseStop' => $leaseDetails[$key]->LeaseStop ],
+								'WHERE id = ' . (int)$dto->id,
+								$flushCache = false
+
+							);
 							\sys::logger( sprintf('<%s> %s', $leaseDetails[$key]->LeaseStop, __METHOD__));
 
 						}

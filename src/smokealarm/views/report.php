@@ -52,7 +52,9 @@ use strings;  ?>
               <div class="form-row">
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
-                <div class="col text-truncate">power</div>
+                <?php if ( $this->data->console) {  ?>
+                <div class="col text-truncate">L.End</div>
+                <?php } // if ( $this->data->console)  ?>
 
               </div>
 
@@ -95,7 +97,7 @@ use strings;  ?>
       if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
       // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
-      $items[] = (object)[
+      $item = (object)[
         'properties_id' => $pid = $dto->properties_id,
         'address' => implode( ' ', $addr),
         'street_index' => $dto->street_index,
@@ -112,10 +114,18 @@ use strings;  ?>
         'smokealarms_upgrade_preference' => $dto->smokealarms_upgrade_preference,
         'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
         'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
-        'alarms' => 0
+        'alarms' => 0,
+        'LeaseStop' => ''
 
       ];
 
+      if ( $this->data->console) {
+        $item->LeaseStop = $dto->LeaseStop;
+
+      }
+
+
+      $items[] = $item;
       $index = count( $items) -1; // the last item
 
     }
@@ -208,6 +218,17 @@ use strings;  ?>
 
               }
 
+              $leaseEnd = '';
+              if ( $this->data->console) {
+                $leaseEnd = sprintf(
+                  '<div class="col text-truncate">%s</div>',
+                  strings::asLocalDate( $item->LeaseStop)
+
+                );
+
+              }
+
+
               printf(
                 '<div class="form-row">
                   <div class="col text-left text-truncate" address>%s</div>
@@ -218,23 +239,28 @@ use strings;  ?>
                       <div class="col-6 col-xl-5 text-truncate" last_inspection>%s</div>
                       <div class="col-1" certificate title="%s">%s</div>
                     </div>
+
                   </div>
+
                   <div class="col-1 col-xl-3 text-left d-none d-lg-block">
                     <div class="form-row">
                       <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
                       <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
-                      <div class="col text-truncate">%s</div>
+                      %s
 
                     </div>
 
                   </div>
+
                   <div class="col-4 col-md-3">
                     <div class="form-row">
                       <div class="col-3 text-center" compliant>%s</div>
                       <div class="col d-none d-md-block text-center" required>%s</div>
                       <div class="col text-center %s" compliance>%s</div>
                     </div>
+
                   </div>
+
                 </div>',
                 $item->address,
                 $item->smokealarms_company,
@@ -245,7 +271,7 @@ use strings;  ?>
                 $hasCert ? strings::html_tick : '&nbsp;',
                 $item->smokealarms_upgrade_preference,
                 $woTitle, $wo,
-                $item->smokealarms_power,
+                $leaseEnd,
                 $item->alarms,
                 $item->smokealarms_na ? 'N/A' : $item->smokealarms_required,
                 $complianceClass,
