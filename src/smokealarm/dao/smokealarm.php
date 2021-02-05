@@ -316,12 +316,12 @@ class smokealarm extends _dao {
 					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
 					if ( $key !== false) {
 						if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
-							// 'property_manager_id' => $leaseDetails[$key]->property_manager_id,
-							// 'PropertyManager' => $leaseDetails[$key]->PropertyManager
 							$this->db->Update(
 								'tmp', [
 									'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
-									'LeaseStop' => $leaseDetails[$key]->LeaseStop
+									'LeaseStop' => $leaseDetails[$key]->LeaseStop,
+									'property_manager_id' => $leaseDetails[$key]->property_manager_id,
+									'PropertyManager' => $leaseDetails[$key]->PropertyManager
 
 								],
 								'WHERE uid = ' . (int)$dto->uid,
