@@ -53,7 +53,7 @@ use strings;  ?>
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
                 <?php if ( $this->data->console) {  ?>
-                <div class="col text-truncate">L.End</div>
+                <div class="col text-center text-truncate">L.End</div>
                 <?php } // if ( $this->data->console)  ?>
 
               </div>
@@ -221,7 +221,7 @@ use strings;  ?>
               $leaseEnd = '';
               if ( $this->data->console) {
                 $leaseEnd = sprintf(
-                  '<div class="col text-truncate">%s</div>',
+                  '<div class="col text-center text-truncate">%s</div>',
                   strings::asLocalDate( $item->LeaseStop)
 
                 );

@@ -49,8 +49,8 @@ class smokealarm extends _dao {
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
 	public function getOrderedByStreet( bool $excludeInactive = false,  bool $IncludeNotApplicable = false) : ?object {
-		$debug = FALSE;
-		// $debug = TRUE;
+		$debug = false;
+		$debug = true;
 
 		$_sql =
 			'SELECT
@@ -92,6 +92,9 @@ class smokealarm extends _dao {
 		$activeProperties = [];
 		$leaseDetails = [];
     if ( $excludeInactive && \class_exists('dao\console_properties')) {
+
+			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console data', \application::timer()->elapsed(), __METHOD__));
+
       $_cp_dao = new \dao\console_properties;
       if ( $_cp_res = $_cp_dao->getActive('properties_id')) {
         $activeProperties = array_map( function( $dto) {
@@ -101,12 +104,12 @@ class smokealarm extends _dao {
 
         if ( $activeProperties) {
           $conditions[] = sprintf( 'sa.`properties_id` IN (%s)', implode( ',', $activeProperties));
-          // \sys::logSQL( sprintf('<%s> %s', $_sql, __METHOD__));
-          // \sys::logger( sprintf('<%s> %s', implode( ',', $a), __METHOD__));
 
         }
 
 			}
+
+			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'getting console lease data', \application::timer()->elapsed(), __METHOD__));
 
 			if ( $_cp_res = $_cp_dao->getActiveWithCurrentTenant()) {
         $leaseDetails = array_map( function( $dto) {
@@ -119,6 +122,8 @@ class smokealarm extends _dao {
         }, $_cp_res->dtoSet());
 
 			}
+
+			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'got console lease data', \application::timer()->elapsed(), __METHOD__));
 
 		}
 
@@ -280,6 +285,9 @@ class smokealarm extends _dao {
 		}
 
 		if ( $leaseDetails) {
+
+			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'updating console lease data', \application::timer()->elapsed(), __METHOD__));
+
 			// ADD COLUMN `LeaseFirstStart` DATE,
 			// ADD COLUMN `LeaseStart` DATE,
 				// ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
@@ -307,6 +315,8 @@ class smokealarm extends _dao {
 				});
 
 			}
+
+			if ($debug) \sys::logger( sprintf( '<%s> : %s : %s', 'updated console lease data', \application::timer()->elapsed(), __METHOD__));
 
 		}
 
