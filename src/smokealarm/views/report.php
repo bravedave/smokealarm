@@ -205,9 +205,11 @@ use strings;  ?>
             <?php
               $complianceClass = '';
               $complianceHtml = '';
+              $upgradePref = $item->smokealarms_upgrade_preference;
               if ( 'yes' == $item->smokealarms_2022_compliant) {
                 $complianceClass = 'text-success';
                 $complianceHtml = strings::html_tick;
+                $upgradePref = 'compliant';
 
               }
               elseif ( $item->alarms < $item->smokealarms_required) {
@@ -372,21 +374,24 @@ use strings;  ?>
 
     });
 
-    $('#<?= $_uidSortLeaseStart ?>')
-    .css('cursor',cursor)
-    .on( 'click', e => {
-      e.stopPropagation();e.preventDefault();
-      $('#<?= $_accordion ?>').trigger( 'sort-lease-start');
+    <?php if ( $this->data->console) {  ?>
+      $('#<?= $_uidSortLeaseStart ?>')
+      .css('cursor',cursor)
+      .on( 'click', e => {
+        e.stopPropagation();e.preventDefault();
+        $('#<?= $_accordion ?>').trigger( 'sort-lease-start');
 
-    });
+      });
 
-    $('#<?= $_uidSortLeaseEnd ?>')
-    .css('cursor',cursor)
-    .on( 'click', e => {
-      e.stopPropagation();e.preventDefault();
-      $('#<?= $_accordion ?>').trigger( 'sort-lease-stop');
+      $('#<?= $_uidSortLeaseEnd ?>')
+      .css('cursor',cursor)
+      .on( 'click', e => {
+        e.stopPropagation();e.preventDefault();
+        $('#<?= $_accordion ?>').trigger( 'sort-lease-stop');
 
-    });
+      });
+
+    <?php }  ?>
 
     let sortFunc = (a, b, key, sorttype) => {
       let ae = $(a).data(key);
@@ -605,7 +610,14 @@ use strings;  ?>
           $('[compliant]', _me).html( d.compliant);
           $('[power]', _me).html( d.dto.smokealarms_power);
           $('[company]', _me).html( d.dto.smokealarms_company);
-          $('[upgrade-pref]', _me).html( d.dto.smokealarms_upgrade_preference);
+          if ( 'yes' == d.dto.smokealarms_2022_compliant) {
+            $('[upgrade-pref]', _me).html( 'compliant');
+
+          }
+          else {
+            $('[upgrade-pref]', _me).html( d.dto.smokealarms_upgrade_preference);
+
+          }
 
           let wod = _.dayjs(d.smokealarms_workorder_schedule);
           if ( wod.isValid() && wod.unix() > 0) {
