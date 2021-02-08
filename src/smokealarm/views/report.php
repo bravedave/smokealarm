@@ -541,7 +541,6 @@ use strings;  ?>
 
           if ( 'yes' == d.dto.smokealarms_2022_compliant) {
             $('[compliance]', _me)
-            .removeClass( 'text-danger')
             .addClass( 'text-success')
             .html( '<?= strings::html_tick ?>');
 
@@ -549,13 +548,13 @@ use strings;  ?>
           else if ( Number( d.compliant) < Number( d.dto.smokealarms_required)) {
             $('[compliance]', _me)
             .removeClass( 'text-success')
-            .addClass( 'text-danger')
-            .html( Number( d.compliant) - Number( d.dto.smokealarms_required));
+            .html( '')
+            .append( $('<span class="badge badge-danger"></span>').html( Number( d.compliant) - Number( d.dto.smokealarms_required)));
 
           }
           else {
             $('[compliance]', _me)
-            .removeClass( 'text-success text-danger')
+            .removeClass( 'text-success')
             .html( '&nbsp;' );
 
           }
