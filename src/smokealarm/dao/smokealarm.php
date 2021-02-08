@@ -317,7 +317,7 @@ class smokealarm extends _dao {
 				$res->dtoSet( function( $dto) use ( $leaseDetails) {
 					$key = array_search( $dto->properties_id, array_column( $leaseDetails, 'property_id'));
 					if ( $key !== false) {
-						if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
+						// if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
 							$this->db->Update(
 								'tmp', [
 									'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
@@ -333,7 +333,7 @@ class smokealarm extends _dao {
 							);
 							// \sys::logger( sprintf('<%s> %s', $leaseDetails[$key]->LeaseStop, __METHOD__));
 
-						}
+						// }
 
 					}
 
