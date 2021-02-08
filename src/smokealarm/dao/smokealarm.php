@@ -118,6 +118,7 @@ class smokealarm extends _dao {
           return (object)[
 						'property_id' => $dto->properties_id,
 						'LeaseFirstStart' => $dto->LeaseFirstStart,
+						'LeaseStart' => $dto->LeaseStart,
 						'LeaseStop' => $dto->LeaseStop,
 						'PropertyManager' => $dto->PropertyManager,
 						'property_manager_id' => $dto->property_manager_id
@@ -298,6 +299,7 @@ class smokealarm extends _dao {
 			$this->Q( 'ALTER TABLE tmp
 				ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
 				ADD COLUMN `LeaseFirstStart` DATE DEFAULT "0000-00-00",
+				ADD COLUMN `LeaseStart` DATE DEFAULT "0000-00-00",
 				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00",
 				ADD COLUMN `PropertyManager` VARCHAR(100),
 				ADD COLUMN `property_manager_id` INT,
@@ -319,6 +321,7 @@ class smokealarm extends _dao {
 							$this->db->Update(
 								'tmp', [
 									'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
+									'LeaseStart' => $leaseDetails[$key]->LeaseStart,
 									'LeaseStop' => $leaseDetails[$key]->LeaseStop,
 									'property_manager_id' => $leaseDetails[$key]->property_manager_id,
 									'PropertyManager' => $leaseDetails[$key]->PropertyManager

@@ -119,6 +119,7 @@ use strings;  ?>
         'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
         'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
         'alarms' => 0,
+        'LeaseStart' => '',
         'LeaseFirstStart' => '',
         'LeaseStop' => '',
         'PropertyManager' => '',
@@ -126,6 +127,7 @@ use strings;  ?>
       ];
 
       if ( $this->data->console) {
+        $item->LeaseStart = $dto->LeaseStart;
         $item->LeaseFirstStart = $dto->LeaseFirstStart;
         $item->LeaseStop = $dto->LeaseStop;
         $item->PropertyManager = $dto->PropertyManager;
@@ -232,7 +234,7 @@ use strings;  ?>
               if ( $this->data->console) {
                 $leaseStart = sprintf(
                   '<div class="col text-center text-truncate">%s</div>',
-                  strings::asLocalDate( $item->LeaseFirstStart)
+                  strings::asLocalDate( $item->LeaseStart)
 
                 );
 
