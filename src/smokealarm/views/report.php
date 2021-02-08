@@ -83,7 +83,11 @@ use strings;  ?>
 
         </div>
 
-        <button class="btn btn-secondary btn-sm flex-grow-0" type="button"><i class="bi bi-circle text-muted"></i></button>
+        <?php if ( $this->data->na) {  ?>
+          <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-archive text-muted"></i></div>
+        <?php } ?>
+
+        <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-circle text-muted"></i></div>
 
       </div>
 
@@ -305,6 +309,9 @@ use strings;  ?>
 
           </button>
 
+        <?php if ( $this->data->na) {  ?>
+          <div class="btn btn-sm <?= $btnClass ?> flex-grow-0"><i class="bi bi-archive<?= $item->smokealarms_na ? '-fill' : '' ?>"></i></div>
+        <?php } ?>
           <button type="button" class="btn btn-sm <?= $btnClass ?> flex-grow-0" edit-property><i class="bi bi-pencil"></i></button>
 
         </div>
@@ -488,6 +495,14 @@ use strings;  ?>
       }).then( d => {
         if ( 'ack' == d.response) {
           _me.data( 'na', d.na);
+
+          // console.log( d.na);
+
+          $('.bi-archive, .bi-archive-fill', _me.closest('.card-header'))
+          .removeClass('bi-archive bi-archive-fill')
+          .addClass( 'yes' == String(d.na) ? 'bi-archive-fill' : 'bi-archive');
+
+          // console.log( $('.bi-archive, .bi-archive-fill', _me.closest('.card-header')));
 
         }
         else {
