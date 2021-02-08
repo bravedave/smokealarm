@@ -51,7 +51,7 @@ use strings;  ?>
             <div class="col-1 col-xl-3 text-left d-none d-lg-block">
               <div class="form-row">
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
-                <div class="col-3 d-none d-xl-block text-center text-truncate">w/o</div>
+                <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortByWorkOrder = strings::rand() ?>">w/o</div>
                 <?php if ( $this->data->console) {  ?>
                 <div class="col text-center text-truncate">L.Start</div>
                 <?php } // if ( $this->data->console)  ?>
@@ -180,6 +180,7 @@ use strings;  ?>
       data-address="<?= htmlentities( $item->street_index) ?>"
       data-company="<?= htmlentities( $item->smokealarms_company) ?>"
       data-inspect="<?= $item->smokealarms_last_inspection ?>"
+      data-workorder_sent="<?= strtotime( $item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>"
       >
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
@@ -351,6 +352,14 @@ use strings;  ?>
 
     });
 
+    $('#<?= $_uidSortByWorkOrder ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-last-work-order');
+
+    });
+
     let sortFunc = (a, b, key, sorttype) => {
       let ae = $(a).data(key);
       let be = $(b).data(key);
@@ -420,6 +429,26 @@ use strings;  ?>
 
       let items = $('> div[data-inspect]', this);
       items.sort( ( a,b) => sortFunc( a, b, 'inspect', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    })
+    .on( 'sort-last-work-order', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-workorder_sent]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'workorder_sent', 'string'));
 
       if (order == "desc") {
         let first = $('> div', this).first();
@@ -536,6 +565,7 @@ use strings;  ?>
           }
 
           _me.data('workorder_sent', d.smokealarms_workorder_sent);
+          _me.closest('.card').data('workorder_sent', d.smokealarms_workorder_sent);
 
           $('[last_inspection]', _me).html( _.dayjs( d.dto.smokealarms_last_inspection).format('L'));
 
