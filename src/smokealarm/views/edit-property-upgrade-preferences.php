@@ -82,6 +82,16 @@ $dto = $this->data->dto; ?>
 
               <div class="form-check">
                 <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
+                  value="Quote"
+                  <?php if ( 'Quote' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
+                  id="<?= $_uid = strings::rand() ?>">
+
+                <label class="form-check-label" for="<?= $_uid ?>">Quote</label>
+
+              </div>
+
+              <div class="form-check">
+                <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
                   value="Owner"
                   <?php if ( 'Owner' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
                   id="<?= $_uid = strings::rand() ?>">
@@ -92,11 +102,21 @@ $dto = $this->data->dto; ?>
 
               <div class="form-check">
                 <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
-                  value="Quote"
-                  <?php if ( 'Quote' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
+                  value="wait-tenant"
+                  <?php if ( 'wait-tenant' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
                   id="<?= $_uid = strings::rand() ?>">
 
-                <label class="form-check-label" for="<?= $_uid ?>">Quote</label>
+                <label class="form-check-label" for="<?= $_uid ?>">Await Tenant</label>
+
+              </div>
+
+              <div class="form-check">
+                <input type="radio" class="form-check-input" name="smokealarms_upgrade_preference"
+                  value="wait-lease-exp"
+                  <?php if ( 'wait-lease-exp' == $dto->smokealarms_upgrade_preference) print 'checked'; ?>
+                  id="<?= $_uid = strings::rand() ?>">
+
+                <label class="form-check-label" for="<?= $_uid ?>">Await Lease Exp</label>
 
               </div>
 
