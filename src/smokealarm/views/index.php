@@ -56,10 +56,10 @@ use strings;  ?>
   } ?>
 
   <?php if ( isset($this->data->na) && $this->data->na) { ?>
-    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="bi bi-check"></i>Include Inactive</a></li>
+    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>"><i class="bi bi-check"></i>Include N/A</a></li>
   <?php }
     else {  ?>
-    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>">Include Inactive</a></li>
+    <li class="nav-item"><a class="nav-link" href="<?= strings::url( $this->route . '?na=yes') ?>">Include N/A</a></li>
   <?php } // if ( $this->data->na) ?>
 
   <?php if ( !(int)currentUser::restriction( 'smokealarm-company')) { ?>
