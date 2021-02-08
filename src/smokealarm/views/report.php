@@ -53,7 +53,7 @@ use strings;  ?>
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortByWorkOrder = strings::rand() ?>">w/o</div>
                 <?php if ( $this->data->console) {  ?>
-                <div class="col text-center text-truncate">L.Start</div>
+                <div class="col text-center text-truncate" id="<?= $_uidSortLeaseStart = strings::rand() ?>">L.Start</div>
                 <?php } // if ( $this->data->console)  ?>
 
               </div>
@@ -63,7 +63,7 @@ use strings;  ?>
             <div class="col-4 col-md-3">
               <div class="form-row">
                 <?php if ( $this->data->console) {  ?>
-                <div class="col-5 text-center d-none d-md-block px-0 text-truncate">L.End</div>
+                <div class="col-5 text-center d-none d-md-block px-0 text-truncate" id="<?= $_uidSortLeaseEnd = strings::rand() ?>">L.End</div>
                 <div class="col-2 d-none d-md-block text-center">PM</div>
                 <?php } // if ( $this->data->console)  ?>
 
@@ -186,6 +186,8 @@ use strings;  ?>
       data-address="<?= htmlentities( $item->street_index) ?>"
       data-company="<?= htmlentities( $item->smokealarms_company) ?>"
       data-inspect="<?= $item->smokealarms_last_inspection ?>"
+      data-lease_start="<?= strtotime($item->LeaseStart) < strtotime( $item->LeaseFirstStart) ? $item->LeaseFirstStart : $item->LeaseStart ?>"
+      data-lease_stop="<?= $item->LeaseStop ?>"
       data-workorder_sent="<?= strtotime( $item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>"
       >
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
@@ -370,6 +372,22 @@ use strings;  ?>
 
     });
 
+    $('#<?= $_uidSortLeaseStart ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-lease-start');
+
+    });
+
+    $('#<?= $_uidSortLeaseEnd ?>')
+    .css('cursor',cursor)
+    .on( 'click', e => {
+      e.stopPropagation();e.preventDefault();
+      $('#<?= $_accordion ?>').trigger( 'sort-lease-stop');
+
+    });
+
     let sortFunc = (a, b, key, sorttype) => {
       let ae = $(a).data(key);
       let be = $(b).data(key);
@@ -439,6 +457,46 @@ use strings;  ?>
 
       let items = $('> div[data-inspect]', this);
       items.sort( ( a,b) => sortFunc( a, b, 'inspect', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    })
+    .on( 'sort-lease-start', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-lease_start]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'lease_start', 'string'));
+
+      if (order == "desc") {
+        let first = $('> div', this).first();
+        $.each(items, (i, el) => $(el).insertAfter( first));
+      }
+      else {
+        $.each(items, (i, el) => _me.append( el));
+
+      }
+
+    })
+    .on( 'sort-lease-stop', function(e) {
+      let _me = $(this);
+      let _data = _me.data();
+      let order = 'desc' == String( _data.order) ? "asc" : "desc";
+
+      _me.data('order', order);
+
+      let items = $('> div[data-lease_stop]', this);
+      items.sort( ( a,b) => sortFunc( a, b, 'lease_stop', 'string'));
 
       if (order == "desc") {
         let first = $('> div', this).first();
