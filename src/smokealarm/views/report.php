@@ -237,7 +237,8 @@ use strings;  ?>
               $leaseEnd = '';
               if ( $this->data->console) {
                 $leaseStart = sprintf(
-                  '<div class="col text-center text-truncate">%s</div>',
+                  '<div class="col text-center text-truncate" title="">%s</div>',
+                  $item->LeaseStart,
                   strings::asLocalDate( strtotime($item->LeaseStart) < strtotime( $item->LeaseFirstStart) ? $item->LeaseFirstStart : $item->LeaseStart)
 
                 );
