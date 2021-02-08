@@ -299,7 +299,7 @@ use strings;  ?>
                 strings::asLocalDate( $item->smokealarms_last_inspection),
                 $hasCert ? 'has certificate' : 'no certificate',
                 $hasCert ? strings::html_tick : '&nbsp;',
-                $item->smokealarms_upgrade_preference,
+                $upgradePref,
                 $woTitle, $wo,
                 $leaseStart,
                 $leaseEnd,
