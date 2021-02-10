@@ -432,7 +432,7 @@ class controller extends \Controller {
 
           ];
 
-          if ( currentUser::isAdmin()) {
+          if ( 'yes' == currentUser::restriction('smokealarm-admin')) {
             $a['smokealarms_annual'] = $this->getPost('smokealarms_annual');
 
           }

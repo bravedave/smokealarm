@@ -741,7 +741,7 @@ use strings;  ?>
 
       }));
 
-      <?php if ( currentUser::isadmin()) {  ?>
+      <?php if ( 'yes' == currentUser::restriction('smokealarm-admin')) {  ?>
         _context.append( $('<a href="#">Upgrade Preference</a>').on( 'click', function( e) {
           e.stopPropagation();e.preventDefault();
 

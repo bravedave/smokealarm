@@ -120,7 +120,7 @@ $dto = $this->data->dto; ?>
             <div class="col-4 col-form-label text-truncate" for="<?= $uid = strings::rand() ?>">Annual Month</div>
             <div class="col">
               <input type="month" name="smokealarms_annual" class="form-control"
-                <?php if ( !currentUser::isAdmin()) print 'readonly'; ?>
+                <?php if ( 'yes' != currentUser::restriction('smokealarm-admin')) print 'readonly'; ?>
                 id="?<?= $uid ?>"
                 <?php
                 if ( preg_match('@^[0-9]{4}-[0-9]{2}$@', $dto->smokealarms_annual)) printf( ' value="%s"', $dto->smokealarms_annual);
