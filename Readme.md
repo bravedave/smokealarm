@@ -2,6 +2,10 @@
 
 A matrix to summarise Smoke Alarms for each property and report their compliance
 
+### default restrictions
+
+* note by default the user is restricted see ```src\application\app\currentUser.php``` for detail
+
 #### Install Standalone (Development / Windows 10)
 1. Install Pre-Requisits
    1. Install PHP : http://windows.php.net/download/
