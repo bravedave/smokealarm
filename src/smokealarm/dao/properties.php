@@ -10,11 +10,11 @@
 
 namespace smokealarm\dao;
 
-use green;
+use dao;
 use smokealarm;
 use strings;
 
-class properties extends green\properties\dao\properties {
+class properties extends dao\properties {
   public function hasSmokeAlarmComplianceCertificate( $dto) : bool {
     return (bool)$this->smokeAlarmComplianceCertificatePath( $dto);
 
