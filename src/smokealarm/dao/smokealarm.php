@@ -463,7 +463,8 @@ class smokealarm extends _dao {
 		if ($debug) $debugSQL[] = $_z;
 		$conditions[] = 'p.id NOT IN (SELECT properties_id FROM tmpx)';
 
-		$_sql = $__sql = 'INSERT INTO tmp(
+		$_sql = $__sql = sprintf(
+			'INSERT INTO tmp(
 				`properties_id`,
 				`address_street`,
 				`people_id`,
@@ -481,7 +482,10 @@ class smokealarm extends _dao {
 				`smokealarms_annual`,
 				`smokealarms_workorder_sent`,
 				`smokealarms_workorder_schedule`,
-				`people_name`)
+				`people_name`,
+				`LeaseFirstStart`,
+				`LeaseStart`,
+				`LeaseStop`)
 				SELECT
 					p.id,
 					p.address_street,
@@ -500,9 +504,17 @@ class smokealarm extends _dao {
 					p.smokealarms_annual,
 					p.smokealarms_workorder_sent,
 					p.smokealarms_workorder_schedule,
-					people.name people_name
-					FROM properties p
-						LEFT JOIN people on p.people_id = people.id';
+					people.name people_name,
+					%s,
+					%s,
+					%s
+				FROM properties p
+						LEFT JOIN
+					people ON p.people_id = people.id',
+			$leaseStartInagural,
+			$leaseStart,
+			$leaseEnd
+		);
 
 		$_sql = sprintf(
 			'%s WHERE %s',
