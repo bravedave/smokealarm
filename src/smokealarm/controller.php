@@ -55,6 +55,11 @@ class controller extends \Controller {
 		config::smokealarm_checkdatabase();
 		parent::before();
 
+    if ( 'yes' == \currentUser::option('smokealarm-inactive-exclude')) {
+      \currentUser::option('smokealarm-inactive-exclude', '');
+
+    }
+
   }
 
   protected function page( $params) {
@@ -622,16 +627,6 @@ class controller extends \Controller {
 					->add( 'data', $suppliers);
 
 			} else { Json::nak( $action); }
-
-    }
-    elseif ( 'set-option-exclude-inactive' == $action) {
-      \currentUser::option('smokealarm-inactive-exclude', 'yes');
-      Json::ack( $action);
-
-    }
-    elseif ( 'set-option-exclude-inactive-undo' == $action) {
-      \currentUser::option('smokealarm-inactive-exclude', '');
-      Json::ack( $action);
 
     }
     elseif ( 'suppliers-extract' == $action) {
