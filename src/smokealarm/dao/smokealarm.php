@@ -327,7 +327,7 @@ class smokealarm extends _dao {
 
 	public function getOrderedByStreet(bool $IncludeNotApplicable = false): ?object {
 		$debug = false;
-		$debug = true;
+		// $debug = true;
 		$debugSQL = [];
 
 		$leaseStartInagural = sprintf(
