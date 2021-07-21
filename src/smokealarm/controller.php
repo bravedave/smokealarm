@@ -23,16 +23,10 @@ class controller extends \Controller {
 
   protected function _index() {
 
-    $excludeInactive = false;
-    if ( \class_exists('dao\console_properties')) {
-      $excludeInactive = 'yes' == \currentUser::option('smokealarm-inactive-exclude');
-
-    }
-
     $na = 'yes' == $this->getParam('na');
     $dao = new dao\smokealarm;
     $this->data = (object)[
-      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $excludeInactive, $na)),
+      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $na)),
       'na' => $na,
       'console' => \class_exists('dao\console_properties')
 

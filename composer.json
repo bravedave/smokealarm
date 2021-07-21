@@ -9,11 +9,20 @@
       "email": "david@brayworth.com.au"
     }
   ],
-  "repositories": [
-    { "type": "git", "url": "https://github.com/bravedave/dvc"},
-    { "type": "git", "url": "https://github.com/bravedave/green"},
-    { "type": "git", "url": "https://github.com/bravedave/photolog"}
-  ],
+  "repositories": {
+    "0": {
+      "type": "git",
+      "url": "https://github.com/bravedave/dvc"
+    },
+    "1": {
+      "type": "git",
+      "url": "https://github.com/bravedave/green"
+    },
+    "2": {
+      "type": "git",
+      "url": "https://github.com/bravedave/photolog"
+    }
+  },
   "require": {
     "bravedave/dvc": "*",
     "bravedave/green": "*",
@@ -23,23 +32,17 @@
   "autoload": {
     "psr-4": {
       "smokealarm\\": "src/smokealarm/"
-
     }
-
   },
   "autoload-dev": {
     "psr-4": {
       "": "src/application/app/"
-
     }
-
   },
   "scripts": {
     "post-update-cmd": "smokealarm\\postUpdate::upgrade",
     "cron": "photolog\\postUpdate::cron",
     "importcsv": "smokealarm\\postUpdate::importcsv",
     "import-property-status": "smokealarm\\postUpdate::importpropertystatuscsv"
-
   }
-
 }
