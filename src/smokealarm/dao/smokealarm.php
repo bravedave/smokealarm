@@ -327,7 +327,7 @@ class smokealarm extends _dao {
 
 	public function getOrderedByStreet(bool $IncludeNotApplicable = false): ?object {
 		$debug = false;
-		$debug = true;
+		// $debug = true;
 		$debugSQL = [];
 
 		$leaseStartInagural = sprintf(
@@ -541,8 +541,8 @@ class smokealarm extends _dao {
 						$_sql = 'SELECT uid, properties_id, address_street, LeaseFirstStart, LeaseStart FROM tmp';
 						if ($res = $this->Result($_sql)) {
 							$res->dtoSet(function ($dto) use ($leaseDetails) {
-								if ( strtotime($dto->LeaseFirstStart) > 0) return $dto;
-								if ( strtotime($dto->LeaseStart) > 0) return $dto;
+								if (strtotime($dto->LeaseFirstStart) > 0) return $dto;
+								if (strtotime($dto->LeaseStart) > 0) return $dto;
 
 								$key = array_search(
 									$dto->properties_id,
@@ -566,7 +566,7 @@ class smokealarm extends _dao {
 										$flushCache = false
 
 									);
-									\sys::logger( sprintf('<%s %s> %s', $dto->address_street, $leaseDetails[$key]->LeaseStop, __METHOD__));
+									\sys::logger(sprintf('<%s %s> %s', $dto->address_street, $leaseDetails[$key]->LeaseStop, __METHOD__));
 
 									// }
 
@@ -615,10 +615,12 @@ class smokealarm extends _dao {
 		// $this->Q('DROP TABLE IF EXISTS _smokealarm_tmp');
 		// $this->Q('CREATE TABLE IF NOT EXISTS _smokealarm_tmp SELECT * FROM tmp');
 
+		$debugFile = sprintf('%s/_debug_sql.sql', rtrim(\config::tempdir(), '/'));
 		if ($debugSQL) {
-			$debugFile = sprintf('%s/_debug_sql.sql', rtrim(\config::tempdir(), '/'));
 			\sys::logger(sprintf('<%s> %s', $debugFile, __METHOD__));
 			file_put_contents($debugFile, implode(';' . PHP_EOL, $debugSQL));
+		} elseif (file_exists($debugFile)) {
+			unlink($debugFile);
 		}
 
 		return $this->Result('SELECT * FROM tmp ORDER BY `smokealarms_last_inspection`, `properties_id` LIMIT 3000');
