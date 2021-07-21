@@ -27,8 +27,7 @@ class controller extends \Controller {
     $dao = new dao\smokealarm;
     $this->data = (object)[
       'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $na)),
-      'na' => $na,
-      'console' => \class_exists('dao\console_properties')
+      'na' => $na
 
     ];
 
