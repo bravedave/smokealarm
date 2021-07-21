@@ -327,7 +327,7 @@ class smokealarm extends _dao {
 
 	public function getOrderedByStreet(bool $IncludeNotApplicable = false): ?object {
 		$debug = false;
-		// $debug = true;
+		$debug = true;
 		$debugSQL = [];
 
 		$leaseStartInagural = sprintf(
@@ -420,7 +420,7 @@ class smokealarm extends _dao {
 				%s,
 				%s,
 				%s
-		FROM
+			FROM
 				`smokealarm` sa
 						LEFT JOIN
 				properties p ON p.id = sa.properties_id
