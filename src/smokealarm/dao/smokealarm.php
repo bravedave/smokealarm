@@ -566,7 +566,7 @@ class smokealarm extends _dao {
 										$flushCache = false
 
 									);
-									\sys::logger(sprintf('<%s %s> %s', $dto->address_street, $leaseDetails[$key]->LeaseStop, __METHOD__));
+									// \sys::logger(sprintf('<%s %s> %s', $dto->address_street, $leaseDetails[$key]->LeaseStop, __METHOD__));
 
 									// }
 
