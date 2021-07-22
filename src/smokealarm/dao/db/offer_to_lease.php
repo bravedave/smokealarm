@@ -17,6 +17,7 @@ $dbc->defineField('lease_start_inaugural', 'date');
 $dbc->defineField('lease_start', 'date');
 $dbc->defineField('lease_end', 'date');
 $dbc->defineField('vacate', 'date');
+$dbc->defineField('lessor_signature', 'longblob');
 $dbc->defineField('lessor_signature_time', 'datetime');
 
 $dbc->check();

@@ -330,68 +330,33 @@ class smokealarm extends _dao {
 		// $debug = true;
 		$debugSQL = [];
 
-		$leaseStartInagural = sprintf(
-			'(SELECT
-						lease_start_inaugural
-					FROM
-						offer_to_lease o2l
-					WHERE
-						o2l.property_id = p.id
-							AND (lease_start_inaugural <= %s OR lease_start <= %s)
-							AND lease_end > %s
-							AND (`vacate` IS NULL
-							OR `vacate` = %s
-							OR `vacate` > %s)
-					ORDER BY `lessor_signature_time` DESC
-					LIMIT 1) LeaseFirstStart',
-			$this->quote(date('Y-m-d')),
-			$this->quote(date('Y-m-d')),
+		$source = sprintf(
+			'FROM
+					offer_to_lease o2l
+			WHERE
+				o2l.property_id = p.id
+					AND NOT `lessor_signature` IS NULL
+					AND lease_end > %s
+					AND (`vacate` IS NULL
+					OR `vacate` = %s
+					OR `vacate` > %s)
+			ORDER BY
+				CASE
+					WHEN `lease_start_inaugural` <= %s OR `lease_start` <= %s THEN 0
+					ELSE 1
+        END ASC ,
+				`lessor_signature_time` DESC
+			LIMIT 1',
 			$this->quote(date('Y-m-d')),
 			$this->quote('0000-00-00'),
+			$this->quote(date('Y-m-d')),
+			$this->quote(date('Y-m-d')),
 			$this->quote(date('Y-m-d'))
 		);
 
-		$leaseStart = sprintf(
-			'(SELECT
-						lease_start
-					FROM
-						offer_to_lease o2l
-					WHERE
-						o2l.property_id = p.id
-							AND (lease_start_inaugural <= %s OR lease_start <= %s)
-							AND lease_end > %s
-							AND (`vacate` IS NULL
-							OR `vacate` = %s
-							OR `vacate` > %s)
-					ORDER BY `lessor_signature_time` DESC
-					LIMIT 1) LeaseStart',
-			$this->quote(date('Y-m-d')),
-			$this->quote(date('Y-m-d')),
-			$this->quote(date('Y-m-d')),
-			$this->quote('0000-00-00'),
-			$this->quote(date('Y-m-d'))
-		);
-
-		$leaseEnd = sprintf(
-			'(SELECT
-						lease_end
-					FROM
-						offer_to_lease o2l
-					WHERE
-						o2l.property_id = p.id
-							AND (lease_start_inaugural <= %s OR lease_start <= %s)
-							AND lease_end > %s
-							AND (`vacate` IS NULL
-							OR `vacate` = %s
-							OR `vacate` > %s)
-					ORDER BY `lessor_signature_time` DESC
-					LIMIT 1) LeaseStop',
-			$this->quote(date('Y-m-d')),
-			$this->quote(date('Y-m-d')),
-			$this->quote(date('Y-m-d')),
-			$this->quote('0000-00-00'),
-			$this->quote(date('Y-m-d'))
-		);
+		$leaseStartInagural = sprintf('(SELECT lease_start_inaugural %s) LeaseFirstStart', $source);
+		$leaseStart = sprintf('(SELECT lease_start %s) LeaseStart', $source);
+		$leaseEnd = sprintf('(SELECT lease_end %s) LeaseStop', $source);
 
 		$_sql = sprintf(
 			'SELECT
