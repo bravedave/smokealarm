@@ -337,9 +337,7 @@ class smokealarm extends _dao {
 				o2l.property_id = p.id
 					AND NOT `lessor_signature` IS NULL
 					AND lease_end > %s
-					AND (`vacate` IS NULL
-					OR `vacate` = %s
-					OR `vacate` > %s)
+					AND (`vacate` IS NULL OR `vacate` = %s OR `vacate` > %s)
 			ORDER BY
 				CASE
 					WHEN `lease_start_inaugural` <= %s OR `lease_start` <= %s THEN 0
