@@ -7,7 +7,7 @@ Options -Indexes
 
 RewriteEngine Off
 
-FallbackResource /_dvc.php
+FallbackResource /_mvp.php
 
 <IfModule mod_php7.c>
 	php_value post_max_size 40M
