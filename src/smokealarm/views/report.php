@@ -42,7 +42,7 @@ use strings;  ?>
         <div class="btn btn-secondary btn-sm flex-fill" style="cursor: default;">
           <div class="form-row">
             <div class="col text-left text-truncate" id="<?= $_uidSortByAddress = strings::rand() ?>">address</div>
-            <div class="col-3 text-left d-none d-lg-block">
+            <div class="col-lg-3 text-left d-none d-lg-block">
               <div class="form-row">
                 <div class="col text-truncate" id="<?= $_uidSortByCompany = strings::rand() ?>">company</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate">month</div>
@@ -50,7 +50,7 @@ use strings;  ?>
                 <div class="col-1">&nbsp;</div>
               </div>
             </div>
-            <div class="col-1 col-xl-3 text-left d-none d-lg-block">
+            <div class="col-3 col-lg-1 col-xl-3 text-left">
               <div class="form-row">
                 <div class="col d-none d-xl-block text-truncate">upgrade</div>
                 <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortByWorkOrder = strings::rand() ?>">w/o</div>
@@ -60,7 +60,7 @@ use strings;  ?>
 
             </div>
 
-            <div class="col-4 col-md-3">
+            <div class="col-lg-4 col-md-3 d-none d-lg-block">
               <div class="form-row">
                 <div class="col-5 text-center d-none d-md-block px-0 text-truncate" id="<?= $_uidSortLeaseEnd = strings::rand() ?>">L.End</div>
                 <div class="col-2 d-none d-md-block text-center">PM</div>
@@ -222,7 +222,7 @@ use strings;  ?>
             printf(
               '<div class="form-row">
                   <div class="col text-left text-truncate" address>%s</div>
-                  <div class="col-3 text-left d-none d-lg-block">
+                  <div class="col-lg-3 text-left d-none d-lg-block">
                     <div class="form-row">
                       <div class="col text-truncate" company>%s</div>
                       <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s" annual>%s</div>
@@ -232,7 +232,7 @@ use strings;  ?>
 
                   </div>
 
-                  <div class="col-1 col-xl-3 text-left d-none d-lg-block">
+                  <div class="col-3 col-lg-1 col-xl-3 text-left">
                     <div class="form-row">
                       <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
                       <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
@@ -242,7 +242,7 @@ use strings;  ?>
 
                   </div>
 
-                  <div class="col-4 col-md-3">
+                  <div class="col-lg-4 col-md-3 d-none d-lg-block">
                     <div class="form-row">
                       %s
                       <div class="col-3 text-center" compliant>%s</div>
