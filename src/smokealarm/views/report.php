@@ -225,7 +225,7 @@ use strings;  ?>
                   <div class="col-3 text-left d-none d-lg-block">
                     <div class="form-row">
                       <div class="col text-truncate" company>%s</div>
-                      <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s">%s</div>
+                      <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s" annual>%s</div>
                       <div class="col-6 col-xl-5 text-truncate" last_inspection>%s</div>
                       <div class="col-1" certificate title="%s">%s</div>
                     </div>
@@ -721,14 +721,37 @@ use strings;  ?>
 
           }
 
-          _context.append($('<a href="#">Schedule Next Inspection</a>').on('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
+          _context.append(
+            $('<a href="#">Schedule Next Inspection</a>')
+            .on('click', e => {
+              e.stopPropagation();
+              e.preventDefault();
 
-            _context.close();
-            _me.trigger('workorder-schedule');
+              _context.close();
+              _me.trigger('workorder-schedule');
 
-          }));
+            })
+          );
+
+          <?php if ('yes' == currentUser::restriction('smokealarm-admin')) {  ?>
+            _context.append(
+              $('<a href="#"></a>')
+              .on('click', e => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                _context.close();
+                _me.trigger('set-annual-month-now');
+
+              })
+              .on('recon', function(e) {
+                let d = _.dayjs();
+                $(this).html('Set annual month to ' + d.format('MMM YYYY'))
+
+              })
+              .trigger('recon')
+            );
+          <?php }  ?>
 
           _context.append($('<a href="#"><i class="bi bi-eraser"></i>Clear Workorder Data</a>').on('click', function(e) {
             e.stopPropagation();
@@ -771,6 +794,27 @@ use strings;  ?>
         }
 
         _context.open(e);
+
+      })
+      .on('set-annual-month-now', function(e) {
+        let _me = $(this);
+        let _data = _me.data();
+
+        _.post({
+          url: _.url('<?= $this->route ?>'),
+          data: {
+            action: 'set-annual-month-now',
+            id: _data.properties_id
+
+          },
+
+        }).then(d => {
+          _.growl(d);
+          if ('ack' == d.response) {
+            $('[annual]', _me).html(d.date);
+          }
+
+        });
 
       })
       .on('upgrade-preferences', function(e) {

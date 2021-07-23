@@ -26,7 +26,7 @@ class controller extends \Controller {
     $na = 'yes' == $this->getParam('na');
     $dao = new dao\smokealarm;
     $this->data = (object)[
-      'dtoSet' => $dao->dtoSet( $dao->getOrderedByStreet( $na)),
+      'dtoSet' => $dao->dtoSet($dao->getOrderedByStreet($na)),
       'na' => $na
 
     ];
@@ -42,45 +42,41 @@ class controller extends \Controller {
       ],
       'data' => (object)[
         'searchFocus' => false,
-        'pageUrl' => strings::url( $this->route)
+        'pageUrl' => strings::url($this->route)
 
       ]
 
     ]);
-
   }
 
-	protected function before() {
-		config::smokealarm_checkdatabase();
-		parent::before();
+  protected function before() {
+    config::smokealarm_checkdatabase();
+    parent::before();
 
-    if ( 'yes' == \currentUser::option('smokealarm-inactive-exclude')) {
+    if ('yes' == \currentUser::option('smokealarm-inactive-exclude')) {
       \currentUser::option('smokealarm-inactive-exclude', '');
-
     }
-
   }
 
-  protected function page( $params) {
+  protected function page($params) {
 
-    if ( !isset( $params['latescripts'])) $params['latescripts'] = [];
+    if (!isset($params['latescripts'])) $params['latescripts'] = [];
     $params['latescripts'][] = sprintf(
       '<script type="text/javascript" src="%s"></script>',
-      strings::url( $this->route . '/js')
+      strings::url($this->route . '/js')
 
     );
 
-		return parent::page( $params);
+    return parent::page($params);
+  }
 
-	}
-
-	protected function postHandler() {
+  protected function postHandler() {
     $action = $this->getPost('action');
 
-    if ( 'archive-smokealarm' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+    if ('archive-smokealarm' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\smokealarm;
-        if ( $dto = $dao->getByID( $id)) {
+        if ($dto = $dao->getByID($id)) {
           $a = [
             'location' => $dto->location,
             'make' => $dto->make,
@@ -95,114 +91,113 @@ class controller extends \Controller {
           ];
 
           $daoA = new dao\smokealarm_archive;
-          $daoA->Insert( $a);
+          $daoA->Insert($a);
 
-          $dao->delete( $id);
-          Json::ack( $action);
-
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'delete-smokealarm-location' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+          $dao->delete($id);
+          Json::ack($action);
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('delete-smokealarm-location' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\smokealarm_locations;
-        $dao->delete( $id);
+        $dao->delete($id);
 
-        Json::ack( $action);
-
-      } else { Json::nak( $action); }
-
-    }
-    elseif ( 'delete-smokealarm-supplier' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('delete-smokealarm-supplier' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\smokealarm_suppliers;
-        $dao->delete( $id);
+        $dao->delete($id);
 
-        Json::ack( $action);
-
-      } else { Json::nak( $action); }
-
-    }
-    elseif ( 'document-delete-for-property' == $action) {
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('document-delete-for-property' == $action) {
       $debug = false;
       // $debug = true;
-      if ( $properties_id = (int)$this->getPost('properties_id')) {
-        if ( $file = $this->getPost('file')) {
-          \sys::logger( sprintf('<%s> %s/%s', $file, __METHOD__, $action));
+      if ($properties_id = (int)$this->getPost('properties_id')) {
+        if ($file = $this->getPost('file')) {
+          \sys::logger(sprintf('<%s> %s/%s', $file, __METHOD__, $action));
           $dao = new dao\properties;
-          if ( $dto = $dao->getByID( $properties_id)) {
-            if ( $store = $dao->smokealarmStore( $dto)) {
-              $target = implode( DIRECTORY_SEPARATOR, [ $store, $file ]);
+          if ($dto = $dao->getByID($properties_id)) {
+            if ($store = $dao->smokealarmStore($dto)) {
+              $target = implode(DIRECTORY_SEPARATOR, [$store, $file]);
 
-              if ( \file_exists( $target)) unlink( $target);
-              Json::ack( $action);
-
-            } else { Json::nak( sprintf( '%s : invalid store', $action)); }
-
-          } else { Json::nak( sprintf( '%s : property not found', $action)); }
-
-        } else { Json::nak( sprintf( '%s : invalid file', $action)); }
-
-      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
-
-    }
-    elseif ( 'document-get-for-property' == $action) {
+              if (\file_exists($target)) unlink($target);
+              Json::ack($action);
+            } else {
+              Json::nak(sprintf('%s : invalid store', $action));
+            }
+          } else {
+            Json::nak(sprintf('%s : property not found', $action));
+          }
+        } else {
+          Json::nak(sprintf('%s : invalid file', $action));
+        }
+      } else {
+        Json::nak(sprintf('%s : invalid id', $action));
+      }
+    } elseif ('document-get-for-property' == $action) {
       $debug = false;
       // $debug = true;
-      if ( $properties_id = (int)$this->getPost('properties_id')) {
+      if ($properties_id = (int)$this->getPost('properties_id')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $properties_id)) {
-          if ( $store = $dao->smokealarmStore( $dto)) {
+        if ($dto = $dao->getByID($properties_id)) {
+          if ($store = $dao->smokealarmStore($dto)) {
 
             $tags = $dto->smokealarms_tags ?
-              (array)\json_decode( $dto->smokealarms_tags) :
+              (array)\json_decode($dto->smokealarms_tags) :
               [];
 
             $it = new \FilesystemIterator($store);
             $a = [];
             foreach ($it as $obj) {
-              if ( 'notes.txt' == $obj->getFilename()) continue;
+              if ('notes.txt' == $obj->getFilename()) continue;
 
-              $key = (string)\array_search( $obj->getFilename(), $tags);
+              $key = (string)\array_search($obj->getFilename(), $tags);
               $a[] = (object)[
                 'name' => $obj->getFilename(),
-                'size' => strings::formatBytes( $obj->getSize(), 0),
+                'size' => strings::formatBytes($obj->getSize(), 0),
                 'tag' => $key
 
               ];
-
             }
 
-            Json::ack( $action)
-              ->add( 'data', $a);
-
-          } else { Json::nak( sprintf( '%s : invalid store', $action)); }
-
-        } else { Json::nak( sprintf( '%s : property not found', $action)); }
-
-      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
-
-    }
-    elseif ( 'document-upload' == $action) {
+            Json::ack($action)
+              ->add('data', $a);
+          } else {
+            Json::nak(sprintf('%s : invalid store', $action));
+          }
+        } else {
+          Json::nak(sprintf('%s : property not found', $action));
+        }
+      } else {
+        Json::nak(sprintf('%s : invalid id', $action));
+      }
+    } elseif ('document-upload' == $action) {
       $debug = false;
       // $debug = true;
-      if ( $properties_id = (int)$this->getPost('properties_id')) {
+      if ($properties_id = (int)$this->getPost('properties_id')) {
 
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $properties_id)) {
-          if ( $store = $dao->smokealarmStore( $dto)) {
+        if ($dto = $dao->getByID($properties_id)) {
+          if ($store = $dao->smokealarmStore($dto)) {
             /*--- ---[uploads]--- ---*/
-            if ( $debug) \sys::logger( sprintf('<%s> %s', '-- uploads --', __METHOD__));
+            if ($debug) \sys::logger(sprintf('<%s> %s', '-- uploads --', __METHOD__));
             $good = [];
             $bad = [];
-            foreach ( $_FILES as $file ) {
-              if ( $debug) sys::logger( sprintf('%s : %s', $file['name'], __METHOD__));
-              if ( is_uploaded_file( $file['tmp_name'] )) {
-                $strType = mime_content_type ( $file['tmp_name']);
-                if ( $debug) sys::logger( sprintf('%s (%s) : %s', $file['name'], $strType, __METHOD__));
+            foreach ($_FILES as $file) {
+              if ($debug) sys::logger(sprintf('%s : %s', $file['name'], __METHOD__));
+              if (is_uploaded_file($file['tmp_name'])) {
+                $strType = mime_content_type($file['tmp_name']);
+                if ($debug) sys::logger(sprintf('%s (%s) : %s', $file['name'], $strType, __METHOD__));
 
                 $ok = true;
                 $accept = [
@@ -216,147 +211,124 @@ class controller extends \Controller {
 
                 ];
 
-                if ( in_array( $strType, $accept)) {
+                if (in_array($strType, $accept)) {
                   $source = $file['tmp_name'];
-                  $target = implode( DIRECTORY_SEPARATOR, [
+                  $target = implode(DIRECTORY_SEPARATOR, [
                     $store,
                     $file['name']
 
                   ]);
 
-                  if ( file_exists( $target )) unlink( $target );
-                  if ( move_uploaded_file( $source, $target)) {
-                    chmod( $target, 0666 );
-                    $good[] = [ 'name' => $file['name'], 'result' => 'uploaded'];
-
+                  if (file_exists($target)) unlink($target);
+                  if (move_uploaded_file($source, $target)) {
+                    chmod($target, 0666);
+                    $good[] = ['name' => $file['name'], 'result' => 'uploaded'];
+                  } else {
+                    $bad[] = ['name' => $file['name'], 'result' => 'nak'];
                   }
-                  else {
-                    $bad[] = [ 'name' => $file['name'], 'result' => 'nak'];
-
-                  }
-
+                } elseif (!$strType) {
+                  sys::logger(sprintf('%s invalid file type : %s', $file['name'], __METHOD__));
+                  $bad[] = ['name' => $file['name'], 'result' => 'invalid file type'];
+                } else {
+                  sys::logger(sprintf('%s invalid file type - %s : %s', $file['name'], $strType, __METHOD__));
+                  $bad[] = ['name' => $file['name'], 'result' => 'invalid file type : ' . $strType];
                 }
-                elseif ( !$strType) {
-                  sys::logger( sprintf('%s invalid file type : %s', $file['name'], __METHOD__));
-                  $bad[] = [ 'name' => $file['name'], 'result' => 'invalid file type'];
-
-                }
-                else {
-                  sys::logger( sprintf('%s invalid file type - %s : %s', $file['name'], $strType, __METHOD__));
-                  $bad[] = [ 'name' => $file['name'], 'result' => 'invalid file type : ' . $strType];
-
-                }
-
+              } elseif (UPLOAD_ERR_INI_SIZE == $file['error']) {
+                sys::logger(sprintf('%s size exceeds ini size', $file['name'], __METHOD__));
+                $bad[] = ['name' => $file['name'], 'result' => 'size exceeds ini size'];
+              } else {
+                sys::logger(sprintf('is not an uploaded file ? : %s : %s', $file['name'], __METHOD__));
               }
-              elseif ( UPLOAD_ERR_INI_SIZE == $file['error']) {
-                sys::logger( sprintf('%s size exceeds ini size', $file['name'], __METHOD__));
-                $bad[] = [ 'name' => $file['name'], 'result' => 'size exceeds ini size'];
-
-              }
-              else {
-                sys::logger( sprintf('is not an uploaded file ? : %s : %s', $file['name'], __METHOD__));
-
-              }
-
             }
             /*--- ---[/uploads]--- ---*/
 
-            Json::ack( $action)
-              ->add( 'good', $good)
-              ->add( 'bad', $bad);
-
-          } else { Json::nak( sprintf( '%s : invalid store', $action)); }
-
-        } else { Json::nak( sprintf( '%s : property not found', $action)); }
-
-      } else { Json::nak( sprintf( '%s : invalid id', $action)); }
-
-    }
-    elseif ( 'get-property-by-id' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+            Json::ack($action)
+              ->add('good', $good)
+              ->add('bad', $bad);
+          } else {
+            Json::nak(sprintf('%s : invalid store', $action));
+          }
+        } else {
+          Json::nak(sprintf('%s : property not found', $action));
+        }
+      } else {
+        Json::nak(sprintf('%s : invalid id', $action));
+      }
+    } elseif ('get-property-by-id' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $id)) {
+        if ($dto = $dao->getByID($id)) {
 
           $dto->smokealarm_expired = $dto->smokealarm_warning = false;
-          if ( ( $et = \strtotime( $dto->smokealarms_last_inspection)) > 0) {
-            $etx = \strtotime( config::smokealarm_valid_time, $et);
-            if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+          if (($et = \strtotime($dto->smokealarms_last_inspection)) > 0) {
+            $etx = \strtotime(config::smokealarm_valid_time, $et);
+            if (date('Y-m-d', $etx) < date('Y-m-d')) {
               $dto->smokealarm_expired = true;
-
-            }
-            else {
-              $etx = \strtotime( config::smokealarm_warn_time, $et);
-              if ( date('Y-m-d', $etx) < date('Y-m-d')) {
+            } else {
+              $etx = \strtotime(config::smokealarm_warn_time, $et);
+              if (date('Y-m-d', $etx) < date('Y-m-d')) {
                 $dto->smokealarm_warning = true;
-
               }
-
             }
-
           }
 
           $daoS = new dao\smokealarm;
-          $stat = $daoS->getCompliantCountForProperty( $dto->id);
+          $stat = $daoS->getCompliantCountForProperty($dto->id);
 
-          $addr = [ strings::GoodStreetString( $dto->address_street)];
-          if ( $dto->address_suburb) $addr[] = $dto->address_suburb;
+          $addr = [strings::GoodStreetString($dto->address_street)];
+          if ($dto->address_suburb) $addr[] = $dto->address_suburb;
           // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
-          Json::ack( $action)
-            ->add( 'dto', $dto)
-            ->add( 'compliant', $stat->compliant)
-            ->add( 'hasSmokeAlarmComplianceCertificate', $dao->hasSmokeAlarmComplianceCertificate( $dto) ? 'yes' : 'no')
-            ->add( 'smokealarms_workorder_sent', strtotime( $dto->smokealarms_workorder_sent) > 0 ? 'yes' : 'no')
-            ->add( 'smokealarms_workorder_date', strings::asLocalDate( $dto->smokealarms_workorder_sent))
-            ->add( 'smokealarms_workorder_schedule', $dto->smokealarms_workorder_schedule)
-            ->add( 'address', implode( ' ', $addr))
-            ;
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-    }
-    elseif ( 'get-photolog-images-of-alarm' == $action) {
-      if ( $location = $this->getPost('location')) {
-        if ( $properties_id = (int)$this->getPost('properties_id')) {
+          Json::ack($action)
+            ->add('dto', $dto)
+            ->add('compliant', $stat->compliant)
+            ->add('hasSmokeAlarmComplianceCertificate', $dao->hasSmokeAlarmComplianceCertificate($dto) ? 'yes' : 'no')
+            ->add('smokealarms_workorder_sent', strtotime($dto->smokealarms_workorder_sent) > 0 ? 'yes' : 'no')
+            ->add('smokealarms_workorder_date', strings::asLocalDate($dto->smokealarms_workorder_sent))
+            ->add('smokealarms_workorder_schedule', $dto->smokealarms_workorder_schedule)
+            ->add('address', implode(' ', $addr));
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('get-photolog-images-of-alarm' == $action) {
+      if ($location = $this->getPost('location')) {
+        if ($properties_id = (int)$this->getPost('properties_id')) {
           $dao = new dao\properties;
-          if ( $property = $dao->getByID( $properties_id)) {
+          if ($property = $dao->getByID($properties_id)) {
             $alarms = [];
-            if ( class_exists( 'photolog\dao\property_photolog')) {
+            if (class_exists('photolog\dao\property_photolog')) {
               $dao = new \photolog\dao\property_photolog;
-              if ($photologs = $dao->getForProperty( $property->id)) {
+              if ($photologs = $dao->getForProperty($property->id)) {
                 foreach ($photologs as $photolog) {
-                  $files = $dao->getFiles( $photolog, config::$PHOTOLOG_ROUTE);
+                  $files = $dao->getFiles($photolog, config::$PHOTOLOG_ROUTE);
                   foreach ($files as $file) {
-                    if ( $location == $file->location) {
+                    if ($location == $file->location) {
                       $file->photolog = $photolog;
                       $alarms[] = $file;
-
                     }
-
                   }
-
                 }
-
               }
-
             }
 
-            Json::ack( $action)
-              ->add( 'property', $property)
-              ->add( 'alarms', $alarms);
-
-          } else { Json::nak( $action); }
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-    }
-		elseif ( 'get-tenant-of-property' == $action) {
-      if ( \class_exists( 'dao\console_tenants')) {;
-        if ( $properties_id = $this->getPost( 'properties_id')) {
+            Json::ack($action)
+              ->add('property', $property)
+              ->add('alarms', $alarms);
+          } else {
+            Json::nak($action);
+          }
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('get-tenant-of-property' == $action) {
+      if (\class_exists('dao\console_tenants')) {;
+        if ($properties_id = $this->getPost('properties_id')) {
           /*
           ( _ => {
             _.post({
@@ -373,53 +345,55 @@ class controller extends \Controller {
           })(_brayworth_);
           */
           $dao = new \dao\console_tenants;
-          if ( $dto = $dao->getTenantOfProperty( $properties_id)) {
-            \Json::ack( $action)->add( 'data', $dto);
-
-          } else { \Json::nak( sprintf( '%s : not found', $action)); }
-
-        } else { \Json::nak( sprintf( '%s : missing id', $action)); }
-
-      } else { \Json::nak( sprintf( '%s : not enabled', $action)); }
-
-    }
-    elseif ( 'mark-property-na' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+          if ($dto = $dao->getTenantOfProperty($properties_id)) {
+            \Json::ack($action)->add('data', $dto);
+          } else {
+            \Json::nak(sprintf('%s : not found', $action));
+          }
+        } else {
+          \Json::nak(sprintf('%s : missing id', $action));
+        }
+      } else {
+        \Json::nak(sprintf('%s : not enabled', $action));
+      }
+    } elseif ('mark-property-na' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $id)) {
+        if ($dto = $dao->getByID($id)) {
           $v = (int)$this->getPost('value');
 
-          $a = [ 'smokealarms_na' => $v ];
+          $a = ['smokealarms_na' => $v];
 
-          $dao->UpdateByID( $a, $id);
-          Json::ack( $action)
-            ->add( 'na', $v ? 'yes' : 'no');
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-    }
-    elseif ( 'save-notes' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+          $dao->UpdateByID($a, $id);
+          Json::ack($action)
+            ->add('na', $v ? 'yes' : 'no');
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-notes' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $id)) {
-          if ( $path = $dao->smokealarmNotesPath( $dto)) {
-            $text = (string)$this->getPost( 'text');
-            \file_put_contents( $path, $text);
-            Json::ack( $action);
-
-          } else { Json::nak( $action); }
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'save-properties' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+        if ($dto = $dao->getByID($id)) {
+          if ($path = $dao->smokealarmNotesPath($dto)) {
+            $text = (string)$this->getPost('text');
+            \file_put_contents($path, $text);
+            Json::ack($action);
+          } else {
+            Json::nak($action);
+          }
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-properties' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $id)) {
+        if ($dto = $dao->getByID($id)) {
           $a = [
             'smokealarms_required' => $this->getPost('smokealarms_required'),
             'smokealarms_2022_compliant' => $this->getPost('smokealarms_2022_compliant'),
@@ -430,80 +404,73 @@ class controller extends \Controller {
 
           ];
 
-          if ( 'yes' == currentUser::restriction('smokealarm-admin')) {
+          if ('yes' == currentUser::restriction('smokealarm-admin')) {
             $a['smokealarms_annual'] = $this->getPost('smokealarms_annual');
-
           }
 
           if (
             strtotime($dto->smokealarms_workorder_schedule) > 0
             &&
             strtotime($dto->smokealarms_workorder_schedule) < strtotime($a['smokealarms_last_inspection'])
-            ) {
+          ) {
 
             $a['smokealarms_workorder_schedule'] = '0000-00-00';
             $a['smokealarms_workorder_sent'] = '';
             $a['smokealarms_upgrade_preference'] = '';
-
-          }
-          elseif (
+          } elseif (
             strtotime($dto->smokealarms_workorder_sent) > 0
             &&
             strtotime($dto->smokealarms_workorder_sent) < strtotime($a['smokealarms_last_inspection'])
-            ) {
+          ) {
 
             $a['smokealarms_workorder_sent'] = '';
             $a['smokealarms_upgrade_preference'] = '';
-
           }
 
-          $dao->UpdateByID( $a, $id);
-          Json::ack( $action);
-
-        } else { Json::nak( $action); }
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'save-properties-upgrade-preferences' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+          $dao->UpdateByID($a, $id);
+          Json::ack($action);
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-properties-upgrade-preferences' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $a = [
           'smokealarms_upgrade_preference' => $this->getPost('smokealarms_upgrade_preference')
 
         ];
 
         $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
+        $dao->UpdateByID($a, $id);
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-properties-workorder-sent' == $action) {
+      if ($id = (int)$this->getPost('id')) {
 
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'save-properties-workorder-sent' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
-
-        $a = [ 'smokealarms_workorder_sent' => \db::dbTimeStamp() ];
-
-        $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'save-properties-workorder-sent-clear' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
-
-        $a = [ 'smokealarms_workorder_sent' => ''];
+        $a = ['smokealarms_workorder_sent' => \db::dbTimeStamp()];
 
         $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
+        $dao->UpdateByID($a, $id);
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-properties-workorder-sent-clear' == $action) {
+      if ($id = (int)$this->getPost('id')) {
 
-      } else { Json::nak( $action); }
+        $a = ['smokealarms_workorder_sent' => ''];
 
-		}
-    elseif ( 'save-smokealarm' == $action) {
+        $dao = new dao\properties;
+        $dao->UpdateByID($a, $id);
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('save-smokealarm' == $action) {
       $a = [
         'expiry' => $this->getPost('expiry'),
         'location' => $this->getPost('location'),
@@ -517,40 +484,30 @@ class controller extends \Controller {
       ];
 
       $dao = new dao\smokealarm;
-      if ( $id = (int)$this->getPost('id')) {
-        $dao->UpdateByID( $a, $id);
-
-      }
-      else {
-        $id = $dao->Insert( $a);
-
+      if ($id = (int)$this->getPost('id')) {
+        $dao->UpdateByID($a, $id);
+      } else {
+        $id = $dao->Insert($a);
       }
 
-      Json::ack( $action)
-        ->add( 'id', $id);
-
-		}
-    elseif ( 'save-smokealarm-location' == $action) {
+      Json::ack($action)
+        ->add('id', $id);
+    } elseif ('save-smokealarm-location' == $action) {
       $a = [
         'location' => $this->getPost('location'),
 
       ];
 
       $dao = new dao\smokealarm_locations;
-      if ( $id = (int)$this->getPost('id')) {
-        $dao->UpdateByID( $a, $id);
-
-      }
-      else {
-        $id = $dao->Insert( $a);
-
+      if ($id = (int)$this->getPost('id')) {
+        $dao->UpdateByID($a, $id);
+      } else {
+        $id = $dao->Insert($a);
       }
 
-      Json::ack( $action)
-        ->add( 'id', $id);
-
-		}
-    elseif ( 'save-smokealarm-supplier' == $action) {
+      Json::ack($action)
+        ->add('id', $id);
+    } elseif ('save-smokealarm-supplier' == $action) {
       $a = [
         'name' => $this->getPost('name'),
         'contact' => $this->getPost('contact'),
@@ -560,119 +517,125 @@ class controller extends \Controller {
       ];
 
       $dao = new dao\smokealarm_suppliers;
-      if ( $id = (int)$this->getPost('id')) {
-        $dao->UpdateByID( $a, $id);
-
-      }
-      else {
-        $id = $dao->Insert( $a);
-
+      if ($id = (int)$this->getPost('id')) {
+        $dao->UpdateByID($a, $id);
+      } else {
+        $id = $dao->Insert($a);
       }
 
-      Json::ack( $action)
-        ->add( 'id', $id);
-
-		}
-    elseif ( 'save-workorder-schedule' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+      Json::ack($action)
+        ->add('id', $id);
+    } elseif ('save-workorder-schedule' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $a = [
           'smokealarms_workorder_schedule' => $this->getPost('smokealarms_workorder_schedule')
 
         ];
 
         $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'search-properties' == $action) {
-			if ( $term = $this->getPost('term')) {
+        $dao->UpdateByID($a, $id);
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('search-properties' == $action) {
+      if ($term = $this->getPost('term')) {
         $restriction = '';
-        if ( $co = (int)currentUser::restriction( 'smokealarm-company')) {
-          $restriction = sprintf( 'smokealarms_company_id = %d', $co);
-
+        if ($co = (int)currentUser::restriction('smokealarm-company')) {
+          $restriction = sprintf('smokealarms_company_id = %d', $co);
         }
 
-				Json::ack( $action)
-					->add( 'term', $term)
-					->add( 'data', green\search::properties( $term, $restriction));
-
-			} else { Json::nak( $action); }
-
-		}
-    elseif ( 'search-makes' == $action) {
-			if ( $term = $this->getPost('term')) {
+        Json::ack($action)
+          ->add('term', $term)
+          ->add('data', green\search::properties($term, $restriction));
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('search-makes' == $action) {
+      if ($term = $this->getPost('term')) {
         $dao = new dao\smokealarm;
-        $makes = $dao->searchMakes( $term);
+        $makes = $dao->searchMakes($term);
 
-				Json::ack( $action)
-					->add( 'term', $term)
-					->add( 'data', $makes);
-
-			} else { Json::nak( $action); }
-
-    }
-    elseif ( 'search-suppliers' == $action) {
-			if ( $term = $this->getPost('term')) {
+        Json::ack($action)
+          ->add('term', $term)
+          ->add('data', $makes);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('search-suppliers' == $action) {
+      if ($term = $this->getPost('term')) {
         $dao = new dao\smokealarm_suppliers;
-        $suppliers = $dao->search( $term);
+        $suppliers = $dao->search($term);
 
-        \sys::logger( sprintf('<%s> %s/%s', json_encode($suppliers), __METHOD__, $action));
+        \sys::logger(sprintf('<%s> %s/%s', json_encode($suppliers), __METHOD__, $action));
 
-				Json::ack( $action)
-					->add( 'term', $term)
-					->add( 'data', $suppliers);
+        Json::ack($action)
+          ->add('term', $term)
+          ->add('data', $suppliers);
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('set-annual-month-now' == $action) {
+      if ('yes' == currentUser::restriction('smokealarm-admin')) {
+        if ($id = (int)$this->getPost('id')) {
+          $dao = new dao\properties;
+          if ($dto = $dao->getByID($id)) {
+            $a = [
+              'smokealarms_annual' => date('Y-m')
+            ];
 
-			} else { Json::nak( $action); }
-
-    }
-    elseif ( 'suppliers-extract' == $action) {
+            $dao->UpdateByID($a, $id);
+            Json::ack($action)
+              ->add('date', date('n/y'));
+          } else {
+            Json::nak($action);
+          }
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('suppliers-extract' == $action) {
       $dao = new dao\smokealarm_suppliers;
       $dao->extractDataSet();
-      Json::ack( $action);
-
-    }
-    elseif ( 'tag-set-for-property' == $action) {
-      if ( $file = $this->getPost( 'file')) {
-        if ( $properties_id = (int)$this->getPost('properties_id')) {
+      Json::ack($action);
+    } elseif ('tag-set-for-property' == $action) {
+      if ($file = $this->getPost('file')) {
+        if ($properties_id = (int)$this->getPost('properties_id')) {
 
           $dao = new dao\properties;
-          if ( $dto = $dao->getByID( $properties_id)) {
-            $tags = (array)\json_decode( $dto->smokealarms_tags);
+          if ($dto = $dao->getByID($properties_id)) {
+            $tags = (array)\json_decode($dto->smokealarms_tags);
             foreach ($tags as $k => $v) {
-              if ( $file == $v) unset( $tags[$k]);
-
+              if ($file == $v) unset($tags[$k]);
             }
 
-            if ( $tag = $this->getPost( 'tag')) {
+            if ($tag = $this->getPost('tag')) {
               $tags[$tag] = $file;
-
             }
 
             $dao->UpdateByID(
-              ['smokealarms_tags' => json_encode( $tags)],
+              ['smokealarms_tags' => json_encode($tags)],
               $dto->id
 
             );
 
-            Json::ack( $action);
-
-          } else { Json::nak( sprintf( '%s : property not found', $action)); }
-
-        } else { Json::nak( sprintf( '%s : invalid id', $action)); }
-
-      } else { Json::nak( $action); }
-
-		}
-    elseif ( 'tags-get-available' == $action) {
-      Json::ack( $action)
-        ->add( 'tags', config::smokealarm_tags);
-
-		}
-    elseif ( 'workorder-clear' == $action) {
-      if ( $id = (int)$this->getPost('id')) {
+            Json::ack($action);
+          } else {
+            Json::nak(sprintf('%s : property not found', $action));
+          }
+        } else {
+          Json::nak(sprintf('%s : invalid id', $action));
+        }
+      } else {
+        Json::nak($action);
+      }
+    } elseif ('tags-get-available' == $action) {
+      Json::ack($action)
+        ->add('tags', config::smokealarm_tags);
+    } elseif ('workorder-clear' == $action) {
+      if ($id = (int)$this->getPost('id')) {
         $a = [
           'smokealarms_workorder_schedule' => '0000-00-00',
           'smokealarms_workorder_sent' => '',
@@ -681,115 +644,105 @@ class controller extends \Controller {
         ];
 
         $dao = new dao\properties;
-        $dao->UpdateByID( $a, $id);
-        Json::ack( $action);
-
-      } else { Json::nak( $action); }
-
-		}
-		else {
-			parent::postHandler();
-
-		}
-
+        $dao->UpdateByID($a, $id);
+        Json::ack($action);
+      } else {
+        Json::nak($action);
+      }
+    } else {
+      parent::postHandler();
+    }
   }
 
-  public function documentView( $id = 0) {
-		if ( $id = (int)$id) {
-			$dao = new dao\properties;
-			if ( $dto = $dao->getByID( $id)) {
-        if ( $document = $this->getParam( 'd')) {
-          if ( $store = $dao->smokealarmStore( $dto)) {
-            $target = implode( DIRECTORY_SEPARATOR, [ $store, $document ]);
+  public function documentView($id = 0) {
+    if ($id = (int)$id) {
+      $dao = new dao\properties;
+      if ($dto = $dao->getByID($id)) {
+        if ($document = $this->getParam('d')) {
+          if ($store = $dao->smokealarmStore($dto)) {
+            $target = implode(DIRECTORY_SEPARATOR, [$store, $document]);
 
-            if ( \file_exists( $target)) {
-              \sys::serve( $target);
-
-            } else { $this->render(['content' => 'not-found']); }
-
-          } else { $this->render(['content' => 'not-found']); }
-
-        } else { $this->render(['content' => 'not-found']); }
-
-      } else { $this->render(['content' => 'not-found']); }
-
-    } else { $this->render(['content' => 'not-found']); }
-
+            if (\file_exists($target)) {
+              \sys::serve($target);
+            } else {
+              $this->render(['content' => 'not-found']);
+            }
+          } else {
+            $this->render(['content' => 'not-found']);
+          }
+        } else {
+          $this->render(['content' => 'not-found']);
+        }
+      } else {
+        $this->render(['content' => 'not-found']);
+      }
+    } else {
+      $this->render(['content' => 'not-found']);
+    }
   }
 
-  public function edit( $id = 0, $mode = '') {
-		$this->data = (object)[
-			'title' => $this->title = 'Add Smoke Alarm',
-			'dto' => new dao\dto\smokealarm
+  public function edit($id = 0, $mode = '') {
+    $this->data = (object)[
+      'title' => $this->title = 'Add Smoke Alarm',
+      'dto' => new dao\dto\smokealarm
 
-		];
+    ];
 
-		if ( $id = (int)$id) {
-			$dao = new dao\smokealarm;
-			if ( $dto = $dao->getByID( $id)) {
+    if ($id = (int)$id) {
+      $dao = new dao\smokealarm;
+      if ($dto = $dao->getByID($id)) {
 
-        if ( 'copy' == $mode) {
+        if ('copy' == $mode) {
           $dto->id = 0;
           $dto->location = '';
-
-        }
-        else {
+        } else {
           $this->data->title = $this->title = 'Edit Smoke Alarm';
-
         }
 
-				$this->data->dto = $dto;
-				$this->load('edit');
-
-			}
-			else {
-				$this->load('not-found');
-
-			}
-
-		}
-		else {
-      if ( $pid = (int)$this->getParam('pid')) {
+        $this->data->dto = $dto;
+        $this->load('edit');
+      } else {
+        $this->load('not-found');
+      }
+    } else {
+      if ($pid = (int)$this->getParam('pid')) {
         $dao = new dao\properties;
-        if ( $dto = $dao->getByID( $pid)) {
+        if ($dto = $dao->getByID($pid)) {
           $this->data->dto->properties_id = $dto->id;
           $this->data->dto->address_street = $dto->address_street;
-
         }
-
       }
-			$this->load('edit');
-
-		}
-
+      $this->load('edit');
+    }
   }
 
-	public function editproperty( $id = 0) {
+  public function editproperty($id = 0) {
     $this->title = 'Edit Property';
 
-    if ( $id = (int)$id) {
+    if ($id = (int)$id) {
 
       $dao = new dao\properties;
-      if ( $dto = $dao->getByID( $id)) {
+      if ($dto = $dao->getByID($id)) {
 
         $this->data = (object)[
           'dto' => $dto
 
         ];
 
-				$this->load('edit-property');
-
-			} else { $this->load('not-found-property'); }
-
-		} else { $this->load('not-found-property'); }
-
+        $this->load('edit-property');
+      } else {
+        $this->load('not-found-property');
+      }
+    } else {
+      $this->load('not-found-property');
+    }
   }
 
-	public function editScheduleWorkorder( $id = 0) {
-    if ( $id = (int)$id) {
+  public function editScheduleWorkorder($id = 0) {
+    if ($id = (int)$id) {
 
       $dao = new dao\properties;
-      if ( $dto = $dao->getByID( $id)) {
+      if ($dto = $dao->getByID($id)) {
 
         $this->data = (object)[
           'title' => $this->title = 'Next Inspection Sceduled',
@@ -797,87 +750,82 @@ class controller extends \Controller {
 
         ];
 
-				$this->load('edit-workorder-schedule');
-
-			} else { $this->load('not-found-property'); }
-
-		} else { $this->load('not-found-property'); }
-
+        $this->load('edit-workorder-schedule');
+      } else {
+        $this->load('not-found-property');
+      }
+    } else {
+      $this->load('not-found-property');
+    }
   }
 
-	public function editUpgradePreferences( $id = 0) {
+  public function editUpgradePreferences($id = 0) {
     $this->title = 'Edit Upgrade Preferences';
 
-    if ( $id = (int)$id) {
+    if ($id = (int)$id) {
 
       $dao = new dao\properties;
-      if ( $dto = $dao->getByID( $id)) {
+      if ($dto = $dao->getByID($id)) {
 
         $this->data = (object)[
           'dto' => $dto
 
         ];
 
-				$this->load('edit-property-upgrade-preferences');
-
-			} else { $this->load('not-found-property'); }
-
-		} else { $this->load('not-found-property'); }
-
+        $this->load('edit-property-upgrade-preferences');
+      } else {
+        $this->load('not-found-property');
+      }
+    } else {
+      $this->load('not-found-property');
+    }
   }
 
-  public function js( $lib = '') {
+  public function js($lib = '') {
     $s = [];
     $r = [];
 
     $s[] = '@{{route}}@';
-    $r[] = strings::url( $this->route);
+    $r[] = strings::url($this->route);
 
-    $js = \file_get_contents( __DIR__ . '/js/custom.js');
-    $js = preg_replace( $s, $r, $js);
+    $js = \file_get_contents(__DIR__ . '/js/custom.js');
+    $js = preg_replace($s, $r, $js);
 
     Response::javascript_headers();
     print $js;
-
   }
 
-  public function propertyalarms( $id = 0) {
+  public function propertyalarms($id = 0) {
 
-    if ( $id = (int)$id) {
+    if ($id = (int)$id) {
       $daoP = new dao\properties;
-      if ( $dto = $daoP->getByID( $id)) {
+      if ($dto = $daoP->getByID($id)) {
 
-        $notes = $daoP->smokealarmNotes( $dto);
+        $notes = $daoP->smokealarmNotes($dto);
 
         $dao = new dao\smokealarm;
         $this->data = (object)[
-          'dtoSet' => $dao->dtoSet( $dao->getForProperty( $id)),
+          'dtoSet' => $dao->dtoSet($dao->getForProperty($id)),
           'property' => $dto,
           'notes' => $notes,
-          'certificate' => $daoP->hasSmokeAlarmComplianceCertificate( $dto),
+          'certificate' => $daoP->hasSmokeAlarmComplianceCertificate($dto),
 
         ];
 
-        if ( $this->data->certificate) {
-          $certInfo = new \SplFileInfo( $daoP->smokeAlarmComplianceCertificatePath( $dto));
+        if ($this->data->certificate) {
+          $certInfo = new \SplFileInfo($daoP->smokeAlarmComplianceCertificatePath($dto));
           $this->data->certificate = $certInfo->getFilename();
-
         }
 
         $this->title = config::label;
-        $this->load( 'report-property');
-
+        $this->load('report-property');
+      } else {
+        $this->load('not-found-property-alert');
       }
-      else {
-				$this->load('not-found-property-alert');
-
-      }
-
-    }
-    else {
+    } else {
       $dao = new dao\smokealarm;
       $this->data = (object)[
-        'dtoSet' => $dao->dtoSet( $dao->getAll())
+        'dtoSet' => $dao->dtoSet($dao->getAll())
 
       ];
 
@@ -890,14 +838,11 @@ class controller extends \Controller {
         ],
         'data' => (object)[
           'searchFocus' => false,
-          'pageUrl' => strings::url( $this->route)
+          'pageUrl' => strings::url($this->route)
 
         ]
 
       ]);
-
     }
-
   }
-
 }
