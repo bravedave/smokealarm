@@ -586,7 +586,7 @@ class controller extends \Controller {
 
             $dao->UpdateByID($a, $id);
             Json::ack($action)
-              ->add('date', date('n/y'));
+              ->add('date', $a['smokealarms_annual']);
           } else {
             Json::nak($action);
           }

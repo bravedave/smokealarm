@@ -606,7 +606,13 @@ use strings;  ?>
             _me.data('workorder_sent', d.smokealarms_workorder_sent);
             _me.closest('.card').data('workorder_sent', d.smokealarms_workorder_sent);
 
-            $('[last_inspection]', _me).html(_.dayjs(d.dto.smokealarms_last_inspection).format('L'));
+            // console.log(d.dto);
+            let dla = _.dayjs(d.dto.smokealarms_annual);
+            // console.log('annual', dla.isValid() && dla.unix() > 0 ? dla.format('L') : '');
+            $('[annual]', _me).html(dla.format('M/YY'));
+
+            let dli = _.dayjs(d.dto.smokealarms_last_inspection);
+            $('[last_inspection]', _me).html(dli.isValid() && dli.unix() > 0 ? dli.format('L') : '');
 
             if ('yes' == d.dto.smokealarms_2022_compliant) {
               $('[compliance]', _me)
@@ -811,7 +817,9 @@ use strings;  ?>
         }).then(d => {
           _.growl(d);
           if ('ack' == d.response) {
-            $('[annual]', _me).html(d.date);
+            let dla = _.dayjs(d.date);
+            // console.log('annual', dla.isValid() && dla.unix() > 0 ? dla.format('L') : '');
+            $('[annual]', _me).html(dla.format('M/YY'));
           }
 
         });
