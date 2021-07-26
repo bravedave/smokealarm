@@ -13,17 +13,17 @@ namespace smokealarm;
 use currentUser;
 use strings;  ?>
 
-<div id="<?= $_spinner = strings::rand() ?>" class="text-center p-5"></div>
+<div id="<?= $_spinner = strings::rand() ?>" class="text-center p-5"><br><br><br><br><br><br></div>
 <script>
   (_ => {
     let spinner = () => {
       let p = $('#<?= $_spinner ?>');
 
       if (p.parent().length > 0) {
-        let _s = $('<div class="spinner-grow spinner-grow-sm text-secondary"></div>')
+        let _s = $('<div class="spinner-grow text-secondary ml-2"></div>')
           .appendTo('#<?= $_spinner ?>');
 
-        setTimeout(() => spinner(), 1000);
+        setTimeout(() => spinner(), 1200);
       }
 
     };
@@ -464,18 +464,20 @@ use strings;  ?>
 
     $('#<?= $_accordion ?>')
       .on('-sort-hide-', function(e) {
-        $('#<?= $_accordion ?>')
-          .addClass('d-none');
+        _.hourglass.on();
+        // $('#<?= $_accordion ?>')
+        // .addClass('d-none');
 
-        $('<div class="full-sorter"></div>')
-          .insertBefore('#<?= $_accordion ?>');
+        // $('<div class="full-sorter"></div>')
+        // .insertBefore('#<?= $_accordion ?>');
 
       })
       .on('-sort-reveal-', function(e) {
-        $('.full-sorter')
-          .remove();
-        $('#<?= $_accordion ?>')
-          .removeClass('d-none');
+        _.hourglass.off();
+        // $('.full-sorter')
+        //   .remove();
+        // $('#<?= $_accordion ?>')
+        //   .removeClass('d-none');
 
       })
       .on('sort-address', function(e) {
@@ -500,7 +502,7 @@ use strings;  ?>
 
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
       })
       .on('sort-annual-month', function(e) {
         $(this).trigger('-sort-hide-');
@@ -523,7 +525,7 @@ use strings;  ?>
           }
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
 
       })
       .on('sort-company', function(e) {
@@ -548,7 +550,7 @@ use strings;  ?>
 
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
       })
       .on('sort-last-inspection', function(e) {
         $(this).trigger('-sort-hide-');
@@ -572,7 +574,7 @@ use strings;  ?>
 
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
       })
       .on('sort-lease-start', function(e) {
         $(this).trigger('-sort-hide-');
@@ -596,7 +598,7 @@ use strings;  ?>
 
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
       })
       .on('sort-lease-stop', function(e) {
         $(this).trigger('-sort-hide-');
@@ -619,7 +621,7 @@ use strings;  ?>
           }
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
 
       })
       .on('sort-last-work-order', function(e) {
@@ -644,7 +646,7 @@ use strings;  ?>
 
           $(this).trigger('-sort-reveal-');
 
-        }, 600);
+        }, 200);
       });
 
     $('#<?= $_accordion ?> button[data-properties_id]')
