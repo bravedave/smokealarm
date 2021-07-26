@@ -13,65 +13,129 @@ namespace smokealarm;
 use currentUser;
 use strings;  ?>
 
-<div class="form-row mb-2 d-print-none" id="<?= $srch = strings::rand() ?>envelope">
-  <div class="col">
-    <input type="search" class="form-control" autofocus id="<?= $srch ?>">
+<div id="<?= $_spinner = strings::rand() ?>" class="text-center p-5"></div>
+<script>
+  (_ => {
+    let spinner = () => {
+      let p = $('#<?= $_spinner ?>');
+
+      if (p.parent().length > 0) {
+        let _s = $('<div class="spinner-grow spinner-grow-sm text-secondary"></div>')
+          .appendTo('#<?= $_spinner ?>');
+
+        setTimeout(() => spinner(), 1000);
+      }
+
+    };
+
+    spinner();
+
+  })(_brayworth_);
+</script>
+<div class="fade" id="<?= $_wrapper = strings::rand() ?>">
+  <div class="form-row mb-2 d-print-none" id="<?= $srch = strings::rand() ?>envelope">
+    <div class="col">
+      <input type="search" class="form-control" autofocus id="<?= $srch ?>">
+
+    </div>
 
   </div>
 
-</div>
+  <style media="screen">
+    @media screen {
+      .full-sorter {
+        position: absolute;
+        inset: 0;
+        z-index: 994;
+        display: grid;
+        background: #fff;
+        height: 100vh;
+      }
 
-<style media="screen">
-  @media screen and (max-width: 767px) {
-    div[data-role="content-primary"] {
-      padding: 0 0 1.5rem 0 !important;
+      .full-sorter:before,
+      .full-sorter:after {
+        content: "";
+        grid-area: 1/1;
+        background: repeating-linear-gradient(-45deg, #000 0 5px, #0000 0 10px);
+        opacity: 0.1;
+      }
 
+      .full-sorter:after {
+        content: "sorting...";
+        font-family: monospace;
+        font-weight: bold;
+        font-size: 15vmin;
+        display: grid;
+        place-items: center;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: #ddd;
+        opacity: 1;
+        -webkit-mask: linear-gradient(90deg, #0000 30%, #000, #0000 70%) right/300% 100%;
+        animation: f 1s infinite linear;
+      }
+
+      @keyframes f {
+
+        80%,
+        100% {
+          -webkit-mask-position: left;
+        }
+      }
     }
 
-    #<?= $srch ?>envelope>.col {
-      padding: .2rem 20px;
+    @media screen and (max-width: 767px) {
+      div[data-role="content-primary"] {
+        padding: 0 0 1.5rem 0 !important;
+
+      }
+
+      #<?= $srch ?>envelope>.col {
+        padding: .2rem 20px;
+      }
+
     }
+  </style>
 
-  }
-</style>
-
-<div class="accordion" id="<?= $_accordion = strings::rand() ?>">
-  <div class="card">
-    <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
-      <div class="btn-group d-flex">
-        <div class="btn btn-secondary btn-sm flex-fill" style="cursor: default;">
-          <div class="form-row">
-            <div class="col text-left text-truncate" id="<?= $_uidSortByAddress = strings::rand() ?>">address</div>
-            <div class="col-lg-3 text-left d-none d-lg-block">
-              <div class="form-row">
-                <div class="col text-truncate" id="<?= $_uidSortByCompany = strings::rand() ?>">company</div>
-                <div class="col-3 d-none d-xl-block text-center text-truncate">month</div>
-                <div class="col-6 col-xl-5 text-truncate" id="<?= $_uidSortLastInspection = strings::rand() ?>">last inspection</div>
-                <div class="col-1">&nbsp;</div>
+  <div class="accordion" id="<?= $_accordion = strings::rand() ?>">
+    <div class="card">
+      <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
+        <div class="btn-group d-flex">
+          <div class="btn btn-secondary btn-sm flex-fill" style="cursor: default;">
+            <div class="form-row">
+              <div class="col text-left text-truncate" id="<?= $_uidSortByAddress = strings::rand() ?>">address</div>
+              <div class="col-lg-3 text-left d-none d-lg-block">
+                <div class="form-row">
+                  <div class="col text-truncate" id="<?= $_uidSortByCompany = strings::rand() ?>">company</div>
+                  <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortInspectionMonth = strings::rand() ?>">month</div>
+                  <div class="col-6 col-xl-5 text-truncate" id="<?= $_uidSortLastInspection = strings::rand() ?>">last inspection</div>
+                  <div class="col-1">&nbsp;</div>
+                </div>
               </div>
-            </div>
-            <div class="col-3 col-lg-1 col-xl-3 text-left">
-              <div class="form-row">
-                <div class="col d-none d-xl-block text-truncate">upgrade</div>
-                <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortByWorkOrder = strings::rand() ?>">w/o</div>
-                <div class="col text-center text-truncate" id="<?= $_uidSortLeaseStart = strings::rand() ?>">L.Start</div>
-
-              </div>
-
-            </div>
-
-            <div class="col-lg-4 col-md-3 d-none d-lg-block">
-              <div class="form-row">
-                <div class="col-5 text-center d-none d-md-block px-0 text-truncate" id="<?= $_uidSortLeaseEnd = strings::rand() ?>">L.End</div>
-                <div class="col-2 d-none d-md-block text-center">PM</div>
-
-                <div class="col-3 text-center d-flex">
-                  <div class="d-md-none">#</div>
-                  <div class="d-none d-md-block flex-fill text-center text-truncate" title="count">count</div>
+              <div class="col-3 col-lg-1 col-xl-3 text-left">
+                <div class="form-row">
+                  <div class="col d-none d-xl-block text-truncate">upgrade</div>
+                  <div class="col-3 d-none d-xl-block text-center text-truncate" id="<?= $_uidSortByWorkOrder = strings::rand() ?>">w/o</div>
+                  <div class="col text-center text-truncate" id="<?= $_uidSortLeaseStart = strings::rand() ?>">L.Start</div>
 
                 </div>
 
-                <div class="col text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
+              </div>
+
+              <div class="col-lg-4 col-md-3 d-none d-lg-block">
+                <div class="form-row">
+                  <div class="col-5 text-center d-none d-md-block px-0 text-truncate" id="<?= $_uidSortLeaseEnd = strings::rand() ?>">L.End</div>
+                  <div class="col-2 d-none d-md-block text-center">PM</div>
+
+                  <div class="col-3 text-center d-flex">
+                    <div class="d-md-none">#</div>
+                    <div class="d-none d-md-block flex-fill text-center text-truncate" title="count">count</div>
+
+                  </div>
+
+                  <div class="col text-center px-0 text-truncate"><?= strings::html_tick ?>&nbsp;<br class="d-md-none">2022</div>
+
+                </div>
 
               </div>
 
@@ -79,95 +143,109 @@ use strings;  ?>
 
           </div>
 
+          <?php if ($this->data->na) {  ?>
+            <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-archive text-muted"></i></div>
+          <?php } ?>
+
+          <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-circle text-muted"></i></div>
+
         </div>
-
-        <?php if ($this->data->na) {  ?>
-          <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-archive text-muted"></i></div>
-        <?php } ?>
-
-        <div class="btn btn-secondary btn-sm flex-grow-0"><i class="bi bi-circle text-muted"></i></div>
 
       </div>
 
     </div>
 
-  </div>
+    <?php
+    $items = [];
+    $index = -1;
+    $pid = -1;
+    foreach ($this->data->dtoSet as $dto) {
+      if ($pid != $dto->properties_id) {
+        $addr = [strings::GoodStreetString($dto->address_street)];
+        if ($dto->address_suburb) $addr[] = $dto->address_suburb;
+        // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
 
-  <?php
-  $items = [];
-  $index = -1;
-  $pid = -1;
-  foreach ($this->data->dtoSet as $dto) {
-    if ($pid != $dto->properties_id) {
-      $addr = [strings::GoodStreetString($dto->address_street)];
-      if ($dto->address_suburb) $addr[] = $dto->address_suburb;
-      // if ( $dto->address_postcode) $addr[] = $dto->address_postcode;
+        $item = (object)[
+          'properties_id' => $pid = $dto->properties_id,
+          'address' => implode(' ', $addr),
+          'street_index' => $dto->street_index,
+          'people_id' => $dto->people_id,
+          'people_name' => $dto->people_name,
+          'smokealarms_power' => $dto->smokealarms_power,
+          'smokealarms_required' => $dto->smokealarms_required,
+          'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
+          'smokealarms_company' => $dto->smokealarms_company,
+          'smokealarms_annual' => $dto->smokealarms_annual,
+          'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
+          'smokealarms_tags' => $dto->smokealarms_tags,
+          'smokealarms_na' => $dto->smokealarms_na,
+          'smokealarms_upgrade_preference' => $dto->smokealarms_upgrade_preference,
+          'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
+          'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
+          'alarms' => 0,
+          'LeaseStart' => '',
+          'LeaseFirstStart' => '',
+          'LeaseStop' => '',
+          'PropertyManager' => '',
 
-      $item = (object)[
-        'properties_id' => $pid = $dto->properties_id,
-        'address' => implode(' ', $addr),
-        'street_index' => $dto->street_index,
-        'people_id' => $dto->people_id,
-        'people_name' => $dto->people_name,
-        'smokealarms_power' => $dto->smokealarms_power,
-        'smokealarms_required' => $dto->smokealarms_required,
-        'smokealarms_2022_compliant' => $dto->smokealarms_2022_compliant,
-        'smokealarms_company' => $dto->smokealarms_company,
-        'smokealarms_annual' => $dto->smokealarms_annual,
-        'smokealarms_last_inspection' => $dto->smokealarms_last_inspection,
-        'smokealarms_tags' => $dto->smokealarms_tags,
-        'smokealarms_na' => $dto->smokealarms_na,
-        'smokealarms_upgrade_preference' => $dto->smokealarms_upgrade_preference,
-        'smokealarms_workorder_sent' => $dto->smokealarms_workorder_sent,
-        'smokealarms_workorder_schedule' => $dto->smokealarms_workorder_schedule,
-        'alarms' => 0,
-        'LeaseStart' => '',
-        'LeaseFirstStart' => '',
-        'LeaseStop' => '',
-        'PropertyManager' => '',
+        ];
 
-      ];
+        $item->LeaseStart = $dto->LeaseStart;
+        $item->LeaseFirstStart = $dto->LeaseFirstStart;
+        $item->LeaseStop = $dto->LeaseStop;
+        $item->PropertyManager = $dto->PropertyManager;
 
-      $item->LeaseStart = $dto->LeaseStart;
-      $item->LeaseFirstStart = $dto->LeaseFirstStart;
-      $item->LeaseStop = $dto->LeaseStop;
-      $item->PropertyManager = $dto->PropertyManager;
+        $items[] = $item;
+        $index = count($items) - 1; // the last item
 
-      $items[] = $item;
-      $index = count($items) - 1; // the last item
+      }
 
+      if ($index > -1 && \in_array($dto->status, config::smokealarm_status_compliant)) $items[$index]->alarms++;
     }
 
-    if ($index > -1 && \in_array($dto->status, config::smokealarm_status_compliant)) $items[$index]->alarms++;
-  }
+    // \sys::dump( $this->data->dtoSet);
+    // \sys::dump( $items);
 
-  // \sys::dump( $this->data->dtoSet);
-  // \sys::dump( $items);
-
-  $dao = new dao\properties;
-  foreach ($items as $item) {
-    $expired = $warning = false;
-    if (($et = \strtotime($item->smokealarms_last_inspection)) > 0) {
-      $etx = \strtotime(config::smokealarm_valid_time, $et);
-      if (date('Y-m-d', $etx) < date('Y-m-d')) {
-        // \sys::logger( sprintf('<%s> %s', time() - $etx, __METHOD__));
-        $expired = true;
-      } else {
-        $etx = \strtotime(config::smokealarm_warn_time, $et);
+    $dao = new dao\properties;
+    foreach ($items as $item) {
+      $expired = $warning = false;
+      if (($et = \strtotime($item->smokealarms_last_inspection)) > 0) {
+        $etx = \strtotime(config::smokealarm_valid_time, $et);
         if (date('Y-m-d', $etx) < date('Y-m-d')) {
-          $warning = true;
+          // \sys::logger( sprintf('<%s> %s', time() - $etx, __METHOD__));
+          $expired = true;
+        } else {
+          $etx = \strtotime(config::smokealarm_warn_time, $et);
+          if (date('Y-m-d', $etx) < date('Y-m-d')) {
+            $warning = true;
+          }
         }
       }
-    }
 
-    $btnClass = 'btn-light';
-    if ($expired) {
-      $btnClass = 'btn-danger';
-    } elseif ($warning) {
-      $btnClass = 'btn-warning';
-    }
-  ?>
-    <div class="card" data-address="<?= htmlentities($item->street_index) ?>" data-company="<?= htmlentities($item->smokealarms_company) ?>" data-inspect="<?= $item->smokealarms_last_inspection ?>" data-lease_start="<?= strtotime($item->LeaseStart) < strtotime($item->LeaseFirstStart) ? $item->LeaseFirstStart : $item->LeaseStart ?>" data-lease_stop="<?= $item->LeaseStop ?>" data-workorder_sent="<?= strtotime($item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>">
+      $btnClass = 'btn-light';
+      if ($expired) {
+        $btnClass = 'btn-danger';
+      } elseif ($warning) {
+        $btnClass = 'btn-warning';
+      }
+
+      printf(
+        '<div class="card"
+          data-address="%s"
+          data-company="%s"
+          data-inspect="%s"
+          data-lease_start="%s"
+          data-lease_stop="%s"
+          data-smokealarms_annual="%s"
+          data-workorder_sent="%s">',
+        htmlentities($item->street_index),
+        htmlentities($item->smokealarms_company),
+        $item->smokealarms_last_inspection,
+        strtotime($item->LeaseStart) < strtotime($item->LeaseFirstStart) ? $item->LeaseFirstStart : $item->LeaseStart,
+        $item->LeaseStop,
+        $item->smokealarms_annual,
+        strtotime($item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no'
+      );  ?>
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
           <button class="btn <?= $btnClass ?> btn-sm flex-fill" type="button" data-toggle="collapse" data-target="#<?= $_collapse = strings::rand() ?>" data-properties_id="<?= $item->properties_id ?>" data-address="<?= htmlentities($item->address) ?>" data-people_id="<?= $item->people_id ?>" data-people_name="<?= htmlentities($item->people_name) ?>" data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>" data-workorder_sent="<?= strtotime($item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>" aria-expanded="false" aria-controls="<?= $_collapse ?>">
@@ -213,7 +291,7 @@ use strings;  ?>
 
             $leaseEnd = sprintf(
               '<div class="col-5 d-none d-md-block text-center">%s</div>
-                  <div class="col-2 d-none d-md-block text-center">%s</div>',
+                    <div class="col-2 d-none d-md-block text-center">%s</div>',
               strings::asLocalDate($item->LeaseStop),
               strings::initials($item->PropertyManager)
 
@@ -221,38 +299,38 @@ use strings;  ?>
 
             printf(
               '<div class="form-row">
-                  <div class="col text-left text-truncate" address>%s</div>
-                  <div class="col-lg-3 text-left d-none d-lg-block">
-                    <div class="form-row">
-                      <div class="col text-truncate" company>%s</div>
-                      <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s" annual>%s</div>
-                      <div class="col-6 col-xl-5 text-truncate" last_inspection>%s</div>
-                      <div class="col-1" certificate title="%s">%s</div>
-                    </div>
-
-                  </div>
-
-                  <div class="col-3 col-lg-1 col-xl-3 text-left">
-                    <div class="form-row">
-                      <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
-                      <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
-                      %s
+                    <div class="col text-left text-truncate" address>%s</div>
+                    <div class="col-lg-3 text-left d-none d-lg-block">
+                      <div class="form-row">
+                        <div class="col text-truncate" company>%s</div>
+                        <div class="col-3 d-none d-xl-block text-truncate text-center" title="%s" annual>%s</div>
+                        <div class="col-6 col-xl-5 text-truncate" last_inspection>%s</div>
+                        <div class="col-1" certificate title="%s">%s</div>
+                      </div>
 
                     </div>
 
-                  </div>
+                    <div class="col-3 col-lg-1 col-xl-3 text-left">
+                      <div class="form-row">
+                        <div class="col d-none d-xl-block text-truncate" upgrade-pref>%s</div>
+                        <div class="col-3 d-none d-xl-block text-center" %s work-order>%s</div>
+                        %s
 
-                  <div class="col-lg-4 col-md-3 d-none d-lg-block">
-                    <div class="form-row">
-                      %s
-                      <div class="col-3 text-center" compliant>%s</div>
-                      <div class="col text-center %s" compliance>%s</div>
+                      </div>
 
                     </div>
 
-                  </div>
+                    <div class="col-lg-4 col-md-3 d-none d-lg-block">
+                      <div class="form-row">
+                        %s
+                        <div class="col-3 text-center" compliant>%s</div>
+                        <div class="col text-center %s" compliance>%s</div>
 
-                </div>',
+                      </div>
+
+                    </div>
+
+                  </div>',
               $item->address,
               $item->smokealarms_company,
               $item->smokealarms_annual,
@@ -290,10 +368,12 @@ use strings;  ?>
 
       </div>
 
-    </div class="card">
 
-  <?php
-  }  ?>
+    <?php
+      print '</div class="card">';
+    }  ?>
+
+  </div>
 
 </div>
 <script>
@@ -315,6 +395,15 @@ use strings;  ?>
         e.stopPropagation();
         e.preventDefault();
         $('#<?= $_accordion ?>').trigger('sort-company');
+
+      });
+
+    $('#<?= $_uidSortInspectionMonth ?>')
+      .css('cursor', cursor)
+      .on('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        $('#<?= $_accordion ?>').trigger('sort-annual-month');
 
       });
 
@@ -374,119 +463,188 @@ use strings;  ?>
     };
 
     $('#<?= $_accordion ?>')
+      .on('-sort-hide-', function(e) {
+        $('#<?= $_accordion ?>')
+          .addClass('d-none');
+
+        $('<div class="full-sorter"></div>')
+          .insertBefore('#<?= $_accordion ?>');
+
+      })
+      .on('-sort-reveal-', function(e) {
+        $('.full-sorter')
+          .remove();
+        $('#<?= $_accordion ?>')
+          .removeClass('d-none');
+
+      })
       .on('sort-address', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-address]', this);
-        items.sort((a, b) => sortFunc(a, b, 'address', 'string'));
+          let items = $('> div[data-address]', this);
+          items.sort((a, b) => sortFunc(a, b, 'address', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
+
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
+      })
+      .on('sort-annual-month', function(e) {
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
+
+          _me.data('order', order);
+
+          let items = $('> div[data-smokealarms_annual]', this);
+          items.sort((a, b) => sortFunc(a, b, 'smokealarms_annual', 'string'));
+
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
+
+          }
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
 
       })
       .on('sort-company', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-company]', this);
-        items.sort((a, b) => sortFunc(a, b, 'company', 'string'));
+          let items = $('> div[data-company]', this);
+          items.sort((a, b) => sortFunc(a, b, 'company', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
 
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
       })
       .on('sort-last-inspection', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-inspect]', this);
-        items.sort((a, b) => sortFunc(a, b, 'inspect', 'string'));
+          let items = $('> div[data-inspect]', this);
+          items.sort((a, b) => sortFunc(a, b, 'inspect', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
 
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
       })
       .on('sort-lease-start', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-lease_start]', this);
-        items.sort((a, b) => sortFunc(a, b, 'lease_start', 'string'));
+          let items = $('> div[data-lease_start]', this);
+          items.sort((a, b) => sortFunc(a, b, 'lease_start', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
 
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
       })
       .on('sort-lease-stop', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-lease_stop]', this);
-        items.sort((a, b) => sortFunc(a, b, 'lease_stop', 'string'));
+          let items = $('> div[data-lease_stop]', this);
+          items.sort((a, b) => sortFunc(a, b, 'lease_stop', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
 
       })
       .on('sort-last-work-order', function(e) {
-        let _me = $(this);
-        let _data = _me.data();
-        let order = 'desc' == String(_data.order) ? "asc" : "desc";
+        $(this).trigger('-sort-hide-');
+        setTimeout(() => {
+          let _me = $(this);
+          let _data = _me.data();
+          let order = 'desc' == String(_data.order) ? "asc" : "desc";
 
-        _me.data('order', order);
+          _me.data('order', order);
 
-        let items = $('> div[data-workorder_sent]', this);
-        items.sort((a, b) => sortFunc(a, b, 'workorder_sent', 'string'));
+          let items = $('> div[data-workorder_sent]', this);
+          items.sort((a, b) => sortFunc(a, b, 'workorder_sent', 'string'));
 
-        if (order == "desc") {
-          let first = $('> div', this).first();
-          $.each(items, (i, el) => $(el).insertAfter(first));
-        } else {
-          $.each(items, (i, el) => _me.append(el));
+          if (order == "desc") {
+            let first = $('> div', this).first();
+            $.each(items, (i, el) => $(el).insertAfter(first));
+          } else {
+            $.each(items, (i, el) => _me.append(el));
 
-        }
+          }
 
+          $(this).trigger('-sort-reveal-');
+
+        }, 600);
       });
 
     $('#<?= $_accordion ?> button[data-properties_id]')
@@ -1166,7 +1324,12 @@ use strings;  ?>
 
       });
 
-    $(document).ready(() => $('#<?= $_accordion ?> [data-toggle="popover"]').popover());
+    $(document).ready(() => {
+      $('#<?= $_accordion ?> [data-toggle="popover"]').popover();
+      $('#<?= $_spinner ?>').remove();
+      $('#<?= $_wrapper ?>').removeClass('fade');
+
+    });
 
   })(_brayworth_);
 </script>
