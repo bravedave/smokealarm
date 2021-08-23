@@ -73,33 +73,35 @@ use strings;  ?>
 </ul>
 
 
-<div class="mt-4" id="<?= $_uid = strings::rand() ?>"></div>
-<script>
-  (_ => $(document).on('smokealarm-stats', (e, stats) => {
-    let row = caption => {
-      return $('<div class="form-row mb-2"></div>')
-        .append(
-          $('<div class="col-4 text-truncate"></div>')
-          .html(caption)
-        )
-        .appendTo('#<?= $_uid ?>');
+<?php if (!(int)currentUser::restriction('smokealarm-company')) { ?>
+  <div class="mt-4" id="<?= $_uid = strings::rand() ?>"></div>
+  <script>
+    (_ => $(document).on('smokealarm-stats', (e, stats) => {
+      let row = caption => {
+        return $('<div class="form-row mb-2"></div>')
+          .append(
+            $('<div class="col-4 text-truncate"></div>')
+            .html(caption)
+          )
+          .appendTo('#<?= $_uid ?>');
 
-    };
+      };
 
-    row('Statistics');
+      row('Statistics');
 
-    $('<div class="col"></div>')
-      .html(stats.properties)
-      .appendTo(row('Properties'));
+      $('<div class="col"></div>')
+        .html(stats.properties)
+        .appendTo(row('Properties'));
 
-    $('<div class="col"></div>')
-      .html(stats.compliant)
-      .appendTo(row('Compliant'));
+      $('<div class="col"></div>')
+        .html(stats.compliant)
+        .appendTo(row('Compliant'));
 
-    $('<div class="col"></div>')
-      .html(stats.notcompliant)
-      .appendTo(row('Not compliant'));
+      $('<div class="col"></div>')
+        .html(stats.notcompliant)
+        .appendTo(row('Not compliant'));
 
-    // console.log(stats);
-  }))(_brayworth_);
-</script>
+      // console.log(stats);
+    }))(_brayworth_);
+  </script>
+<?php } ?>
