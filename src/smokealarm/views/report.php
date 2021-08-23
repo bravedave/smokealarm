@@ -948,6 +948,24 @@ use cms\keyregister;  ?>
                 e.preventDefault();
 
                 _context.close();
+                _me.trigger('set-annual-month-last');
+
+              })
+              .on('recon', function(e) {
+                let d = _.dayjs();
+                $(this).html('Set annual month to ' + d.subtract(1,'month').format('MMM YYYY'))
+
+              })
+              .trigger('recon')
+            );
+
+            _context.append(
+              $('<a href="#"></a>')
+              .on('click', e => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                _context.close();
                 _me.trigger('set-annual-month-now');
 
               })
@@ -1001,6 +1019,29 @@ use cms\keyregister;  ?>
         }
 
         _context.open(e);
+
+      })
+      .on('set-annual-month-last', function(e) {
+        let _me = $(this);
+        let _data = _me.data();
+
+        _.post({
+          url: _.url('<?= $this->route ?>'),
+          data: {
+            action: 'set-annual-month-last',
+            id: _data.properties_id
+
+          },
+
+        }).then(d => {
+          _.growl(d);
+          if ('ack' == d.response) {
+            let dla = _.dayjs(d.date);
+            // console.log('annual', dla.isValid() && dla.unix() > 0 ? dla.format('L') : '');
+            $('[annual]', _me).html(dla.format('M/YY'));
+          }
+
+        });
 
       })
       .on('set-annual-month-now', function(e) {

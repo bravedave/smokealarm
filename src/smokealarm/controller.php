@@ -575,14 +575,17 @@ class controller extends \Controller {
       } else {
         Json::nak($action);
       }
-    } elseif ('set-annual-month-now' == $action) {
+    } elseif ('set-annual-month-now' == $action || 'set-annual-month-last' == $action) {
       if ('yes' == currentUser::restriction('smokealarm-admin')) {
         if ($id = (int)$this->getPost('id')) {
           $dao = new dao\properties;
           if ($dto = $dao->getByID($id)) {
-            $a = [
-              'smokealarms_annual' => date('Y-m')
-            ];
+            $a = ['smokealarms_annual' => date('Y-m')];
+
+            if ('set-annual-month-last' == $action) {
+              $a = ['smokealarms_annual' => date('Y-m', strtotime('-1 month'))];
+
+            }
 
             $dao->UpdateByID($a, $id);
             Json::ack($action)
