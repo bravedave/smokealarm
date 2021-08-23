@@ -71,6 +71,7 @@ use cms\keyregister;  ?>
         background-clip: text;
         color: #ddd;
         opacity: 1;
+        mask: linear-gradient(90deg, #0000 30%, #000, #0000 70%) right/300% 100%;
         -webkit-mask: linear-gradient(90deg, #0000 30%, #000, #0000 70%) right/300% 100%;
         animation: f 1s infinite linear;
       }
