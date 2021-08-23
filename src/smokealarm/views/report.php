@@ -10,8 +10,8 @@
 
 namespace smokealarm;
 
-use currentUser;
-use strings;  ?>
+use currentUser, strings;
+use cms\keyregister;  ?>
 
 <div id="<?= $_spinner = strings::rand() ?>" class="text-center p-5"><br><br><br><br><br><br></div>
 <script>
@@ -364,7 +364,7 @@ use strings;  ?>
 
       <div id="<?= $_collapse ?>" class="collapse" aria-labelledby="<?= $_heading ?>" data-parent="#<?= $_accordion ?>" data-properties_id="<?= $item->properties_id ?>">
 
-        <div class="card-body px-md-3 py-1 py-md-2"></div>
+        <div class="card-body px-2 px-md-3 py-1 py-md-2"></div>
 
       </div>
 
@@ -459,6 +459,35 @@ use strings;  ?>
         return (String(ae).toUpperCase().localeCompare(String(be).toUpperCase()));
 
       }
+
+    };
+
+    let getKeySet = property => {
+      return new Promise(resolve => {
+        _
+          .post({
+            url: _.url('keyregister'),
+            data: {
+              action: 'get-keys-for-property',
+              id: property
+
+            },
+
+          })
+          .then(d => {
+            if ('ack' == d.response) {
+              $.each(d.data, (i, keyset) => {
+                if (<?= keyregister\config::keyset_management ?> == keyset.keyset_type) {
+                  resolve(keyset);
+
+                }
+
+              });
+
+            }
+
+          });
+      });
 
     };
 
@@ -1088,6 +1117,120 @@ use strings;  ?>
         let _me = $(this);
         let _data = _me.data();
 
+        (() => {
+          let row = $('<div class="form-row"></div>');
+
+          row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
+          let col = $('<div class="col"></div>').appendTo(row);
+          let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
+
+          let nc = $('<input type="text" readonly class="form-control">');
+          getKeySet(_data.properties_id)
+            .then(keySet => nc.val(keySet.keyset));
+
+          $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
+
+          $('.card-body', this).prepend(row);
+
+        })();
+
+        <?php if (config::$PROPERTY_USE_NOTIFY) {  ?>
+            (() => {
+              let row = $('<div class="form-row"></div>');
+              $('.card-body', this).prepend(row);
+
+              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner/s</div>');
+              let notaries = $('<div class="col"></div>').appendTo(row);
+
+              _cms_
+                .getPropertyContacts(_data.properties_id)
+                .then(d => {
+                  $.each(d.notaries, (i, notary) => {
+
+                    if ('1' == String(notary.owner)) {
+
+                      let row = $('<div class="form-row"></div>');
+                      let ig, ctrl;
+
+                      ctrl = $('<input type="text" readonly class="form-control">')
+                        .val(notary.name);
+
+                      $('<div class="col mb-2"></div>')
+                        .append(ctrl)
+                        .appendTo(row);
+
+                      ctrl = $('<input type="text" readonly class="form-control">')
+                        .val(notary.email);
+
+                      $('<div class="col-md-4 mb-2"></div>')
+                        .append(ctrl)
+                        .appendTo(row);
+
+                      ig = $('<div class="input-group"></div>');
+                      $('<div class="col-md-3 mb-2"></div>')
+                        .append(ig)
+                        .appendTo(row);
+
+                      ctrl = $('<input type="text" readonly class="form-control">')
+                        .val(notary.mobile)
+                        .appendTo(ig);
+
+                      if (String(notary.mobile).IsMobilePhone()) {
+                        ctrl.val(String(notary.mobile).AsMobilePhone());
+
+                        if (_.browser.isMobileDevice) {
+                          $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
+                            .attr('href', 'sms://' + String(notary.mobile).replace(/[^0-9]/g, ''))
+                            .appendTo(ig);
+
+                          $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
+                            .attr('href', 'tel://' + String(notary.mobile).replace(/[^0-9]/g, ''))
+                            .appendTo(ig);
+
+                        }
+                      }
+
+                      row
+                        .appendTo(notaries);
+
+                    }
+
+                  });
+
+                });
+
+            })();
+        <?php }  ?>
+        /*-- --[get-tenants-for-property]-- --*/
+        // _me.trigger('lookup-tenant-console');
+        // return;
+        _
+          .post({
+            url: _.url('leasing'),
+            data: {
+              action: 'get-tenants-for-property',
+              id: _data.properties_id
+
+            }
+
+          })
+          .then(d => {
+            if ('ack' == d.response) {
+              console.log(d);
+              _me.trigger('lookup-tenant-console')
+
+            } else {
+              _me.trigger('lookup-tenant-console')
+
+            }
+          })
+        /*-- --[get-tenants-for-property]-- --*/
+
+      })
+      .on('lookup-tenant-console', function(e) {
+        let _me = $(this);
+        let _data = _me.data();
+
         _.post({
           url: _.url('<?= $this->route ?>'),
           data: {
@@ -1099,127 +1242,33 @@ use strings;  ?>
         }).then(d => {
           if ('ack' == d.response) {
             /**-- [owner/tenants] --*/
-            // console.log( d);
+            // console.log(d);
 
-            (data => {
-              /** owner */
-              let row = $('<div class="form-row"></div>');
+            <?php if (!config::$PROPERTY_USE_NOTIFY) {  ?>
+                (data => {
+                  /** owner */
+                  let row = $('<div class="form-row"></div>');
 
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label" title=ckey">key</div>');
-              let col = $('<div class="col"></div>').appendTo(row);
-              let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val(data.Key);
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
-
-              $('.card-body', this).prepend(row);
-
-            })(d.data);
-
-            (data => {
-              /** owner */
-              let row = $('<div class="form-row"></div>');
-
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
-              let col = $('<div class="col"></div>').appendTo(row);
-              let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val(data.OwnerName);
-              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val(data.OwnerEmail);
-              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val(String(data.OwnerMobile).AsMobilePhone());
-              if (_brayworth_.browser.isMobileDevice) {
-                if (String(data.OwnerMobile).IsMobilePhone()) {
-                  let g = $('<div class="input-group"></div>');
-                  g.append(pc);
-
-                  let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
-                  a.attr('href', 'sms://' + String(data.OwnerMobile).replace(/[^0-9]/g, ''));
-                  $('<div class="input-group-append"></div>')
-                    .append(a)
-                    .appendTo(g);
-
-                  a = $('<a class="input-group-text"><i class="bi bi-phone"></i></a>')
-                  a.attr('href', 'tel://' + String(data.OwnerMobile).replace(/[^0-9]/g, ''));
-                  $('<div class="input-group-append"></div>')
-                    .append(a)
-                    .appendTo(g);
-
-                  pc = g;
-
-                }
-
-              }
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
-              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
-              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
-
-              $('.card-body', this).prepend(row);
-
-            })(d.data);
-
-            (data => {
-              /** tenant */
-              let row = $('<div class="form-row"></div>');
-
-              row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
-              let col = $('<div class="col"></div>').appendTo(row);
-              let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
-
-              let nc = $('<input type="text" readonly class="form-control bg-transparent">').val(data.Name);
-              let ec = $('<input type="text" readonly class="form-control bg-transparent">').val(data.Email);
-              let pc = $('<input type="text" readonly class="form-control bg-transparent">').val(String(data.Mobile).AsMobilePhone());
-              if (_brayworth_.browser.isMobileDevice) {
-                if (String(data.Mobile).IsMobilePhone()) {
-                  let g = $('<div class="input-group"></div>');
-                  g.append(pc);
-
-                  let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
-                  a.attr('href', 'sms://' + String(data.Mobile).replace(/[^0-9]/g, ''));
-                  $('<div class="input-group-append"></div>')
-                    .append(a)
-                    .appendTo(g);
-
-                  a = $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
-                  a.attr('href', 'tel://' + String(data.Mobile).replace(/[^0-9]/g, ''));
-                  $('<div class="input-group-append"></div>')
-                    .append(a)
-                    .appendTo(g);
-
-                  pc = g;
-
-                }
-
-              }
-
-              $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
-              $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
-              $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
-
-              if (data.cotens.length > 0) {
-                $.each(data.cotens, (i, o) => {
-                  // console.log( o);
-
+                  row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="owner">owner</div>');
+                  let col = $('<div class="col"></div>').appendTo(row);
                   let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
 
-                  let nc = $('<div class="form-control bg-transparent"></div>').html(o.name);
-                  let ec = $('<div class="form-control bg-transparent"></div>').html(o.Email);
-                  let pc = $('<div class="form-control bg-transparent"></div>').html(String(o.Mobile).AsMobilePhone());
-
+                  let nc = $('<input type="text" readonly class="form-control bg-transparent">').val(data.OwnerName);
+                  let ec = $('<input type="text" readonly class="form-control bg-transparent">').val(data.OwnerEmail);
+                  let pc = $('<input type="text" readonly class="form-control bg-transparent">').val(String(data.OwnerMobile).AsMobilePhone());
                   if (_brayworth_.browser.isMobileDevice) {
-                    if (String(o.Mobile).IsMobilePhone()) {
+                    if (String(data.OwnerMobile).IsMobilePhone()) {
                       let g = $('<div class="input-group"></div>');
                       g.append(pc);
 
                       let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
-                      a.attr('href', 'sms://' + String(o.Mobile).replace(/[^0-9]/g, ''));
+                      a.attr('href', 'sms://' + String(data.OwnerMobile).replace(/[^0-9]/g, ''));
                       $('<div class="input-group-append"></div>')
                         .append(a)
                         .appendTo(g);
 
-                      a = $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
-                      a.attr('href', 'tel://' + String(o.Mobile).replace(/[^0-9]/g, ''));
+                      a = $('<a class="input-group-text"><i class="bi bi-phone"></i></a>')
+                      a.attr('href', 'tel://' + String(data.OwnerMobile).replace(/[^0-9]/g, ''));
                       $('<div class="input-group-append"></div>')
                         .append(a)
                         .appendTo(g);
@@ -1234,13 +1283,93 @@ use strings;  ?>
                   $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
                   $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
 
-                });
+                  $('.card-body', this).prepend(row);
 
-              }
+                })(d.data);
+            <?php }  ?>
 
-              $('.card-body', this).prepend(row);
+              (data => {
+                /** tenant */
+                let row = $('<div class="form-row"></div>');
 
-            })(d.data);
+                row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
+                let col = $('<div class="col"></div>').appendTo(row);
+                let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
+
+                let nc = $('<input type="text" readonly class="form-control bg-transparent">').val(data.Name);
+                let ec = $('<input type="text" readonly class="form-control bg-transparent">').val(data.Email);
+                let pc = $('<input type="text" readonly class="form-control bg-transparent">').val(String(data.Mobile).AsMobilePhone());
+                if (_brayworth_.browser.isMobileDevice) {
+                  if (String(data.Mobile).IsMobilePhone()) {
+                    let g = $('<div class="input-group"></div>');
+                    g.append(pc);
+
+                    let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
+                    a.attr('href', 'sms://' + String(data.Mobile).replace(/[^0-9]/g, ''));
+                    $('<div class="input-group-append"></div>')
+                      .append(a)
+                      .appendTo(g);
+
+                    a = $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
+                    a.attr('href', 'tel://' + String(data.Mobile).replace(/[^0-9]/g, ''));
+                    $('<div class="input-group-append"></div>')
+                      .append(a)
+                      .appendTo(g);
+
+                    pc = g;
+
+                  }
+
+                }
+
+                $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
+                $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
+                $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
+
+                if (data.cotens.length > 0) {
+                  $.each(data.cotens, (i, o) => {
+                    // console.log( o);
+
+                    let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
+
+                    let nc = $('<div class="form-control bg-transparent"></div>').html(o.name);
+                    let ec = $('<div class="form-control bg-transparent"></div>').html(o.Email);
+                    let pc = $('<div class="form-control bg-transparent"></div>').html(String(o.Mobile).AsMobilePhone());
+
+                    if (_brayworth_.browser.isMobileDevice) {
+                      if (String(o.Mobile).IsMobilePhone()) {
+                        let g = $('<div class="input-group"></div>');
+                        g.append(pc);
+
+                        let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
+                        a.attr('href', 'sms://' + String(o.Mobile).replace(/[^0-9]/g, ''));
+                        $('<div class="input-group-append"></div>')
+                          .append(a)
+                          .appendTo(g);
+
+                        a = $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
+                        a.attr('href', 'tel://' + String(o.Mobile).replace(/[^0-9]/g, ''));
+                        $('<div class="input-group-append"></div>')
+                          .append(a)
+                          .appendTo(g);
+
+                        pc = g;
+
+                      }
+
+                    }
+
+                    $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
+                    $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
+                    $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
+
+                  });
+
+                }
+
+                $('.card-body', this).prepend(row);
+
+              })(d.data);
             /**-- [owner/tenants] --*/
 
           }

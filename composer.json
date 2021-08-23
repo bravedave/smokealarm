@@ -11,10 +11,6 @@
     }
   ],
   "repositories": {
-    "0": {
-      "type": "git",
-      "url": "https://github.com/bravedave/dvc"
-    },
     "1": {
       "type": "git",
       "url": "https://github.com/bravedave/green"
@@ -22,6 +18,22 @@
     "2": {
       "type": "git",
       "url": "https://github.com/bravedave/photolog"
+    },
+    "cms-console": {
+      "type": "git",
+      "url": "https://github.com/bravedave/cms-console"
+    },
+    "cms-keyregister": {
+      "type": "git",
+      "url": "https://github.com/bravedave/cms-keyregister"
+    },
+    "cms-leasing": {
+      "type": "git",
+      "url": "https://github.com/bravedave/cms-leasing"
+    },
+    "dvc": {
+      "type": "git",
+      "url": "https://github.com/bravedave/dvc"
     }
   },
   "require": {
@@ -29,6 +41,9 @@
     "bravedave/green": "*",
     "parsecsv/php-parsecsv": "*",
     "bravedave/photolog": "*"
+  },
+  "require-dev": {
+    "bravedave/cms-keyregister": "*"
   },
   "autoload": {
     "psr-4": {
