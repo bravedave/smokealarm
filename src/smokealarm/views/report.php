@@ -206,8 +206,16 @@ use cms\keyregister;  ?>
     // \sys::dump( $this->data->dtoSet);
     // \sys::dump( $items);
 
+    $stats = (object)[
+      'properties' => 0,
+      'compliant' => 0,
+      'notcompliant' => 0,
+
+    ];
     $dao = new dao\properties;
     foreach ($items as $item) {
+      $stats->properties++;
+
       $expired = $warning = false;
       if (($et = \strtotime($item->smokealarms_last_inspection)) > 0) {
         $etx = \strtotime(config::smokealarm_valid_time, $et);
@@ -257,8 +265,12 @@ use cms\keyregister;  ?>
               $complianceClass = 'text-success';
               $complianceHtml = strings::html_tick;
               $upgradePref = 'compliant';
-            } elseif ($item->alarms < $item->smokealarms_required) {
-              $complianceHtml = sprintf('<span class="badge badge-danger">%s</span>', $item->alarms - $item->smokealarms_required);
+              $stats->compliant++;
+            } else {
+              $stats->notcompliant++;
+              if ($item->alarms < $item->smokealarms_required) {
+                $complianceHtml = sprintf('<span class="badge badge-danger">%s</span>', $item->alarms - $item->smokealarms_required);
+              }
             }
 
             $fakeProperty = (object)[
@@ -1456,9 +1468,17 @@ use cms\keyregister;  ?>
       });
 
     $(document).ready(() => {
-      $('#<?= $_accordion ?> [data-toggle="popover"]').popover();
-      $('#<?= $_spinner ?>').remove();
-      $('#<?= $_wrapper ?>').removeClass('fade');
+      $('#<?= $_accordion ?> [data-toggle="popover"]')
+        .popover();
+
+      $('#<?= $_spinner ?>')
+        .remove();
+
+      $('#<?= $_wrapper ?>')
+        .removeClass('fade');
+
+      $(document)
+        .trigger('smokealarm-stats', <?= json_encode($stats) ?>);
 
     });
 
