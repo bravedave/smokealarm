@@ -1272,13 +1272,13 @@ use cms\keyregister;  ?>
               if (true) {
                 // if (_cms_.currentUser.isDavid) {
 
-                if (!String.prototype.AsPhone) {
-                  String.prototype.AsPhone = function() {
-                    return this.isMobilePhone() ?
-                      this.AsMobilePhone() : this.AsLocalPhone();
-                  };
+                // if (!String.prototype.AsPhone) {
+                //   String.prototype.AsPhone = function() {
+                //     return this.isMobilePhone() ?
+                //       this.AsMobilePhone() : this.AsLocalPhone();
+                //   };
 
-                }
+                // }
 
                 // _me.trigger('lookup-tenant-console');
                 let row = $('<div class="form-row"></div>');
