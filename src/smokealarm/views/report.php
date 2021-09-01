@@ -941,43 +941,41 @@ use cms\keyregister;  ?>
             })
           );
 
-          <?php if ('yes' == currentUser::restriction('smokealarm-admin')) {  ?>
-            _context.append(
-              $('<a href="#"></a>')
-              .on('click', e => {
-                e.stopPropagation();
-                e.preventDefault();
+          _context.append(
+            $('<a href="#"></a>')
+            .on('click', e => {
+              e.stopPropagation();
+              e.preventDefault();
 
-                _context.close();
-                _me.trigger('set-annual-month-last');
+              _context.close();
+              _me.trigger('set-annual-month-last');
 
-              })
-              .on('recon', function(e) {
-                let d = _.dayjs();
-                $(this).html('Set annual month to ' + d.subtract(1,'month').format('MMM YYYY'))
+            })
+            .on('recon', function(e) {
+              let d = _.dayjs();
+              $(this).html('Set annual month to ' + d.subtract(1, 'month').format('MMM YYYY'))
 
-              })
-              .trigger('recon')
-            );
+            })
+            .trigger('recon')
+          );
 
-            _context.append(
-              $('<a href="#"></a>')
-              .on('click', e => {
-                e.stopPropagation();
-                e.preventDefault();
+          _context.append(
+            $('<a href="#"></a>')
+            .on('click', e => {
+              e.stopPropagation();
+              e.preventDefault();
 
-                _context.close();
-                _me.trigger('set-annual-month-now');
+              _context.close();
+              _me.trigger('set-annual-month-now');
 
-              })
-              .on('recon', function(e) {
-                let d = _.dayjs();
-                $(this).html('Set annual month to ' + d.format('MMM YYYY'))
+            })
+            .on('recon', function(e) {
+              let d = _.dayjs();
+              $(this).html('Set annual month to ' + d.format('MMM YYYY'))
 
-              })
-              .trigger('recon')
-            );
-          <?php }  ?>
+            })
+            .trigger('recon')
+          );
 
           _context.append($('<a href="#"><i class="bi bi-eraser"></i>Clear Workorder Data</a>').on('click', function(e) {
             e.stopPropagation();
@@ -1258,23 +1256,207 @@ use cms\keyregister;  ?>
         /*-- --[get-tenants-for-property]-- --*/
         // _me.trigger('lookup-tenant-console');
         // return;
+
         _
           .post({
-            url: _.url('leasing'),
+            url: _.url('<?= $this->route ?>'),
             data: {
               action: 'get-tenants-for-property',
-              id: _data.properties_id
+              properties_id: _data.properties_id
 
             }
 
           })
           .then(d => {
             if ('ack' == d.response) {
-              console.log(d);
-              _me.trigger('lookup-tenant-console')
+              if (true) {
+                // if (_cms_.currentUser.isDavid) {
 
-            } else {
-              _me.trigger('lookup-tenant-console')
+                if (!String.prototype.AsPhone) {
+                  String.prototype.AsPhone = function() {
+                    return this.isMobilePhone() ?
+                      this.AsMobilePhone() : this.AsLocalPhone();
+                  };
+
+                }
+
+                // _me.trigger('lookup-tenant-console');
+                let row = $('<div class="form-row"></div>');
+                row.append('<div class="col-md-2 col-xl-1 text-truncate col-form-label pb-0" title="co tenants">tenants</div>');
+                $('.card-body', this).prepend(row);
+
+                let col = $('<div class="col"></div>').appendTo(row);
+                let emails = [];
+                let mobiles = [];
+                $.each(d.tenants, (i, tenant) => {
+                  // console.log(tenant);
+                  let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
+
+                  let nc = $('<input type="text" readonly class="form-control">')
+                    .val(tenant.name);
+                  let ec = $('<input type="text" readonly class="form-control">')
+                    .val(tenant.email);
+                  let pc = $('<input type="text" readonly class="form-control">')
+                    .val(String(tenant.phone).AsPhone());
+                  // console.log(this);
+
+                  if (_.browser.isMobileDevice) {
+                    if (String(tenant.phone).IsMobilePhone()) {
+                      let g = $('<div class="input-group"></div>');
+                      g.append(pc);
+
+                      let a = $('<a class="input-group-text"><i class="bi bi-chat-dots"></i></a>')
+                      a.attr('href', 'sms://' + String(tenant.phone).replace(/[^0-9]/g, ''));
+                      $('<div class="input-group-append"></div>')
+                        .append(a)
+                        .appendTo(g);
+
+                      a = $('<a class="input-group-text"><i class="bi bi-telephone"></i></a>')
+                      a.attr('href', 'tel://' + String(tenant.phone).replace(/[^0-9]/g, ''));
+                      $('<div class="input-group-append"></div>')
+                        .append(a)
+                        .appendTo(g);
+
+                      pc = g;
+
+                    }
+
+                    <?php
+                    if ('yes' != currentUser::restriction('smoke-alarm')) {
+                      // this part only runs if not a mobile device
+                      print '} else {'; ?>
+
+                      if (String(tenant.email).isEmail()) {
+                        emails.push(_.email.rfc922({
+                          name: tenant.name,
+                          email: tenant.email
+                        }));
+
+                        let g = $('<div class="input-group"></div>');
+                        g.append(ec);
+
+                        $('<button type="button" class="btn input-group-text"><i class="bi bi-cursor"></i></button>')
+                          .on('click', function(e) {
+                            e.stopPropagation();
+
+                            window.top._cms_.email.activate({
+                              to: _.email.rfc922({
+                                name: tenant.name,
+                                email: tenant.email
+                              }),
+                              propertyID: _data.properties_id
+                            });
+
+                          })
+                          .appendTo(
+                            $('<div class="input-group-append"></div>')
+                            .appendTo(g)
+
+                          );
+
+                        ec = g;
+
+                      }
+
+                      if (String(tenant.phone).IsMobilePhone()) {
+                        mobiles.push(tenant.phone);
+
+                        let g = $('<div class="input-group"></div>');
+                        g.append(pc);
+
+                        $('<button type=""button" class="btn input-group-text"><i class="bi bi-chat-dots"></i></button>')
+                          .on('click', function(e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+
+                            _cms_.modal
+                              .sms()
+                              .then(m => {
+                                $('form', m).trigger('add.recipient', tenant.phone);
+                                return m;
+
+                              });
+
+                          })
+                          .appendTo(
+                            $('<div class="input-group-append"></div>')
+                            .appendTo(g)
+
+                          );
+
+                        pc = g;
+
+                      }
+
+                    <?php } ?>
+
+                  }
+
+                  $('<div class="col-md-5 mb-1 mb-md-0"></div>').append(nc).appendTo(_row);
+                  $('<div class="col-md-4 mb-1 mb-md-0"></div>').append(ec).appendTo(_row);
+                  $('<div class="col-md-3 mb-1 mb-md-0"></div>').append(pc).appendTo(_row);
+
+                });
+
+                <?php if ('yes' != currentUser::restriction('smoke-alarm')) { ?>
+                  let _row = $('<div class="form-row mb-2"></div>').appendTo(col);
+                  $('<div class="col-md-5"></div>').appendTo(_row);
+                  $('<div class="col-md-4 text-right"></div>')
+                    .on('recon', function(e) {
+                      if (emails.length > 0) {
+                        $('<button class="btn btn-light" type="button"><i class="bi bi-cursor-fill"></i></button>')
+                          .on('click', function(e) {
+                            e.stopPropagation();
+
+                            window.top._cms_.email.activate({
+                              to: emails.join(','),
+                              propertyID: _data.properties_id
+                            });
+
+                          })
+                          .appendTo(this);
+
+                      }
+
+                    })
+                    .trigger('recon')
+                    .appendTo(_row);
+
+                  $('<div class="col-md-3 mb-1 mb-md-0 text-right"></div>')
+                    .on('recon', function(e) {
+                      if (mobiles.length > 0) {
+                        $('<button class="btn btn-light" type="button"><i class="bi bi-chat-dots-fill"></i></button>')
+                          .on('click', function(e) {
+                            e.stopPropagation();
+
+                            _cms_.modal
+                              .sms()
+                              .then(m => {
+                                $.each(mobiles, (i, mobile) => {
+                                  $('form', m).trigger('add.recipient', mobile);
+
+                                })
+                                return m;
+
+                              });
+
+                          })
+                          .appendTo(this);
+
+                      }
+
+                    })
+                    .trigger('recon')
+                    .appendTo(_row);
+                <?php } ?>
+
+              // } else {
+              //   _me.trigger('lookup-tenant-console')
+
+              }
+
+            // } else {
+            //   _me.trigger('lookup-tenant-console')
 
             }
           })
@@ -1343,6 +1525,7 @@ use cms\keyregister;  ?>
             <?php }  ?>
 
               (data => {
+                console.log(data);
                 /** tenant */
                 let row = $('<div class="form-row"></div>');
 
@@ -1509,20 +1692,21 @@ use cms\keyregister;  ?>
 
       });
 
-    $(document).ready(() => {
-      $('#<?= $_accordion ?> [data-toggle="popover"]')
-        .popover();
+    $(document)
+      .ready(() => {
+        $('#<?= $_accordion ?> [data-toggle="popover"]')
+          .popover();
 
-      $('#<?= $_spinner ?>')
-        .remove();
+        $('#<?= $_spinner ?>')
+          .remove();
 
-      $('#<?= $_wrapper ?>')
-        .removeClass('fade');
+        $('#<?= $_wrapper ?>')
+          .removeClass('fade');
 
-      $(document)
-        .trigger('smokealarm-stats', <?= json_encode($stats) ?>);
+        $(document)
+          .trigger('smokealarm-stats', <?= json_encode($stats) ?>);
 
-    });
+      });
 
   })(_brayworth_);
 </script>

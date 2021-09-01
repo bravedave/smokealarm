@@ -356,6 +356,33 @@ class controller extends \Controller {
       } else {
         \Json::nak(sprintf('%s : not enabled', $action));
       }
+    } elseif ('get-tenants-for-property' == $action) {
+      if (\class_exists('cms\leasing\dao\tenants')) {
+        /*
+        ( _ => {
+          _.post({
+            url : _.url('smokealarm'),
+            data : {
+              action : 'get-tenants-for-property',
+              id : 15910
+
+            }
+
+          }).then( d => console.log('ack' == d.response ? d.tenants : d))
+
+        })(_brayworth_)
+
+         */
+        if ($id = $this->getPost('properties_id')) {
+          $dao = new \cms\leasing\dao\tenants;
+          Json::ack($action)
+            ->add('tenants', $dao->getTenantsOfProperty($id));
+        } else {
+          Json::nak(sprintf('%s : property not found', $action));
+        }
+      } else {
+        Json::nak(sprintf('%s : not enabled', $action));
+      }
     } elseif ('mark-property-na' == $action) {
       if ($id = (int)$this->getPost('id')) {
         $dao = new dao\properties;
