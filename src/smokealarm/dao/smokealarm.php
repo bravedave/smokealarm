@@ -49,283 +49,7 @@ class smokealarm extends _dao {
 		FROM `smokealarm` sa
 			LEFT JOIN properties p on p.id = sa.properties_id';
 
-	public function getOrderedByStreet_disabled(bool $excludeInactive = false,  bool $IncludeNotApplicable = false): ?object {
-		$debug = false;
-		// $debug = true;
-
-		$_sql =
-			'SELECT
-				sa.*,
-				p.address_street,
-				p.people_id,
-				p.street_index,
-				p.address_suburb,
-				p.address_state,
-				p.address_postcode,
-				p.smokealarms_required,
-				p.smokealarms_power,
-				p.smokealarms_2022_compliant,
-				p.smokealarms_company,
-				p.smokealarms_company_id,
-				p.smokealarms_annual,
-				p.smokealarms_last_inspection,
-				p.smokealarms_tags,
-				p.smokealarms_na,
-				p.smokealarms_upgrade_preference,
-				p.smokealarms_workorder_sent,
-				p.smokealarms_workorder_schedule,
-				people.name people_name
-			FROM `smokealarm` sa
-				LEFT JOIN properties p on p.id = sa.properties_id
-				LEFT JOIN people on p.people_id = people.id';
-
-		$conditions = [];
-		if (!$IncludeNotApplicable) {
-			$conditions[] = 'p.smokealarms_na = 0';
-		}
-
-		if ($company = (int)currentUser::restriction('smokealarm-company')) {
-			$conditions[] = sprintf('p.smokealarms_company_id = %d', $company);
-		}
-
-		$activeProperties = [];
-		$leaseDetails = [];
-		if (\class_exists('dao\console_properties')) {
-			$_cp_dao = new \dao\console_properties;
-
-			if ($excludeInactive) {
-
-				if ($debug) \sys::logger(sprintf('<%s> : %s : %s', 'getting console data', \application::timer()->elapsed(), __METHOD__));
-				if ($_cp_res = $_cp_dao->getActive('properties_id')) {
-					$activeProperties = array_map(function ($dto) {
-						return $dto->properties_id;
-					}, $_cp_res->dtoSet());
-
-					if ($activeProperties) {
-						$conditions[] = sprintf('sa.`properties_id` IN (%s)', implode(',', $activeProperties));
-					}
-				}
-			}
-
-			if ($debug) \sys::logger(sprintf('<%s> : %s : %s', 'getting console lease data', \application::timer()->elapsed(), __METHOD__));
-			if ($_cp_res = $_cp_dao->getActiveWithCurrentTenant($excludeRoutineInspectionExclusions = false)) {
-				$leaseDetails = array_map(function ($dto) {
-					return (object)[
-						'property_id' => $dto->properties_id,
-						'LeaseFirstStart' => $dto->LeaseFirstStart,
-						'LeaseStart' => $dto->LeaseStart,
-						'LeaseStop' => $dto->LeaseStop,
-						'PropertyManager' => $dto->PropertyManager,
-						'property_manager_id' => $dto->property_manager_id
-
-					];
-				}, $_cp_res->dtoSet());
-			}
-
-			if ($debug) \sys::logger(sprintf('<%s> : %s : %s', 'got console lease data', \application::timer()->elapsed(), __METHOD__));
-		}
-
-		if ($conditions) {
-			$_sql .= sprintf(' WHERE %s', implode(' AND ', $conditions));
-		}
-
-		$this->Q($_z = 'DROP TABLE IF EXISTS tmp');
-		// if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
-
-		$this->Q($_z = sprintf('CREATE TEMPORARY TABLE tmp AS %s', $_sql));
-		// if ( $debug) \sys::logSQL( sprintf('<%s> %s', $_z, __METHOD__));
-
-		if ($activeProperties) {
-			$_sql = 'SELECT properties_id FROM tmp WHERE properties_id > 0';
-			if ($res = $this->Result($_sql)) {
-				$res->dtoSet(function ($dto) use (&$activeProperties) {
-					if ($i = array_search($dto->properties_id, $activeProperties)) {
-						if (false !== $i) {
-							unset($activeProperties[$i]);
-						}
-					}
-				});
-			}
-			if ($debug) \sys::logSQL(sprintf('<%s> %s', $_sql, __METHOD__));
-		}
-
-		// if ( $activeProperties) {
-		if ($activeProperties || !$excludeInactive) {
-			/**
-			 * So it's either:
-			 * - console was active and have active properties .. I should be here ..
-			 * or
-			 * - we simple have excludeInactive off .. I should be here ..
-			 * or
-			 * - console was active and had no active properties .. should I be here ?
-			 */
-
-
-			$conditions = [];
-			if (!$IncludeNotApplicable) {
-				$conditions[] = 'p.smokealarms_na = 0';
-			}
-
-			if ($company = (int)currentUser::restriction('smokealarm-company')) {
-				$conditions[] = sprintf('p.smokealarms_company_id = %d', $company);
-			}
-
-			if ($activeProperties) {
-				$conditions[] = sprintf('p.id IN (%s)', implode(',', $activeProperties));
-			} else {
-				$this->Q($_z = 'CREATE TEMPORARY TABLE tmpx AS SELECT id FROM tmp');
-				if ($debug) \sys::logSQL(sprintf('<%s> %s', $_z, __METHOD__));
-				$conditions[] = 'p.id NOT IN (SELECT id FROM tmpx)';
-			}
-
-			$_sql = $__sql = 'INSERT INTO tmp(
-				`properties_id`,
-				`address_street`,
-				`people_id`,
-				`street_index`,
-				`address_suburb`,
-				`address_state`,
-				`address_postcode`,
-				`smokealarms_required`,
-				`smokealarms_power`,
-				`smokealarms_2022_compliant`,
-				`smokealarms_company`,
-				`smokealarms_last_inspection`,
-				`smokealarms_na`,
-				`smokealarms_upgrade_preference`,
-				`smokealarms_annual`,
-				`smokealarms_workorder_sent`,
-				`smokealarms_workorder_schedule`,
-				`people_name`)
-				SELECT
-					p.id,
-					p.address_street,
-					p.people_id,
-					p.street_index,
-					p.address_suburb,
-					p.address_state,
-					p.address_postcode,
-					p.smokealarms_required,
-					p.smokealarms_power,
-					p.smokealarms_2022_compliant,
-					p.smokealarms_company,
-					p.smokealarms_last_inspection,
-					p.smokealarms_na,
-					p.smokealarms_upgrade_preference,
-					p.smokealarms_annual,
-					p.smokealarms_workorder_sent,
-					p.smokealarms_workorder_schedule,
-					people.name people_name
-					FROM properties p
-						LEFT JOIN people on p.people_id = people.id';
-
-			if ($activeProperties || $company) {
-				/**
-				 * currently this blow the machine memory
-				 */
-				$_sql = sprintf(
-					'%s WHERE %s',
-					$__sql,
-					implode(' AND ', $conditions)
-
-				);
-				if ($debug) \sys::logSQL(sprintf('<%s> %s', $_sql, __METHOD__));
-
-				$this->Q($_sql);
-			}
-		}
-
-		$_sql = 'SELECT
-				id,
-				address_street,
-				street_index,
-				properties_id
-			FROM tmp
-			WHERE street_index = "" OR street_index IS NULL';
-		if ($res = $this->Result($_sql)) {
-			$res->dtoSet(function ($dto) {
-				if (!$dto->street_index) {
-					if ($s = strings::street_index($dto->address_street)) {
-
-						// \sys::logger( sprintf('<%s> %s', $s, __METHOD__));
-						$this->db->Update(
-							'tmp',
-							['street_index' => $s],
-							'WHERE id = ' . (int)$dto->id,
-							$flushCache = false
-
-						);
-
-						$dao = new properties;
-						$dao->UpdateByID([
-							'street_index' => $s
-
-						], $dto->properties_id);
-					}
-				}
-
-				return $dto;
-			});
-		}
-
-		if ($leaseDetails) {
-
-			if ($debug) \sys::logger(sprintf('<%s> : %s : %s', 'updating console lease data', \application::timer()->elapsed(), __METHOD__));
-
-			$this->Q('ALTER TABLE tmp
-				ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
-				ADD COLUMN `LeaseFirstStart` DATE DEFAULT "0000-00-00",
-				ADD COLUMN `LeaseStart` DATE DEFAULT "0000-00-00",
-				ADD COLUMN `LeaseStop` DATE DEFAULT "0000-00-00",
-				ADD COLUMN `PropertyManager` VARCHAR(100),
-				ADD COLUMN `property_manager_id` INT,
-				ADD PRIMARY KEY (`uid`)');
-
-			// console_properties only exists if leaseDetails has content
-			$this->Q('UPDATE tmp
-				LEFT JOIN
-					console_properties cp ON cp.properties_id = tmp.properties_id
-				SET
-					tmp.PropertyManager = cp.`PropertyManager`');
-
-			$_sql = 'SELECT uid, properties_id FROM tmp';
-			if ($res = $this->Result($_sql)) {
-				$res->dtoSet(function ($dto) use ($leaseDetails) {
-					$key = array_search($dto->properties_id, array_column($leaseDetails, 'property_id'));
-					if ($key !== false) {
-						// if ( strtotime( $leaseDetails[$key]->LeaseStop) > 0) {
-						$this->db->Update(
-							'tmp',
-							[
-								'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
-								'LeaseStart' => $leaseDetails[$key]->LeaseStart,
-								'LeaseStop' => $leaseDetails[$key]->LeaseStop,
-								'property_manager_id' => $leaseDetails[$key]->property_manager_id,
-								'PropertyManager' => $leaseDetails[$key]->PropertyManager
-
-							],
-							'WHERE uid = ' . (int)$dto->uid,
-							$flushCache = false
-
-						);
-						// \sys::logger( sprintf('<%s> %s', $leaseDetails[$key]->LeaseStop, __METHOD__));
-
-						// }
-
-					}
-				});
-			}
-
-			if ($debug) \sys::logger(sprintf('<%s> : %s : %s', 'updated console lease data', \application::timer()->elapsed(), __METHOD__));
-		}
-
-		// $this->Q('DROP TABLE IF EXISTS _smokealarm_tmp');
-		// $this->Q('CREATE TABLE IF NOT EXISTS _smokealarm_tmp SELECT * FROM tmp');
-
-		return $this->Result('SELECT * FROM tmp ORDER BY `smokealarms_last_inspection`, `properties_id` LIMIT 3000');
-	}
-
-	public function getOrderedByStreet(bool $IncludeNotApplicable = false): ?object {
+	public function getOrderedByStreet_disabled(bool $IncludeNotApplicable = false): ?object {
 		$debug = false;
 		// $debug = true;
 		$debugSQL = [];
@@ -598,6 +322,278 @@ class smokealarm extends _dao {
 			unlink($debugFile);
 		}
 
+		if ($debug) \sys::logger(sprintf('<%s> %s', \application::app()->timer()->elapsed(), __METHOD__));
+		return $this->Result('SELECT * FROM tmp ORDER BY `smokealarms_last_inspection`, `properties_id` LIMIT 3000');
+	}
+
+	public function getOrderedByStreet(bool $IncludeNotApplicable = false): ?object {
+		$debug = false;
+		// $debug = true;
+		$debugSQL = [];
+
+		$_sql = 'SELECT
+				sa.*,
+				p.address_street,
+				p.people_id,
+				p.street_index,
+				p.address_suburb,
+				p.address_state,
+				p.address_postcode,
+				p.property_manager property_manager_id,
+				pm.name PropertyManager,
+				p.smokealarms_required,
+				p.smokealarms_power,
+				p.smokealarms_2022_compliant,
+				p.smokealarms_company,
+				p.smokealarms_company_id,
+				p.smokealarms_annual,
+				p.smokealarms_last_inspection,
+				p.smokealarms_tags,
+				p.smokealarms_na,
+				p.smokealarms_upgrade_preference,
+				p.smokealarms_workorder_sent,
+				p.smokealarms_workorder_schedule,
+				people.name people_name
+			FROM
+				`smokealarm` sa
+						LEFT JOIN
+				properties p ON p.id = sa.properties_id
+						LEFT JOIN
+				people ON p.people_id = people.id
+						LEFT JOIN
+				users pm ON pm.id = p.property_manager';
+
+		$conditions = ['p.forrent = 1'];
+		if (!$IncludeNotApplicable) {
+			$conditions[] = 'p.smokealarms_na = 0';
+		}
+
+		if ($company = (int)currentUser::restriction('smokealarm-company')) {
+			$conditions[] = sprintf('p.smokealarms_company_id = %d', $company);
+		}
+
+		if ($conditions) {
+			$_sql .= sprintf(' WHERE %s', implode(' AND ', $conditions));
+		}
+
+		$this->Q($_z = 'DROP TABLE IF EXISTS tmp');
+		if ($debug) $debugSQL[] = $_z;
+
+		$this->Q($_z = sprintf('CREATE TEMPORARY TABLE tmp AS %s', $_sql));
+		if ($debug) $debugSQL[] = $_z;
+
+		/**
+		 * draw in properties which are on the rental roll,
+		 * but which do not have any alarms
+		 */
+		$this->Q($_z = 'DROP TABLE IF EXISTS tmpx');
+		if ($debug) $debugSQL[] = $_z;
+		$this->Q($_z = 'CREATE TEMPORARY TABLE tmpx AS SELECT DISTINCT properties_id FROM tmp');
+		if ($debug) $debugSQL[] = $_z;
+		$conditions[] = 'p.id NOT IN (SELECT properties_id FROM tmpx)';
+
+		$_sql = sprintf(
+			'INSERT INTO tmp(
+				`properties_id`,
+				`address_street`,
+				`people_id`,
+				`street_index`,
+				`address_suburb`,
+				`address_state`,
+				`address_postcode`,
+				`property_manager_id`,
+				`PropertyManager`,
+				`smokealarms_required`,
+				`smokealarms_power`,
+				`smokealarms_2022_compliant`,
+				`smokealarms_company`,
+				`smokealarms_last_inspection`,
+				`smokealarms_na`,
+				`smokealarms_upgrade_preference`,
+				`smokealarms_annual`,
+				`smokealarms_workorder_sent`,
+				`smokealarms_workorder_schedule`,
+				`people_name`)
+				SELECT
+					p.id,
+					p.address_street,
+					p.people_id,
+					p.street_index,
+					p.address_suburb,
+					p.address_state,
+					p.address_postcode,
+					p.property_manager property_manager_id,
+					pm.name PropertyManager,
+					p.smokealarms_required,
+					p.smokealarms_power,
+					p.smokealarms_2022_compliant,
+					p.smokealarms_company,
+					p.smokealarms_last_inspection,
+					p.smokealarms_na,
+					p.smokealarms_upgrade_preference,
+					p.smokealarms_annual,
+					p.smokealarms_workorder_sent,
+					p.smokealarms_workorder_schedule,
+					people.name people_name
+				FROM properties p
+						LEFT JOIN
+					people ON p.people_id = people.id
+						LEFT JOIN
+					users pm ON pm.id = p.property_manager
+				WHERE %s',
+			implode(' AND ', $conditions)
+		);
+
+		if ($debug) $debugSQL[] = $_sql;
+		$this->Q($_sql);
+
+		if ('sqlite' == \config::$DB_TYPE) {
+			$this->Q('ALTER TABLE tmp ADD COLUMN `offer_to_lease_id` INT NOT NULL DEFAULT 0');
+			$this->Q(sprintf('ALTER TABLE tmp ADD COLUMN `LeaseFirstStart` DATE NOT NULL DEFAULT %s', $this->quote('0000-00-00')));
+			$this->Q(sprintf('ALTER TABLE tmp ADD COLUMN `LeaseStart` DATE NOT NULL DEFAULT %s', $this->quote('0000-00-00')));
+			$this->Q(sprintf('ALTER TABLE tmp ADD COLUMN `LeaseStop` DATE NOT NULL DEFAULT %s', $this->quote('0000-00-00')));
+		} else {
+			$sql = sprintf(
+				'ALTER TABLE tmp
+          ADD COLUMN `offer_to_lease_id` BIGINT(20) NOT NULL DEFAULT 0,
+          ADD COLUMN `LeaseFirstStart` DATE NOT NULL DEFAULT %s,
+          ADD COLUMN `LeaseStart` DATE NOT NULL DEFAULT %s,
+          ADD COLUMN `LeaseStop` DATE NOT NULL DEFAULT %s',
+				$this->quote('0000-00-00'),
+				$this->quote('0000-00-00'),
+				$this->quote('0000-00-00')
+			);
+			$this->Q($sql);
+		}
+
+		$sql = sprintf(
+			'UPDATE tmp
+          SET
+            offer_to_lease_id = (SELECT
+                id
+              FROM
+                offer_to_lease o
+              WHERE
+                tmp.properties_id = o.property_id
+                AND DATE(COALESCE( o.lessor_signature_time, %s)) > %s
+              ORDER BY
+                o.`lessor_signature_time` DESC
+              LIMIT 1)',
+			$this->quote('0000-00-00'),
+			$this->quote('0000-00-00')
+		);
+		$this->Q($sql);
+
+		$sql =
+			'UPDATE
+				tmp
+					LEFT JOIN
+				offer_to_lease o ON o.id = tmp.offer_to_lease_id
+			SET
+				tmp.LeaseFirstStart = o.lease_start_inaugural,
+				tmp.LeaseStart = o.lease_start,
+				tmp.LeaseStop = o.lease_end
+			WHERE
+				tmp.offer_to_lease_id > 0';
+		$this->Q($sql);
+		/** ------------------------------------------------------- */
+
+		// /*--- -----[check in console]----- ---*/
+		if (\class_exists('cms\leasing\config') && \class_exists('dao\console_properties')) {
+			if (\cms\leasing\config::check_console_tenants) {
+				$_cp_dao = new \dao\console_properties;
+				if ($_cp_res = $_cp_dao->getActiveWithCurrentTenant($excludeRoutineInspectionExclusions = false)) {
+					$leaseDetails = array_map(function ($dto) {
+						return (object)[
+							'property_id' => $dto->properties_id,
+							'LeaseFirstStart' => $dto->LeaseFirstStart,
+							'LeaseStart' => $dto->LeaseStart,
+							'LeaseStop' => $dto->LeaseStop
+
+						];
+					}, $_cp_res->dtoSet());
+
+					if ($leaseDetails) {
+						$this->Q('ALTER TABLE tmp
+							ADD COLUMN `uid` BIGINT AUTO_INCREMENT FIRST,
+							ADD PRIMARY KEY (`uid`)');
+
+						$_sql = 'SELECT uid, properties_id FROM tmp WHERE offer_to_lease_id = 0';
+						if ($res = $this->Result($_sql)) {
+							$res->dtoSet(function ($dto) use ($leaseDetails) {
+								$key = array_search(
+									$dto->properties_id,
+									array_column($leaseDetails, 'property_id')
+
+								);
+
+								if ($key !== false) {
+									$this->db->Update(
+										'tmp',
+										[
+											'LeaseFirstStart' => $leaseDetails[$key]->LeaseFirstStart,
+											'LeaseStart' => $leaseDetails[$key]->LeaseStart,
+											'LeaseStop' => $leaseDetails[$key]->LeaseStop
+
+										],
+										'WHERE uid = ' . (int)$dto->uid,
+										$flushCache = false
+
+									);
+								}
+							});
+						}
+					}
+				}
+			}
+		}
+		// /*--- -----[end check in console]----- ---*/
+
+		$_sql = 'SELECT
+				id,
+				address_street,
+				street_index,
+				properties_id
+			FROM tmp
+			WHERE street_index = "" OR street_index IS NULL';
+		if ($res = $this->Result($_sql)) {
+			$res->dtoSet(function ($dto) {
+				if (!$dto->street_index) {
+					if ($s = strings::street_index($dto->address_street)) {
+
+						// \sys::logger( sprintf('<%s> %s', $s, __METHOD__));
+						$this->db->Update(
+							'tmp',
+							['street_index' => $s],
+							'WHERE id = ' . (int)$dto->id,
+							$flushCache = false
+
+						);
+
+						$dao = new properties;
+						$dao->UpdateByID([
+							'street_index' => $s
+
+						], $dto->properties_id);
+					}
+				}
+
+				return $dto;
+			});
+		}
+
+		// $this->Q('DROP TABLE IF EXISTS _smokealarm_tmp');
+		// $this->Q('CREATE TABLE IF NOT EXISTS _smokealarm_tmp SELECT * FROM tmp');
+
+		$debugFile = sprintf('%s/_debug_sql.sql', rtrim(\config::tempdir(), '/'));
+		if ($debugSQL) {
+			\sys::logger(sprintf('<%s> %s', $debugFile, __METHOD__));
+			file_put_contents($debugFile, implode(';' . PHP_EOL, $debugSQL));
+		} elseif (file_exists($debugFile)) {
+			unlink($debugFile);
+		}
+
+		if ( $debug) \sys::logger( sprintf('<%s> %s', \application::app()->timer()->elapsed(), __METHOD__));
 		return $this->Result('SELECT * FROM tmp ORDER BY `smokealarms_last_inspection`, `properties_id` LIMIT 3000');
 	}
 
