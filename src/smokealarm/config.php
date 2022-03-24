@@ -67,33 +67,39 @@ class config extends \config {
 
 	static $PHOTOLOG_ROUTE = 'photolog';
 	static $SMOKEALARM_IMPORT_ADD_PROPERTIES = false;
-  static protected $_SMOKEALARM_VERSION = 0;
+  // static protected $_SMOKEALARM_VERSION = 0;
 
-	static protected function smokealarm_version( $set = null) {
-		$ret = self::$_SMOKEALARM_VERSION;
+	// static protected function smokealarm_version( $set = null) {
+	// 	$ret = self::$_SMOKEALARM_VERSION;
 
-		if ( (float)$set) {
-			$j = Json::read( $config = self::smokealarm_config());
+	// 	if ( (float)$set) {
+	// 		$j = Json::read( $config = self::smokealarm_config());
 
-			self::$_SMOKEALARM_VERSION = $j->smokealarm_version = $set;
+	// 		self::$_SMOKEALARM_VERSION = $j->smokealarm_version = $set;
 
-			Json::write( $config, $j);
+	// 		Json::write( $config, $j);
 
-		}
+	// 	}
 
-		return $ret;
+	// 	return $ret;
 
-	}
+	// }
+
+	// static function smokealarm_checkdatabase() {
+	// 	if ( self::smokealarm_version() < self::smokealarm_db_version) {
+  //     $dao = new dao\dbinfo;
+	// 		$dao->dump( $verbose = false);
+
+	// 		config::smokealarm_version( self::smokealarm_db_version);
+
+	// 	}
+
+	// }
 
 	static function smokealarm_checkdatabase() {
-		if ( self::smokealarm_version() < self::smokealarm_db_version) {
-      $dao = new dao\dbinfo;
-			$dao->dump( $verbose = false);
-
-			config::smokealarm_version( self::smokealarm_db_version);
-
-		}
-
+		$dao = new dao\dbinfo(null, method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath());
+		// $dao->debug = true;
+		$dao->checkVersion('smokealarm', self::smokealarm_db_version);
 	}
 
 	static function smokealarm_config() {
@@ -107,7 +113,7 @@ class config extends \config {
 
 	static function smokealarm_import_csv() {
 		return realpath( implode( DIRECTORY_SEPARATOR, [
-      rtrim( self::dataPath(), '/ '),
+      rtrim(method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath(), '/ '),
       'smokealarm_import.csv'
 
     ]));
@@ -116,7 +122,7 @@ class config extends \config {
 
 	static function smokealarm_propertystatus_import_csv() {
 		return realpath( implode( DIRECTORY_SEPARATOR, [
-      rtrim( self::dataPath(), '/ '),
+      rtrim(method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath(), '/ '),
       'smoke-alarm-property-status.csv'
 
     ]));
@@ -126,7 +132,6 @@ class config extends \config {
   static function smokealarm_init() {
     $_a = [
       'import_add_properties' => self::$SMOKEALARM_IMPORT_ADD_PROPERTIES,
-      'smokealarm_version' => self::$_SMOKEALARM_VERSION,
 
     ];
 
@@ -135,7 +140,7 @@ class config extends \config {
       $j = (object)array_merge( $_a, (array)Json::read( $config));
 
       self::$SMOKEALARM_IMPORT_ADD_PROPERTIES = (float)$j->import_add_properties;
-      self::$_SMOKEALARM_VERSION = (float)$j->smokealarm_version;
+      // self::$_SMOKEALARM_VERSION = (float)$j->smokealarm_version;
 
 		}
 
@@ -143,7 +148,7 @@ class config extends \config {
 
 	static function smokealarm_store() {
 		$store = implode( DIRECTORY_SEPARATOR, [
-      rtrim( self::dataPath(), '/ '),
+      rtrim(method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath(), '/ '),
       'smokealarm'
 
 		]);

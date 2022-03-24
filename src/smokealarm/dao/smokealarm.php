@@ -469,7 +469,7 @@ class smokealarm extends _dao {
 		$sql = sprintf(
 			'UPDATE tmp
           SET
-            offer_to_lease_id = (SELECT
+            offer_to_lease_id = COALESCE((SELECT
                 id
               FROM
                 offer_to_lease o
@@ -478,7 +478,7 @@ class smokealarm extends _dao {
                 AND DATE(COALESCE( o.lessor_signature_time, %s)) > %s
               ORDER BY
                 o.`lessor_signature_time` DESC
-              LIMIT 1)',
+              LIMIT 1), 0)',
 			$this->quote('0000-00-00'),
 			$this->quote('0000-00-00')
 		);
@@ -495,6 +495,22 @@ class smokealarm extends _dao {
 				tmp.LeaseStop = o.lease_end
 			WHERE
 				tmp.offer_to_lease_id > 0';
+		/**
+		 * SQLite compatible
+		 */
+		if ('sqlite' == \config::$DB_TYPE) {
+			$sql =
+				'UPDATE
+				tmp
+			SET (LeaseFirstStart, LeaseStart, LeaseStop) =
+			(SELECT
+				lease_start_inaugural, lease_start, lease_end
+				FROM
+					offer_to_lease o
+				WHERE o.id = tmp.offer_to_lease_id)
+			WHERE
+				tmp.offer_to_lease_id > 0';
+		}
 		$this->Q($sql);
 		/** ------------------------------------------------------- */
 
@@ -593,7 +609,7 @@ class smokealarm extends _dao {
 			unlink($debugFile);
 		}
 
-		if ( $debug) \sys::logger( sprintf('<%s> %s', \application::app()->timer()->elapsed(), __METHOD__));
+		if ($debug) \sys::logger(sprintf('<%s> %s', \application::app()->timer()->elapsed(), __METHOD__));
 		return $this->Result('SELECT * FROM tmp ORDER BY `smokealarms_last_inspection`, `properties_id` LIMIT 3000');
 	}
 
