@@ -11,7 +11,7 @@
 namespace smokealarm\dao;
 
 use currentUser;
-use dao\_dao;
+use dvc\dao\_dao;
 
 class smokealarm_suppliers extends _dao {
 	protected $_db_name = 'smokealarm_suppliers';

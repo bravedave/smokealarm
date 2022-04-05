@@ -11,7 +11,7 @@
 namespace smokealarm\dao;
 
 use currentUser;
-use dao\_dao;
+use dvc\dao\_dao;
 use strings;
 
 class smokealarm extends _dao {
