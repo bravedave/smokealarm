@@ -10,9 +10,9 @@
 
 namespace smokealarm\dao\dto;
 
-use dvc\dao\dto\_dto;
+use bravedave\dvc\dto;
 
-class smokealarm_locations extends _dto {
+class smokealarm_locations extends dto {
 	public $id = 0;
 	public $location = '';
 
