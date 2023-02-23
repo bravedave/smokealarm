@@ -38,11 +38,11 @@
   "require": {
     "bravedave/dvc": "*",
     "bravedave/green": "*",
-    "parsecsv/php-parsecsv": "*",
-    "bravedave/photolog": "*"
+    "parsecsv/php-parsecsv": "*"
   },
   "require-dev": {
-    "bravedave/cms-keyregister": "*"
+    "bravedave/cms-keyregister": "*",
+    "bravedave/photolog": "*"
   },
   "autoload": {
     "psr-4": {
