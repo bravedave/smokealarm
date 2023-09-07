@@ -17,20 +17,18 @@ $dto = $this->data->dto;
 
 $_uidImage = strings::rand(); ?>
 
-<style>
-@media screen and (min-width: 768px) {
-  #<?= $_uidImage ?>uploader .has-advanced-upload::before {
-    content: "drag alarm image here to upload";
-
-  }
-
-}
-</style>
-
 <form id="<?= $_form = strings::rand() ?>" autocomplete="off">
   <input type="hidden" name="action" value="save-smokealarm">
   <input type="hidden" name="id" value="<?= $dto->id ?>">
   <input type="hidden" name="properties_id" value="<?= $dto->properties_id ?>">
+  
+  <style>
+  @media screen and (min-width: 768px) {
+    #<?= $_uidImage ?>uploader .has-advanced-upload::before {
+      content: "drag alarm image here to upload";
+    }
+  }
+  </style>
 
   <div class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" id="<?= $_modal = strings::rand() ?>" aria-labelledby="<?= $_modal ?>Label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
