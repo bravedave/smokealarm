@@ -1000,7 +1000,7 @@ use cms\{currentUser, keyregister, strings, useroptions};  ?>
           }
         <?php } ?>
         _context.append.a({
-          html: 'goto ..' + _data.address,
+          html: 'goto ' + _data.address,
           href: url,
           target: '_blank'
         });
