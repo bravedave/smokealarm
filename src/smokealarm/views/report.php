@@ -10,8 +10,7 @@
 
 namespace smokealarm;
 
-use currentUser, strings;
-use cms\keyregister;  ?>
+use cms\{currentUser, keyregister, strings, useroptions};  ?>
 
 <div id="<?= $_spinner = strings::rand() ?>" class="text-center p-5"><br><br><br><br><br><br></div>
 <script>
@@ -170,6 +169,7 @@ use cms\keyregister;  ?>
           'properties_id' => $pid = $dto->properties_id,
           'address' => implode(' ', $addr),
           'street_index' => $dto->street_index,
+          'forrent' => $dto->forrent,
           'people_id' => $dto->people_id,
           'people_name' => $dto->people_name,
           'smokealarms_power' => $dto->smokealarms_power,
@@ -257,7 +257,14 @@ use cms\keyregister;  ?>
       );  ?>
       <div class="card-header p-0" id="<?= $_heading = strings::rand() ?>">
         <div class="d-flex">
-          <button class="btn <?= $btnClass ?> btn-sm flex-fill" type="button" data-toggle="collapse" data-target="#<?= $_collapse = strings::rand() ?>" data-properties_id="<?= $item->properties_id ?>" data-address="<?= htmlentities($item->address) ?>" data-people_id="<?= $item->people_id ?>" data-people_name="<?= htmlentities($item->people_name) ?>" data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>" data-workorder_sent="<?= strtotime($item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>" aria-expanded="false" aria-controls="<?= $_collapse ?>">
+          <button class="btn <?= $btnClass ?> btn-sm flex-fill" type="button"
+          data-toggle="collapse" data-target="#<?= $_collapse = strings::rand() ?>"
+          data-properties_id="<?= $item->properties_id ?>"
+          data-forrent="<?= $item->forrent ?>"
+          data-address="<?= htmlentities($item->address) ?>"
+          data-people_id="<?= $item->people_id ?>"
+          data-people_name="<?= htmlentities($item->people_name) ?>"
+          data-na="<?= $item->smokealarms_na ? 'yes' : 'no' ?>" data-workorder_sent="<?= strtotime($item->smokealarms_workorder_sent) > 0 ? 'yes' : 'no' ?>" aria-expanded="false" aria-controls="<?= $_collapse ?>">
             <?php
             $complianceClass = '';
             $complianceHtml = '';
@@ -984,12 +991,19 @@ use cms\keyregister;  ?>
 
         <?php } ?>
 
-        _context.append(
-          $('<a href="#" target="_blank">goto ' + _data.address + '</a>')
-          .attr('href', _.url('property/view/' + _data.properties_id))
-          .on('click', e => _context.close())
+        let url = _.url('property/view/' + _data.properties_id);
+        <?php if (currentUser::option(useroptions::properties_show_rental_if_rental) == 'yes') { ?>
 
-        );
+          if ('1' == this.dataset.forrent) {
+
+            url = _.url('properties/forrent/?idx=' + _data.properties_id);
+          }
+        <?php } ?>
+        _context.append.a({
+          html: 'goto ..' + _data.address,
+          href: url,
+          target: '_blank'
+        });
 
         if (Number(_data.people_id) > 0) {
           _context.append(
@@ -1630,18 +1644,11 @@ use cms\keyregister;  ?>
 
     $(document)
       .ready(() => {
-        $('#<?= $_accordion ?> [data-toggle="popover"]')
-          .popover();
 
-        $('#<?= $_spinner ?>')
-          .remove();
-
-        $('#<?= $_wrapper ?>')
-          .removeClass('fade');
-
-        $(document)
-          .trigger('smokealarm-stats', <?= json_encode($stats) ?>);
-
+        $('#<?= $_accordion ?> [data-toggle="popover"]').popover();
+        $('#<?= $_spinner ?>').remove();
+        $('#<?= $_wrapper ?>').removeClass('fade');
+        $(document).trigger('smokealarm-stats', <?= json_encode($stats) ?>);
       });
 
   })(_brayworth_);

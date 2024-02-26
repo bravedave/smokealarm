@@ -340,6 +340,7 @@ class smokealarm extends _dao {
 				p.address_state,
 				p.address_postcode,
 				p.property_manager property_manager_id,
+				p.forrent,
 				pm.name PropertyManager,
 				p.smokealarms_required,
 				p.smokealarms_power,
@@ -356,12 +357,9 @@ class smokealarm extends _dao {
 				people.name people_name
 			FROM
 				`smokealarm` sa
-						LEFT JOIN
-				properties p ON p.id = sa.properties_id
-						LEFT JOIN
-				people ON p.people_id = people.id
-						LEFT JOIN
-				users pm ON pm.id = p.property_manager';
+					LEFT JOIN properties p ON p.id = sa.properties_id
+					LEFT JOIN people ON p.people_id = people.id
+					LEFT JOIN users pm ON pm.id = p.property_manager';
 
 		$conditions = ['p.forrent = 1'];
 		if (!$IncludeNotApplicable) {
@@ -398,6 +396,7 @@ class smokealarm extends _dao {
 				`address_street`,
 				`people_id`,
 				`street_index`,
+				`forrent`,
 				`address_suburb`,
 				`address_state`,
 				`address_postcode`,
@@ -419,6 +418,7 @@ class smokealarm extends _dao {
 					p.address_street,
 					p.people_id,
 					p.street_index,
+					p.forrent,
 					p.address_suburb,
 					p.address_state,
 					p.address_postcode,
@@ -436,10 +436,8 @@ class smokealarm extends _dao {
 					p.smokealarms_workorder_schedule,
 					people.name people_name
 				FROM properties p
-						LEFT JOIN
-					people ON p.people_id = people.id
-						LEFT JOIN
-					users pm ON pm.id = p.property_manager
+					LEFT JOIN people ON p.people_id = people.id
+					LEFT JOIN users pm ON pm.id = p.property_manager
 				WHERE %s',
 			implode(' AND ', $conditions)
 		);
@@ -516,7 +514,9 @@ class smokealarm extends _dao {
 
 		// /*--- -----[check in console]----- ---*/
 		if (\class_exists('cms\leasing\config') && \class_exists('dao\console_properties')) {
+
 			if (\cms\leasing\config::check_console_tenants) {
+
 				$_cp_dao = new \dao\console_properties;
 				if ($_cp_res = $_cp_dao->getActiveWithCurrentTenant($excludeRoutineInspectionExclusions = false)) {
 					$leaseDetails = array_map(function ($dto) {

@@ -10,12 +10,11 @@
 
 namespace smokealarm;
 
-use currentUser;
+use cms\{currentUser, strings};
 use green;
 use Json;
 use Response;
 use SplFileInfo;
-use strings;
 use sys;
 
 class controller extends \Controller {
@@ -53,8 +52,8 @@ class controller extends \Controller {
     config::smokealarm_checkdatabase();
     parent::before();
 
-    if ('yes' == \currentUser::option('smokealarm-inactive-exclude')) {
-      \currentUser::option('smokealarm-inactive-exclude', '');
+    if ('yes' == currentUser::option('smokealarm-inactive-exclude')) {
+      currentUser::option('smokealarm-inactive-exclude', '');
     }
   }
 
@@ -327,6 +326,7 @@ class controller extends \Controller {
         Json::nak($action);
       }
     } elseif ('get-tenant-of-property' == $action) {
+
       if (\class_exists('dao\console_tenants')) {;
         if ($properties_id = $this->getPost('properties_id')) {
           /*

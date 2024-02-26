@@ -8,5 +8,9 @@
  *
 */
 
-abstract class config extends cms\config {
+namespace cms;
+
+use bravedave;
+
+class strings extends bravedave\dvc\strings {
 }

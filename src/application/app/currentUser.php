@@ -8,31 +8,5 @@
  *
 */
 
-class currentUser extends dvc\currentUser {
-	static public function option( $key, $value = null) {
-		return ( false);
-
-	}
-
-	static public function isadmin() {
-		// return ( true);
-		return ( false);
-
-	}
-
-	static public function restriction( $key, $value = null ) {
-		if ( 'smokealarm-admin' == $key) {
-			return 'yes';
-
-		}
-
-		// if ( 'smokealarm-company' == $key) {
-		// 	return '1';
-
-		// }
-
-		return ( false);
-
-	}
-
+class currentUser extends cms\currentUser {
 }

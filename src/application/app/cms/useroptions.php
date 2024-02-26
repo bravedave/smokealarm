@@ -8,5 +8,9 @@
  *
 */
 
-abstract class config extends cms\config {
+namespace cms;
+
+class useroptions {
+
+  const properties_show_rental_if_rental = 'psrir';
 }
