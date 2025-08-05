@@ -170,88 +170,6 @@ $dto = $this->data->dto; ?>
       const form = $('#<?= $_form ?>');
       const modal = $('#<?= $_modal ?>');
 
-      const tagContext = function(e) {
-
-        if (e.shiftKey) return;
-        const _context = _.context(e);
-
-        const _tr = $(this);
-        const _data = _tr.data();
-
-        _context.append($('<a href="#"><strong>view</strong></a>').on('click', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-
-          _context.close();
-          _tr.trigger('view');
-        }));
-
-        $.each(d.tags, (i, tag) => {
-
-          let ctrl = $('<a href="#"></a>').html(tag).on('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-
-            _context.close();
-            tagSet(_data.file, tag);
-          });
-
-          if (tag == _data.tag) ctrl.prepend('<i class="bi bi-check"></i>');
-          _context.append(ctrl);
-        })
-
-        _context.append('<hr>');
-        _context.append($('<a href="#">clear tag</a>').on('click', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-
-          _context.close();
-          tagSet(_data.file, '');
-        }));
-
-        _context.append($('<a href="#"><i class="bi bi-trash"></i>delete document</a>').on('click', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-
-          _context.close();
-
-          _.ask({
-            headClass: 'text-white bg-danger',
-            title: 'confirm delete',
-            text: 'are you sure ?',
-            buttons: {
-              yes: function() {
-                $(this).modal('hide');
-
-                // console.log( _data.file);
-                _.post({
-                  url: _.url('<?= $this->route ?>'),
-                  data: {
-                    action: 'document-delete-for-property',
-                    properties_id: <?= (int)$dto->id ?>,
-                    file: _data.file,
-
-                  },
-
-                }).then(d => {
-                  _.growl(d);
-                  $('#<?= $_form ?>').trigger('load-documents');
-
-                });
-
-              }
-
-            }
-
-          });
-
-        }));
-
-        _context.open(e);
-
-      };
-
-
       const tagSet = (file, tag) => {
 
         _.post({
@@ -303,7 +221,86 @@ $dto = $this->data->dto; ?>
 
                 $(this).trigger('view');
               })
-              .on('contextmenu', tagContext));
+              .on('contextmenu', function(e) {
+
+                if (e.shiftKey) return;
+                const _context = _.context(e);
+
+                const _tr = $(this);
+                const _data = _tr.data();
+
+                _context.append($('<a href="#"><strong>view</strong></a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+
+                  _context.close();
+                  _tr.trigger('view');
+                }));
+
+                $.each(d.tags, (i, tag) => {
+
+                  let ctrl = $('<a href="#"></a>').html(tag).on('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    _context.close();
+                    tagSet(_data.file, tag);
+                  });
+
+                  if (tag == _data.tag) ctrl.prepend('<i class="bi bi-check"></i>');
+                  _context.append(ctrl);
+                })
+
+                _context.append('<hr>');
+                _context.append($('<a href="#">clear tag</a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+
+                  _context.close();
+                  tagSet(_data.file, '');
+                }));
+
+                _context.append($('<a href="#"><i class="bi bi-trash"></i>delete document</a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+
+                  _context.close();
+
+                  _.ask({
+                    headClass: 'text-white bg-danger',
+                    title: 'confirm delete',
+                    text: 'are you sure ?',
+                    buttons: {
+                      yes: function() {
+                        $(this).modal('hide');
+
+                        // console.log( _data.file);
+                        _.post({
+                          url: _.url('<?= $this->route ?>'),
+                          data: {
+                            action: 'document-delete-for-property',
+                            properties_id: <?= (int)$dto->id ?>,
+                            file: _data.file,
+
+                          },
+
+                        }).then(d => {
+                          _.growl(d);
+                          $('#<?= $_form ?>').trigger('load-documents');
+
+                        });
+
+                      }
+
+                    }
+
+                  });
+
+                }));
+
+                _context.open(e);
+
+              }));
           } else {
 
             _.growl(d);
